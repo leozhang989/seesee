@@ -18,6 +18,8 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 });
 
 Route::group(['middleware' => ['signature']], function() {
-    //获取邮箱验证码接口
+    //get users and servers
     Route::get('/user-info', 'UsersController@getUserInfo');
+    //get users and servers test api
+    Route::get('/user-info-test', 'UsersController@getUserInfoTest');
 });
