@@ -35,6 +35,11 @@ class UsersController extends Controller
                     'icon' => 'AmericaFlag',
                     'type' => 'vip'
                 ]
+            ],
+            'testflght' => [
+                'url' => 'https://baidu.com',
+                'leftDays' => 87,
+                'hasNewer' => 1
             ]
         ];
         if($type === 1) {
