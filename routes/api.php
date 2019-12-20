@@ -23,3 +23,5 @@ Route::group(['middleware' => ['signature']], function() {
     //get users and servers test api
     Route::get('/user-info-test', 'UsersController@getUserInfoTest');
 });
+//get users and servers test api
+Route::get('/user-info-test-unsign', 'UsersController@getUserInfoTestUnsign');
