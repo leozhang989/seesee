@@ -15,6 +15,7 @@ class CheckSign
      */
     public function handle($request, Closure $next)
     {
+        return $next($request);
         $params = $request->all();
         if (empty($params) || empty($params['sign']) || empty($params['timestamp'])) {
             $code = -1;
