@@ -31,9 +31,9 @@ class AppusersController extends Controller
             $now = time();
             $response['userInfo'] = [
                 'uuid' => $deviceInfo['uuid'] ? : '',
-                'freeVipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
-                'vipExpired' => 0,
-                'isVip' => 0,
+//                'freeVipExpired' => 0,
+                'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
+                'isVip' => 1,
                 'email' => ''
             ];
 
@@ -52,12 +52,12 @@ class AppusersController extends Controller
 
             $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
 
-            $response['testflght']['url'] = SystemSetting::getValueByName('testflghtUrl') ? : '';
-            $testflghtExpiredDate = SystemSetting::getValueByName('testflghtExpiredDate') ? : 0;
-            $diffDateInt = strtotime($testflghtExpiredDate) - strtotime(date('Y-m-d'));
+            $response['testflight']['url'] = SystemSetting::getValueByName('testflightUrl') ? : '';
+            $testflightExpiredDate = SystemSetting::getValueByName('testflightExpiredDate') ? : 0;
+            $diffDateInt = strtotime($testflightExpiredDate) - strtotime(date('Y-m-d'));
             $leftDays = floor($diffDateInt / (3600 * 24));
-            $response['testflght']['leftDays'] = $leftDays ? : 0;
-            $response['testflght']['hasNewer'] = (int)SystemSetting::getValueByName('testflghtHasNewer') ? : 0;
+            $response['testflight']['leftDays'] = $leftDays ? : 0;
+            $response['testflight']['hasNewer'] = (int)SystemSetting::getValueByName('testflightHasNewer') ? : 0;
             return response()->json(['msg' => 'success', 'data' => $response, 'code' => 200]);
         }
         return response()->json(['msg' => '参数错误', 'data' => $response, 'code' => 202]);
@@ -115,7 +115,7 @@ class AppusersController extends Controller
                     'type' => 'vip'
                 ]
             ],
-            'testflght' => [
+            'testflight' => [
                 'url' => 'https://baidu.com',
                 'leftDays' => 87,
                 'hasNewer' => 1
@@ -160,7 +160,7 @@ class AppusersController extends Controller
                     'type' => 'vip'
                 ]
             ],
-            'testflght' => [
+            'testflight' => [
                 'url' => 'https://baidu.com',
                 'leftDays' => 87,
                 'hasNewer' => 1
