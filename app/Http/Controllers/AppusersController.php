@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 
-class UsersController extends Controller
+class AppusersController extends Controller
 {
     public function getUserInfoTest(Request $request){
         $type = $request->input('type', 1);
