@@ -34,7 +34,9 @@ class AppusersController extends Controller
 //                'freeVipExpired' => 0,
                 'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
                 'isVip' => 1,
-                'email' => ''
+                'email' => '',
+//                'hasNewNotice' => (int)SystemSetting::getValueByName('newNoticeId') ? 1 : 0,
+//                'noticeUrl' => SystemSetting::getValueByName('noticeUrl') ? : ''
             ];
 
 //            $deviceInfo = Appuser::where('uuid', $deviceInfo['uuid'])->first(['uuid', 'free_vip_expired as freeVipExpired', 'vip_expired', 'email', 'gid']);
