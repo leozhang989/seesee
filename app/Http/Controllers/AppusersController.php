@@ -2,10 +2,89 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Appuser;
+use App\Models\Device;
+use App\Models\Server;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class AppusersController extends Controller
 {
+    public function getUserInfo(Request $request){
+        $response = [];
+        if($request->filled('device_code')) {
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first(['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired']);
+            if(empty($deviceInfo)){
+                $uuid = $this->generateUUID();
+                $freeDays = SystemSetting::getValueByName('freeDays');
+                $deviceInfo = Device::create([
+                    'uuid' => $uuid,
+                    'device_code' => $request->input('device_code'),
+                    'is_master' => 0,
+                    'status' => 1,
+                    'free_vip_expired' => strtotime('+' . $freeDays . ' day'),
+                    'uid' => 0
+                ]);
+
+            }
+            $now = time();
+            $response['userInfo'] = [
+                'uuid' => $deviceInfo['uuid'] ? : '',
+                'freeVipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
+                'vipExpired' => 0,
+                'isVip' => 0,
+                'email' => ''
+            ];
+
+//            $deviceInfo = Appuser::where('uuid', $deviceInfo['uuid'])->first(['uuid', 'free_vip_expired as freeVipExpired', 'vip_expired', 'email', 'gid']);
+//            $userInfo = Appuser::create([
+//                'name' => '',
+//                'gid' => 0,
+//                'email' => '',
+//                'password' => '',
+//                'phone' => '',
+//                'free_vip_expired' => strtotime('+' . $freeDays . ' day'),
+//                'vip_expired' => 0,
+//                'vip_left_time' => 0,
+//                'uuid' => $uuid,
+//            ]);
+
+            $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
+
+            $response['testflght']['url'] = SystemSetting::getValueByName('testflghtUrl') ? : '';
+            $testflghtExpiredDate = SystemSetting::getValueByName('testflghtExpiredDate') ? : 0;
+            $diffDateInt = strtotime($testflghtExpiredDate) - strtotime(date('Y-m-d'));
+            $leftDays = floor($diffDateInt / (3600 * 24));
+            $response['testflght']['leftDays'] = $leftDays ? : 0;
+            $response['testflght']['hasNewer'] = (int)SystemSetting::getValueByName('testflghtHasNewer') ? : 0;
+            return response()->json(['msg' => 'success', 'data' => $response, 'code' => 200]);
+        }
+        return response()->json(['msg' => '参数错误', 'data' => $response, 'code' => 202]);
+    }
+
+    protected function generateUUID(){
+        $lastUser = DB::table('devices')
+            ->latest()
+            ->first();
+        $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
+        $length = strlen($lastUuid) - 1;
+        $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
+        return $uuid;
+    }
+
+
+
+
+
+    public function setAccount(Request $request){
+
+        return response()->json(['msg' => 'success', 'data' => [], 'code' => 200]);
+    }
+
+
+
+    //debug api
     public function getUserInfoTest(Request $request){
         $type = $request->input('type', 1);
         $data = [
@@ -50,10 +129,6 @@ class AppusersController extends Controller
         return response()->json(['msg' => 'success', 'data' => $data, 'code' => 200]);
     }
 
-    public function getUserInfo(Request $request){
-
-        return response()->json(['msg' => 'success', 'data' => [], 'code' => 200]);
-    }
 
     public function getUserInfoTestUnsign(Request $request){
         $type = $request->input('type', 1);

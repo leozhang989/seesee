@@ -1,4 +1,7 @@
 <?php
+
+use Illuminate\Support\Facades\DB;
+
 /**
  * 除去数组中的空值和签名参数、然后排序、然后生成md5签名
  * @param $params 签名参数组

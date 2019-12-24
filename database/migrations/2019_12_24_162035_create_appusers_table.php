@@ -20,7 +20,7 @@ class CreateAppusersTable extends Migration
             $table->string('email', '255')->nullable(false)->default('')->comment('user email');
             $table->string('password', '255')->nullable(false)->default('')->comment('user password');
             $table->string('phone', '20')->nullable(false)->default('')->comment('user phone');
-            $table->string('uuid', '20')->nullable(false)->default('')->comment('user uuid');
+//            $table->string('uuid', '20')->nullable(false)->default('')->comment('user uuid');
             $table->unsignedInteger('free_vip_expired', 0)->nullable(false)->default(0)->comment('user free_vip_expired');
             $table->unsignedInteger('vip_expired', 0)->nullable(false)->default(0)->comment('user vip_expired');
             $table->unsignedInteger('vip_left_time', 0)->nullable(false)->default(0)->comment('user vip_left_time');

@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SystemSetting;
 use Closure;
 
 class CheckSign
@@ -16,13 +17,13 @@ class CheckSign
     public function handle($request, Closure $next)
     {
         $params = $request->all();
-        if (empty($params) || empty($params['sign']) || empty($params['timestamp'])) {
+        if (empty($params) || empty($params['sign']) || empty($params['timestamp']) || empty($params['appId'])) {
             $code = -1;
             $msg = '参数错误';
         }else{
             $sign = $params['sign'];
             unset($params['sign']);
-            $secret = '12312312313';
+            $secret = SystemSetting::getValueByName($params['appId']);
             $result = generateSign($params, $secret);
             if(time() - $params['timestamp'] >= 600){
                 $code = -1;
