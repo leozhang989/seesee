@@ -35,8 +35,8 @@ class AppusersController extends Controller
                 'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
                 'isVip' => 1,
                 'email' => '',
-//                'hasNewNotice' => (int)SystemSetting::getValueByName('newNoticeId') ? 1 : 0,
-//                'noticeUrl' => SystemSetting::getValueByName('noticeUrl') ? : ''
+                'hasNewNotice' => 1,
+                'noticeUrl' => SystemSetting::getValueByName('noticeUrl') ? SystemSetting::getValueByName('noticeUrl') . '/1' : ''
             ];
 
 //            $deviceInfo = Appuser::where('uuid', $deviceInfo['uuid'])->first(['uuid', 'free_vip_expired as freeVipExpired', 'vip_expired', 'email', 'gid']);
@@ -60,6 +60,7 @@ class AppusersController extends Controller
             $leftDays = floor($diffDateInt / (3600 * 24));
             $response['testflight']['leftDays'] = $leftDays ? : 0;
             $response['testflight']['hasNewer'] = (int)SystemSetting::getValueByName('testflightHasNewer') ? : 0;
+            $response['testflight']['content'] = (int)SystemSetting::getValueByName('testflightContent') ? : '';
             return response()->json(['msg' => 'success', 'data' => $response, 'code' => 200]);
         }
         return response()->json(['msg' => '参数错误', 'data' => $response, 'code' => 202]);

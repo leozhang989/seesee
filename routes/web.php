@@ -14,3 +14,11 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+//seesee faq page
+Route::get('see/faq', function () {
+    return view('faq');
+});
+
+//seesee faq page
+Route::get('see/notices/{version}', 'NoticesController@detail');
