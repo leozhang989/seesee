@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appuser;
+use App\Models\AppVersion;
 use App\Models\Device;
 use App\Models\Server;
 use App\Models\SystemSetting;
@@ -13,7 +14,31 @@ class AppusersController extends Controller
 {
     public function getUserInfo(Request $request){
         $response = [];
+        $now = time();
+        $nowDate = strtotime(date('Ymd', $now));
         if($request->filled('device_code')) {
+            $hasNewerVersion = 0;
+            $leftDays = 90;
+            $testflightContent = $testflightUrl = '';
+            //update version settings
+            if($request->filled('version')){
+                $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
+                $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
+                if(!in_array($request->input('version'), $appVersions)){
+                    $latestVersionRes = AppVersion::create([
+                        'app_version' => $request->input('version'),
+                        'content' => '',
+                        'testflight_url' => '',
+                        'expired_date' => $nowDate + 90 * 24 * 3600
+                    ]);
+                }
+                $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
+                $leftDays = floor($diffDateInt / (3600 * 24));
+                $testflightContent = $latestVersionRes['content'];
+                $testflightUrl = $latestVersionRes['testflight_url'];
+                if($latestVersionRes['app_version'] != $request->input('version'))
+                    $hasNewerVersion = 1;
+            }
             $deviceInfo = Device::where('device_code', $request->input('device_code'))->first(['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired']);
             if(empty($deviceInfo)){
                 $uuid = $this->generateUUID();
@@ -28,14 +53,13 @@ class AppusersController extends Controller
                 ]);
 
             }
-            $now = time();
             $response['userInfo'] = [
                 'uuid' => $deviceInfo['uuid'] ? : '',
 //                'freeVipExpired' => 0,
                 'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
                 'isVip' => 1,
                 'email' => '',
-                'hasNewNotice' => 1,
+                'hasNewNotice' => 0,
                 'noticeUrl' => SystemSetting::getValueByName('noticeUrl') ? SystemSetting::getValueByName('noticeUrl') . '/1' : ''
             ];
 
@@ -54,13 +78,10 @@ class AppusersController extends Controller
 
             $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
 
-            $response['testflight']['url'] = SystemSetting::getValueByName('testflightUrl') ? : '';
-            $testflightExpiredDate = SystemSetting::getValueByName('testflightExpiredDate') ? : 0;
-            $diffDateInt = strtotime($testflightExpiredDate) - strtotime(date('Y-m-d'));
-            $leftDays = floor($diffDateInt / (3600 * 24));
-            $response['testflight']['leftDays'] = $leftDays ? : 0;
-            $response['testflight']['hasNewer'] = (int)SystemSetting::getValueByName('testflightHasNewer') ? : 0;
-            $response['testflight']['content'] = (int)SystemSetting::getValueByName('testflightContent') ? : '';
+            $response['testflight']['url'] = $testflightUrl ? : '';
+            $response['testflight']['leftDays'] = $leftDays;
+            $response['testflight']['hasNewer'] = $hasNewerVersion;
+            $response['testflight']['content'] = $testflightContent;
             return response()->json(['msg' => 'success', 'data' => $response, 'code' => 200]);
         }
         return response()->json(['msg' => '参数错误', 'data' => $response, 'code' => 202]);
