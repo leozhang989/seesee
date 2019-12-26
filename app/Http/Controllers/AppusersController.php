@@ -28,7 +28,7 @@ class AppusersController extends Controller
                     $latestVersionRes = AppVersion::create([
                         'app_version' => $request->input('version'),
                         'content' => '',
-                        'testflight_url' => '',
+                        'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
                         'expired_date' => $nowDate + 90 * 24 * 3600
                     ]);
                 }
