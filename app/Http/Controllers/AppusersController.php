@@ -39,7 +39,7 @@ class AppusersController extends Controller
                 if($latestVersionRes['app_version'] != $request->input('version'))
                     $hasNewerVersion = 1;
             }
-            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first(['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired']);
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
             if(empty($deviceInfo)){
                 $uuid = $this->generateUUID();
                 $freeDays = SystemSetting::getValueByName('freeDays');
@@ -56,7 +56,7 @@ class AppusersController extends Controller
 
             //支付未上线延长用户有效期
             if($deviceInfo['free_vip_expired'] - $now < 432000){
-                $deviceInfo->free_vip_expired += 432000;
+                $deviceInfo->free_vip_expired = $deviceInfo['free_vip_expired'] + 432000;
                 $deviceInfo->save();
             }
 
