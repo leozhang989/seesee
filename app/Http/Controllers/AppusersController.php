@@ -56,7 +56,7 @@ class AppusersController extends Controller
 
             //支付未上线延长用户有效期
             if($deviceInfo['free_vip_expired'] - $now < 432000){
-                $deviceInfo->free_vip_expired += 432000;
+                $deviceInfo->free_vip_expired = $deviceInfo['free_vip_expired'] + 432000;
                 $deviceInfo->save();
             }
 
