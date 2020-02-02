@@ -39,7 +39,7 @@ class AppusersController extends Controller
                 if($latestVersionRes['app_version'] != $request->input('version'))
                     $hasNewerVersion = 1;
             }
-            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first(['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired']);
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
             if(empty($deviceInfo)){
                 $uuid = $this->generateUUID();
                 $freeDays = SystemSetting::getValueByName('freeDays');
