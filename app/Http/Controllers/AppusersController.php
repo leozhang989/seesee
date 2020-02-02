@@ -24,14 +24,14 @@ class AppusersController extends Controller
             if($request->filled('version')){
                 $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
                 $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
-//                if(!in_array($request->input('version'), $appVersions)){
-//                    $latestVersionRes = AppVersion::create([
-//                        'app_version' => $request->input('version'),
-//                        'content' => '',
-//                        'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
-//                        'expired_date' => $nowDate + 90 * 24 * 3600
-//                    ]);
-//                }
+                if(!in_array($request->input('version'), $appVersions)){
+                    $latestVersionRes = AppVersion::create([
+                        'app_version' => $request->input('version'),
+                        'content' => '',
+                        'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
+                        'expired_date' => $nowDate + 90 * 24 * 3600
+                    ]);
+                }
                 $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
                 $leftDays = floor($diffDateInt / (3600 * 24));
                 $testflightContent = $latestVersionRes['content'];
