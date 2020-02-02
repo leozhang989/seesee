@@ -20,8 +20,9 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
 Route::group(['middleware' => ['signature']], function() {
     //get users and servers
     Route::get('/user-info', 'AppusersController@getUserInfo');
+
     //get users and servers test api
-    Route::get('/user-info-test', 'AppusersController@getUserInfoTest');
+//    Route::get('/user-info-test', 'AppusersController@getUserInfoTest');
 });
 //get users and servers test api
-Route::get('/user-info-test-unsign', 'AppusersController@getUserInfoTestUnsign');
+//Route::get('/user-info-test-unsign', 'AppusersController@getUserInfoTestUnsign');
