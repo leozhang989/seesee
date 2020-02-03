@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\Notice;
 use App\Models\Server;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
@@ -60,14 +61,24 @@ class AppusersController extends Controller
                 $deviceInfo->save();
             }
 
+            //if has new notice now
+            $newNotice = 0;
+            $noticeUrl = '';
+            $nowDate = date('Y-m-d H:i:s', $now);
+            $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+            if($latestNotice) {
+                $newNotice = 1;
+                $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ? : '';
+            }
+
             $response['userInfo'] = [
                 'uuid' => $deviceInfo['uuid'] ? : '',
 //                'freeVipExpired' => 0,
                 'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
                 'isVip' => 1,
                 'email' => '',
-                'hasNewNotice' => 0,
-                'noticeUrl' => SystemSetting::getValueByName('noticeUrl') ? SystemSetting::getValueByName('noticeUrl') . '/1' : ''
+                'hasNewNotice' => $newNotice,
+                'noticeUrl' => $noticeUrl
             ];
 
 //            $deviceInfo = Appuser::where('uuid', $deviceInfo['uuid'])->first(['uuid', 'free_vip_expired as freeVipExpired', 'vip_expired', 'email', 'gid']);

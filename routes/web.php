@@ -20,5 +20,8 @@ Route::get('see/faq', function () {
     return view('faq');
 });
 
-//seesee faq page
-Route::get('see/notices/{version}', 'NoticesController@detail');
+//seesee notice detail page
+Route::get('notices/list', 'NoticesController@list');
+
+//seesee notice detail page
+Route::get('notices/detail/{id}/{uuid}', 'NoticesController@detail');
