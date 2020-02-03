@@ -26,7 +26,7 @@
 
         .flex-center {
             align-items: center;
-            display: flex;
+            /*display: flex;*/
             justify-content: center;
         }
 
@@ -39,7 +39,7 @@
         }
 
         .title {
-            font-size: 30px;
+            font-size: 26px;
         }
 
         .m-b-md {
