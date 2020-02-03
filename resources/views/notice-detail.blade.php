@@ -34,16 +34,12 @@
             position: relative;
         }
 
-        .content {
-            text-align: center;
-        }
-
         .title {
-            font-size: 26px;
+            font-size: 24px;
         }
 
         .m-b-md {
-            margin-bottom: 30px;
+            margin: 0 12px;
         }
     </style>
 </head>
