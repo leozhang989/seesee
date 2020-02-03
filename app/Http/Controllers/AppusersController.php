@@ -6,6 +6,7 @@ use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
 use App\Models\Notice;
+use App\Models\NoticeLog;
 use App\Models\Server;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
@@ -67,7 +68,8 @@ class AppusersController extends Controller
             $nowDate = date('Y-m-d H:i:s', $now);
             $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
             if($latestNotice) {
-                $newNotice = 1;
+                $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
+                $newNotice = $userNoticeLog ? 0 : 1;
                 $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ? : '';
             }
 
