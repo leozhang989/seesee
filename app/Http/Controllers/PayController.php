@@ -20,7 +20,7 @@ class PayController extends Controller
             $viewData = [
                 'goodsList' => $goodsList,
                 'title' => '商品列表',
-                'token' => $request->input('token'),
+                'token' => $token,
                 'vendorId' => SystemSetting::getValueByName('vendorId')
             ];
             return view('order.payment', $viewData);
