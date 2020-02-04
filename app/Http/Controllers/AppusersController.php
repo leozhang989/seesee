@@ -140,8 +140,11 @@ class AppusersController extends Controller
                     return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
 
                 $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
-                $deviceInfo->uid = $user['id'];
-                $deviceInfo->save();
+                if($deviceInfo) {
+                    $deviceInfo->uid = $user['id'];
+                    $deviceInfo->save();
+                }else
+                    return response()->json(['data' => [], 'msg' => '登录失败，设备不存在', 'code' => 202]);
 
 //                $totalIntegral = $user['integral'];
                 unset($user['id'], $user['created_at'], $user['updated_at'], $user['name']);
