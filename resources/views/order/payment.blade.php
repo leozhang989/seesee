@@ -36,6 +36,24 @@
             color: #fff;
             text-align: right;
         }
+        .item0{
+            height: 50px;
+            background: #5BBFBC;
+            border-radius:150px 150px 150px 150px;
+            /*box-shadow: #40DE91 0 0 10px 1px;*/
+        }
+        .item1{
+            height: 50px;
+            background: #5BBFBC;
+            border-radius:150px 150px 150px 150px;
+            /*box-shadow: #40DE91 0 0 10px 1px;*/
+        }
+        .item2{
+            height: 50px;
+            background: #5BBFBC;
+            border-radius:150px 150px 150px 150px;
+            /*box-shadow: #FABB26 0 0 10px 1px;*/
+        }
 
     </style>
 
