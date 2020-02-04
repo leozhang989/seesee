@@ -20,8 +20,14 @@ Route::get('see/faq', function () {
     return view('faq');
 });
 
+//goods list
+Route::get('goods/list/{token}', 'PayController@list');
+
 //seesee notice detail page
 Route::get('notices/list', 'NoticesController@list');
 
 //seesee notice detail page
 Route::get('notices/detail/{id}/{uuid}', 'NoticesController@detail');
+
+//pwd reset page
+Route::get('reset-pwd/confirm/{token}/{email}', 'ResetPwdController@resetPage');

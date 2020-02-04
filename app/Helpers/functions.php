@@ -106,3 +106,23 @@ function paddleKey(){
     $paddleKeyPath = public_path('paddle/paddle.production.key');
     return file_get_contents($paddleKeyPath);
 }
+
+function generateRandomCode($length) {
+    $token = getToken($length);
+    $code = 'EN'. $token . substr(strftime('%Y', time()),2);
+
+    return $code;
+}
+
+function getToken($length){
+    $token = '';
+    $codeAlphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    $codeAlphabet.= "0123456789";
+
+    mt_srand();      // Call once. Good since $application_id is unique.
+
+    for($i=0; $i<$length; $i++){
+        $token .= $codeAlphabet[random_int(0, strlen($codeAlphabet)-1)];
+    }
+    return $token;
+}

@@ -21,8 +21,28 @@ Route::group(['middleware' => ['signature']], function() {
     //get users and servers
     Route::get('/user-info', 'AppusersController@getUserInfo');
 
-    //get users and servers test api
-//    Route::get('/user-info-test', 'AppusersController@getUserInfoTest');
+    //register when pay
+    Route::post('/register', 'RegisterController@register');
+
+    //use login api
+    Route::post('/login', 'AppusersController@login');
+
+    //logout
+    Route::post('/logout', 'AppusersController@logout');
+
+    //get pwd reset url
+    Route::get('/reset', 'ResetPwdController@resetPassword');
 });
-//get users and servers test api
-//Route::get('/user-info-test-unsign', 'AppusersController@getUserInfoTestUnsign');
+
+
+//reset pwd api
+Route::post('/reset-pwd', 'ResetPwdController@newPassword');
+
+//发起支付
+Route::get('/order/create', 'PayController@createOrder');
+
+//查询到期时间接口
+Route::get('/user/vip-time', 'PayController@getVipexpireat');
+
+//paddle回调webhook接口
+Route::post('/paddle/web-hook', 'PayController@webHook');

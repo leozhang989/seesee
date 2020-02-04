@@ -80,7 +80,8 @@ class AppusersController extends Controller
                 'isVip' => 1,
                 'email' => '',
                 'hasNewNotice' => $newNotice,
-                'noticeUrl' => $noticeUrl
+                'noticeUrl' => $noticeUrl,
+                'paymentUrl' => action('PayController@list', ['token' => $deviceInfo['uuid']]),
             ];
 
 //            $deviceInfo = Appuser::where('uuid', $deviceInfo['uuid'])->first(['uuid', 'free_vip_expired as freeVipExpired', 'vip_expired', 'email', 'gid']);
@@ -118,103 +119,98 @@ class AppusersController extends Controller
     }
 
 
-
-
-
     public function setAccount(Request $request){
 
         return response()->json(['msg' => 'success', 'data' => [], 'code' => 200]);
     }
 
 
+    public function login(Request $request){
+        if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
+            $user = Appuser::where('email', $request->input('email'))->where('password', MD5($request->input('password')))->first();
+            if (!empty($user)) {
+                $now = time();
+                //设置用户session
+                session(['user' => $user['id']]);
 
-    //debug api
-    public function getUserInfoTest(Request $request){
-        $type = $request->input('type', 1);
-        $data = [
-            'userInfo' => [
-                'uuid' => '123123',
-                'freeVipExpired' => 0,
-                'vipExpired' => 30 * 24 * 3600,
-                'isVip' => 1,
-                'email' => '123123@qq.com'
-            ],
-            'servers' => [
-                [
-                    'name' => '美国1',
-                    'address' => '123.123.3.123',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ],
-                [
-                    'name' => '美国2',
-                    'address' => '123.123.1.222',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ],
-                [
-                    'name' => '美国3',
-                    'address' => '123.123.12.333',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ]
-            ],
-            'testflight' => [
-                'url' => 'https://baidu.com',
-                'leftDays' => 87,
-                'hasNewer' => 1
-            ]
-        ];
-        if($type === 1) {
-            $data['userInfo']['freeVipExpired'] = 10 * 24 * 3600;
-            $data['userInfo']['vipExpired'] = 0;
-            $data['userInfo']['isVip'] = 0;
+                //检测设备数
+                $exsitedDevicesCount = Device::where('uid', $user['id'])->count();
+                $maxSettings = SystemSetting::getValueByName('seeMaxDevices') ? : 3;
+                if($exsitedDevicesCount >= $maxSettings)
+                    return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
+
+                $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
+                $deviceInfo->uid = $user['id'];
+                $deviceInfo->save();
+
+//                $totalIntegral = $user['integral'];
+                unset($user['id'], $user['created_at'], $user['updated_at'], $user['name']);
+
+                //if has new notice now
+                $newNotice = 0;
+                $noticeUrl = '';
+                $nowDate = date('Y-m-d H:i:s', $now);
+                $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+                if($latestNotice) {
+                    $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
+                    $newNotice = $userNoticeLog ? 0 : 1;
+                    $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ? : '';
+                }
+
+                $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
+                $response['userInfo'] = [
+                    'uuid' => $deviceInfo['uuid'] ? : '',
+                    'vipExpired' => $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now,
+                    'isVip' => 1,
+                    'email' => $request->input('email'),
+                    'hasNewNotice' => $newNotice,
+                    'noticeUrl' => $noticeUrl,
+                    'paymentUrl' => action('PayController@list', ['token' => $deviceInfo['uuid']]),
+                ];
+
+                $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
+
+                //update version settings
+                $hasNewerVersion = 0;
+                $leftDays = 90;
+                $testflightContent = $testflightUrl = '';
+                if($request->filled('version')){
+                    $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
+                    $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
+                    if(!in_array($request->input('version'), $appVersions)){
+                        $latestVersionRes = AppVersion::create([
+                            'app_version' => $request->input('version'),
+                            'content' => '',
+                            'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
+                            'expired_date' => $nowDate + 90 * 24 * 3600
+                        ]);
+                    }
+                    $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
+                    $leftDays = floor($diffDateInt / (3600 * 24));
+                    $testflightContent = $latestVersionRes['content'];
+                    $testflightUrl = $latestVersionRes['testflight_url'];
+                    if($latestVersionRes['app_version'] != $request->input('version'))
+                        $hasNewerVersion = 1;
+                }
+
+                $response['testflight']['url'] = $testflightUrl ? : '';
+                $response['testflight']['leftDays'] = $leftDays;
+                $response['testflight']['hasNewer'] = $hasNewerVersion;
+                $response['testflight']['content'] = $testflightContent;
+
+                return response()->json(['data' => $response, 'msg' => '登陆成功', 'code' => 200]);
+            }
+            return response()->json(['data' => [], 'msg' => '账号或密码错误', 'code' => 202]);
         }
-        return response()->json(['msg' => 'success', 'data' => $data, 'code' => 200]);
+        return response()->json(['data' => [], 'msg' => '登陆失败，请重试！', 'code' => 202]);
     }
 
-
-    public function getUserInfoTestUnsign(Request $request){
-        $type = $request->input('type', 1);
-        $data = [
-            'userInfo' => [
-                'uuid' => '123123',
-                'freeVipExpired' => 0,
-                'vipExpired' => 30 * 24 * 3600,
-                'isVip' => 1,
-                'email' => '123123@qq.com'
-            ],
-            'servers' => [
-                [
-                    'name' => '美国1',
-                    'address' => '123.123.3.123',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ],
-                [
-                    'name' => '美国2',
-                    'address' => '123.123.1.222',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ],
-                [
-                    'name' => '美国3',
-                    'address' => '123.123.12.333',
-                    'icon' => 'AmericaFlag',
-                    'type' => 'vip'
-                ]
-            ],
-            'testflight' => [
-                'url' => 'https://baidu.com',
-                'leftDays' => 87,
-                'hasNewer' => 1
-            ]
-        ];
-        if($type === 1) {
-            $data['userInfo']['freeVipExpired'] = 10 * 24 * 3600;
-            $data['userInfo']['vipExpired'] = 0;
-            $data['userInfo']['isVip'] = 0;
+    public function logout(Request $request){        //清空用户session
+        if ($request->session()->has('user')) {
+            $request->session()->forget('user');
         }
-        return response()->json(['msg' => 'success', 'data' => $data, 'code' => 200]);
+
+        return response()->json(['data' => [],'msg' => '登出成功', 'code' => 200]);
     }
+
 }
