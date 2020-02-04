@@ -19,24 +19,6 @@
             border:0;
             background-color:#fff;
         }
-        .item0{
-            height: 50px;
-            background: #5BBFBC;
-            border-radius:150px 150px 150px 150px;
-            /*box-shadow: #40DE91 0 0 10px 1px;*/
-        }
-        .item1{
-            height: 50px;
-            background: #5BBFBC;
-            border-radius:150px 150px 150px 150px;
-            /*box-shadow: #40DE91 0 0 10px 1px;*/
-        }
-        .item2{
-            height: 50px;
-            background: #5BBFBC;
-            border-radius:150px 150px 150px 150px;
-            /*box-shadow: #FABB26 0 0 10px 1px;*/
-        }
         .item .name{
             height: 50px;
             line-height: 50px;
@@ -53,21 +35,6 @@
             font-weight: 500;
             color: #fff;
             text-align: right;
-        }
-        .discount{
-            position: relative;
-            top: -80px;
-            right: -30px;
-            z-index: 2;
-        }
-        .forsale{
-            height: auto;
-            min-height: 180px;
-            background: url("{{ URL::asset('images/forsale.png') }}") no-repeat;
-            background-size: 100% 100%;
-            z-index: 1;
-            position: relative;
-            top: -100px;
         }
 
     </style>
@@ -92,7 +59,7 @@
         <div class="row text-center">
             <div class="col-sm-12" style="color:#F1502A;border:1px dashed #F1502A;border-radius: 24px 24px;display:table;height:100px;">
                 <p style="display:table-cell;vertical-align:middle;">
-                    <b>购买成功后，重启风速APP</b><br/>
+                    <b>购买成功后，重启See APP</b><br/>
                     <b>有效期如未改变，请联系邮箱：</b><br/>
                     <b>fengchi@protonmail.com</b>
                 </p>
@@ -120,7 +87,7 @@
             <div class="modal-body" style="text-align: center;color: #5B5B5B;">
                 <p>购买成功！</p>
                 <p>有效期至：<span id="viptime"></span></p>
-                <p>如果是电脑浏览器支付成功的用户，重启风速APP即可。</p>
+                <p>如果是电脑浏览器支付成功的用户，重启See APP即可。</p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

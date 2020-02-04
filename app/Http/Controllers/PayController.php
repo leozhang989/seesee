@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appuser;
+use App\Models\Device;
 use App\Models\Goods;
 use App\Models\Order;
 use App\Models\PaddlePayment;
@@ -12,9 +13,9 @@ use Illuminate\Support\Facades\Log;
 
 class PayController extends Controller
 {
-    public function list(Request $request)
+    public function list(Request $request, $token = '')
     {
-        if ($request->has('token')) {
+        if ($token) {
             $goodsList = Goods::where('status', 1)->get();
             $viewData = [
                 'goodsList' => $goodsList,
@@ -66,7 +67,8 @@ class PayController extends Controller
 
         $order = Order::find($orderNo);
         if($order) {
-            $user = Appuser::where('uuid', $order['uuid'])->first();
+            $deviceInfo = Device::where('uuid', $order['uuid'])->first();
+            $user = Appuser::where('id', $deviceInfo['uid'])->first();
             $vipExpireAt = ($user && $user['vip_expireat']) ? date('Y-m-d H:i:s', $user['vip_expireat']) : '';
             return response()->json(['msg' => '成功', 'data' => ['vip_expireat' => $vipExpireAt], 'code' => 200]);
         }
@@ -76,7 +78,7 @@ class PayController extends Controller
 
     public function webHook(Request $request)
     {
-        Log::channel('paylog')->info('web-hook callback data:' . json_encode($request->all()));
+//        Log::channel('paylog')->info('web-hook callback data:' . json_encode($request->all()));
         $signature = $request->input('p_signature');
         if (!$this->verifyHook($signature, $request->all())) {
             return response()->json('Security check failure!', 202);
@@ -136,16 +138,16 @@ class PayController extends Controller
                 $order->transactionId = $paymentData['order_id'];
                 if ($order->save()) {
                     $month = $order->service_date * $order->goods_num;
-                    $user = Appuser::where('uuid', $order->uuid)->first();
-                    $vipStartTime = strtotime('2019-03-20');
-                    $now = time();
-                    $start = $now > $vipStartTime ? $now : $vipStartTime;
-                    $vipExpireAt = $user->vip_expireat > $start ? $user->vip_expireat : $start;
-                    $user->vip_expireat = strtotime('+' . $month . ' month', $vipExpireAt);
-                    if($user->save())
-                        return response()->json('ok');
-                    else
-                        return response()->json('error', 202);
+                    $deviceInfo = Device::where('uuid', $order->uuid)->first();
+                    $user = Appuser::find($deviceInfo['uid']);
+                    if($user) {
+                        $now = time();
+                        $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
+                        $user->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt);
+                        if ($user->save())
+                            return response()->json('ok');
+                    }
+                    return response()->json('error', 202);
                 }
             }
         }
