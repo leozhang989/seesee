@@ -20,7 +20,7 @@ class PayController extends Controller
             if(empty($device))
                 die('支付异常');
 
-            if($device['uid'] != 0)
+            if($device['uid'] == 0)
                 die('用户账户异常，请先注册账号');
 
             $goodsList = Goods::where('status', 1)->get();
