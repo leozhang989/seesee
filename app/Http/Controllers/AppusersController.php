@@ -77,7 +77,7 @@ class AppusersController extends Controller
                 'uuid' => $deviceInfo['uuid'] ? : '',
 //                'freeVipExpired' => 0,
                 'vipExpired' => $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0,
-                'isVip' => 1,
+                'isVip' => $deviceInfo['free_vip_expired'] > $now ? 1 : 0,
                 'email' => '',
                 'hasNewNotice' => $newNotice,
                 'noticeUrl' => $noticeUrl,
@@ -118,13 +118,6 @@ class AppusersController extends Controller
         return $uuid;
     }
 
-
-    public function setAccount(Request $request){
-
-        return response()->json(['msg' => 'success', 'data' => [], 'code' => 200]);
-    }
-
-
     public function login(Request $request){
         if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
             $user = Appuser::where('email', $request->input('email'))->where('password', MD5($request->input('password')))->first();
@@ -153,6 +146,7 @@ class AppusersController extends Controller
                 $newNotice = 0;
                 $noticeUrl = '';
                 $nowDate = date('Y-m-d H:i:s', $now);
+                $today = strtotime(date('Y-m-d', $now));
                 $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
                 if($latestNotice) {
                     $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
@@ -161,10 +155,11 @@ class AppusersController extends Controller
                 }
 
                 $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
+                $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
                 $response['userInfo'] = [
                     'uuid' => $deviceInfo['uuid'] ? : '',
-                    'vipExpired' => $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now,
-                    'isVip' => 1,
+                    'vipExpired' => $totalExpiredTime,
+                    'isVip' => $totalExpiredTime > 0 ? 1 : 0,
                     'email' => $request->input('email'),
                     'hasNewNotice' => $newNotice,
                     'noticeUrl' => $noticeUrl,
@@ -185,10 +180,11 @@ class AppusersController extends Controller
                             'app_version' => $request->input('version'),
                             'content' => '',
                             'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
-                            'expired_date' => $nowDate + 90 * 24 * 3600
+                            'expired_date' => $today + 90 * 24 * 3600
                         ]);
                     }
-                    $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
+
+                    $diffDateInt = $latestVersionRes['expired_date'] - $today;
                     $leftDays = floor($diffDateInt / (3600 * 24));
                     $testflightContent = $latestVersionRes['content'];
                     $testflightUrl = $latestVersionRes['testflight_url'];
