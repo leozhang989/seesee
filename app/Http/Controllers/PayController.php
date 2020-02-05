@@ -16,14 +16,17 @@ class PayController extends Controller
     public function list(Request $request, $token = '')
     {
         if ($token) {
-            $goodsList = Goods::where('status', 1)->get();
-            $viewData = [
-                'goodsList' => $goodsList,
-                'title' => '商品列表',
-                'token' => $token,
-                'vendorId' => SystemSetting::getValueByName('vendorId')
-            ];
-            return view('order.payment', $viewData);
+            $device = Device::where('uuid', $token)->first();
+            if($device) {
+                $goodsList = Goods::where('status', 1)->get();
+                $viewData = [
+                    'goodsList' => $goodsList,
+                    'title' => '商品列表',
+                    'token' => $token,
+                    'vendorId' => SystemSetting::getValueByName('vendorId')
+                ];
+                return view('order.payment', $viewData);
+            }
         }
         die('支付链接异常');
     }
