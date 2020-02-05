@@ -17,16 +17,20 @@ class PayController extends Controller
     {
         if ($token) {
             $device = Device::where('uuid', $token)->first();
-            if($device) {
-                $goodsList = Goods::where('status', 1)->get();
-                $viewData = [
-                    'goodsList' => $goodsList,
-                    'title' => '商品列表',
-                    'token' => $token,
-                    'vendorId' => SystemSetting::getValueByName('vendorId')
-                ];
-                return view('order.payment', $viewData);
-            }
+            if(empty($device))
+                die('支付异常');
+
+            if($device['uid'] != 0)
+                die('用户账户异常，请先注册账号');
+
+            $goodsList = Goods::where('status', 1)->get();
+            $viewData = [
+                'goodsList' => $goodsList,
+                'title' => '商品列表',
+                'token' => $token,
+                'vendorId' => SystemSetting::getValueByName('vendorId')
+            ];
+            return view('order.payment', $viewData);
         }
         die('支付链接异常');
     }
