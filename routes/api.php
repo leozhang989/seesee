@@ -35,6 +35,15 @@ Route::group(['middleware' => ['signature']], function() {
 
     //get user vip time
     Route::post('/query-user-vip', 'AppusersController@queryUserVip');
+
+    //get recharge list
+    Route::get('/get/recharges', 'SupportPayController@rechargeList');
+
+    //recharge api
+    Route::post('/recharge', 'SupportPayController@recharge');
+
+    //set settlement
+    Route::post('/settlement', 'SupportPayController@settlement');
 });
 
 
