@@ -80,7 +80,7 @@ class PayController extends Controller
         if($order) {
             $deviceInfo = Device::where('uuid', $order['uuid'])->first();
             $user = Appuser::where('id', $deviceInfo['uid'])->first();
-            $vipExpireAt = ($user && $user['vip_expireat']) ? date('Y-m-d H:i:s', $user['vip_expireat']) : '';
+            $vipExpireAt = ($user && $user['vip_expired']) ? date('Y-m-d H:i:s', $user['vip_expired']) : '';
             return response()->json(['msg' => '成功', 'data' => ['vip_expireat' => $vipExpireAt], 'code' => 200]);
         }
         return response()->json(['msg' => '查无此订单', 'data' => [], 'code' => 202]);
