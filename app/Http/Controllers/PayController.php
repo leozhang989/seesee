@@ -42,9 +42,13 @@ class PayController extends Controller
             if (!$goods)
                 return response()->json(['msg' => '商品不存在', 'data' => [], 'code' => 202]);
 
-            $UserInfo = Appuser::where('uuid', $request->input('token'))->first();
+            $deviceInfo = Device::where('uuid', $request->input('token'))->first();
+            if(empty($deviceInfo) || empty($deviceInfo['uid']))
+                return response()->json(['msg' => '设备不存在或您还未注册', 'data' => [], 'code' => 202]);
+
+            $UserInfo = Appuser::find($deviceInfo['uid']);
             if (empty($UserInfo))
-                return response()->json(['msg' => '用户不存在，请先注册成为会员', 'data' => [], 'code' => 202]);
+                return response()->json(['msg' => '用户信息不存在，请先注册成为会员', 'data' => [], 'code' => 202]);
 
 //            if ($order = Order::where('commodity_code', $request->input('commodityCode'))->where('uuid', $request->input('token'))->where('status', 0)->first())
 //                return response()->json(['msg' => '成功', 'data' => $order['id'], 'code' => 200], 200);
