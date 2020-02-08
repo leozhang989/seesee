@@ -32,6 +32,9 @@ Route::group(['middleware' => ['signature']], function() {
 
     //get pwd reset url
     Route::get('/reset', 'ResetPwdController@resetPassword');
+
+    //get user vip time
+    Route::post('/query-user-vip', 'AppusersController@queryUserVip');
 });
 
 

@@ -216,4 +216,21 @@ class AppusersController extends Controller
         return response()->json(['data' => [],'msg' => '登出成功', 'code' => 200]);
     }
 
+
+    public function queryUserVip(Request $request){
+        if($request->filled('uuid')){
+            $now = time();
+            $deviceInfo = Device::where('uuid', $request->input('uuid'))->first();
+            $userInfo = Appuser::find($deviceInfo['uid']);
+            if($deviceInfo && $userInfo){
+                //user time object
+                $userTime['vipExpired'] = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
+                $userTime['freeExpired'] = $userInfo['free_vip_expired'] > $now ? $userInfo['free_vip_expired'] - $now : 0;
+                return response()->json(['msg' => '查询成功', 'data' => ['userInfo' => $userTime], 'code' => 200]);
+            }
+            return response()->json(['msg' => '用户不存在', 'data' => '', 'code' => 202]);
+        }
+        return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
+    }
+
 }
