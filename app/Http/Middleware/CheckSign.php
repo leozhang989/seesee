@@ -18,7 +18,7 @@ class CheckSign
     public function handle($request, Closure $next)
     {
         $params = $request->all();
-        Log::Info('中间件中：' . json_encode($params));
+//        Log::Info('中间件中：' . json_encode($params));
         if (empty($params) || empty($params['sign']) || empty($params['timestamp']) || empty($params['appId'])) {
             $code = -1;
             $msg = '参数错误';

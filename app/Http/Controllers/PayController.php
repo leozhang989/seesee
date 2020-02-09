@@ -154,7 +154,11 @@ class PayController extends Controller
                     if($user) {
                         $now = time();
                         $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
-                        $user->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt);
+                        $freeLeft = 0;
+                        if($user->free_vip_expired > $now && $vipExpireAt == $now)
+                            $freeLeft = $user->free_vip_expired - $now;
+
+                        $user->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt) + $freeLeft;
                         if ($user->save())
                             return response()->json('ok');
                     }

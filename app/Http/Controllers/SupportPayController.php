@@ -31,7 +31,6 @@ class SupportPayController extends Controller
 //    }
 
     public function recharge(Request $request){
-        Log::Info('方法中：' . $request->input('uuid'). '|' . $request->input('user_uuid') . '|' . $request->input('product'));
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
             $now = time();
             $uuid = $request->input('uuid', '');
@@ -100,14 +99,14 @@ class SupportPayController extends Controller
                     //see data
                     $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
                     $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->where('creater', $uuid)->where('res_status', 1)->count();
-                    $seeTotalMoney = RechargeLogs::where('creater', $uuid)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
-                    $seeRechargeList = RechargeLogs::where('creater', $uuid)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+//                    $seeTotalMoney = RechargeLogs::where('creater', $uuid)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
+                    $seeRechargeList = RechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     //feng data
                     $fengHalf = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
                     $fengOne = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '12')->where('creater', $uuid)->where('res_status', 1)->count();
-                    $fengTotalMoney = FengRechargeLogs::where('creater', $uuid)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
-                    $fengRechargeList = FengRechargeLogs::where('creater', $uuid)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+//                    $fengTotalMoney = FengRechargeLogs::where('creater', $uuid)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
+                    $fengRechargeList = FengRechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     $successMsg = '用户 ID：' . $userUuid . '，已开通' . $productName;
                     $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
@@ -115,10 +114,9 @@ class SupportPayController extends Controller
                     $data['seeGoods_12'] = $seeOne;
                     $data['fengGoods_6'] = $fengHalf;
                     $data['fengGoods_12'] = $fengOne;
-                    $data['totalMoney'] = $seeTotalMoney + $fengTotalMoney;
-                    $data['payMoney'] = $data['totalMoney'] - ($seeHalf + $seeOne + $fengHalf + $fengOne) * 15;
-                    $data['earnMoney'] = $data['totalMoney'] - $data['payMoney'] > 0 ? $data['totalMoney'] - $data['payMoney'] : 0;
-                    $data['totalMoney'] = $seeTotalMoney + $fengTotalMoney;
+//                    $data['totalMoney'] = $seeTotalMoney + $fengTotalMoney;
+//                    $data['payMoney'] = $data['totalMoney'] - ($seeHalf + $seeOne + $fengHalf + $fengOne) * 15;
+//                    $data['earnMoney'] = $data['totalMoney'] - $data['payMoney'] > 0 ? $data['totalMoney'] - $data['payMoney'] : 0;
                     return response()->json(['msg' => $successMsg, 'data' => $data, 'code' => 200]);
                 } catch (\Exception $e) {
                     DB::rollback();
@@ -175,7 +173,7 @@ class SupportPayController extends Controller
                     $settleRes->settlement_status = 1;
                     $settleRes->save();
                 }
-                return response()->json(['data' => [], 'msg' => 'success', 'code' => 200]);
+                return response()->json(['data' => [], 'msg' => '结算成功', 'code' => 200]);
             }
             return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
         }
