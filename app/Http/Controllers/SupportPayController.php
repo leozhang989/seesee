@@ -14,6 +14,7 @@ use App\Models\SettlementList;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class SupportPayController extends Controller
 {
@@ -30,6 +31,7 @@ class SupportPayController extends Controller
 //    }
 
     public function recharge(Request $request){
+        Log::Info('方法中：' . $request->input('uuid'). '|' . $request->input('user_uuid') . '|' . $request->input('product'));
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
             $now = time();
             $uuid = $request->input('uuid', '');
