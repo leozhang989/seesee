@@ -37,7 +37,7 @@ Route::group(['middleware' => ['signature']], function() {
     Route::post('/query-user-vip', 'AppusersController@queryUserVip');
 
     //get recharge list
-    Route::get('/get/recharges', 'SupportPayController@rechargeList');
+//    Route::get('/get/recharges', 'SupportPayController@rechargeList');
 
     //recharge api
     Route::post('/recharge', 'SupportPayController@recharge');
