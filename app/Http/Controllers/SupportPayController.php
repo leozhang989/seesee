@@ -7,6 +7,7 @@ use App\Models\Device;
 use App\Models\Goods;
 use App\Models\RechargeLogs;
 use App\Models\SettlementList;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -16,7 +17,7 @@ class SupportPayController extends Controller
         if($request->filled('uuid')){
             $uuid = $request->input('uuid', 0);
             if(in_array($uuid, ['1011779', '1000047', '1000092'])){
-                $rechargeList = RechargeLogs::where('creater', $uuid)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'created_at']);
+                $rechargeList = RechargeLogs::where('creater', $uuid)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at']);
                 return response()->json(['data' => ['list' => $rechargeList], 'msg' => 'success', 'code' => 200]);
             }
             return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
@@ -26,8 +27,15 @@ class SupportPayController extends Controller
 
     public function recharge(Request $request){
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
+            $now = time();
             $uuid = $request->input('uuid', '');
             $userUuid = $request->input('user_uuid', '');
+            $todayDate = date('Y-m-d 00:00:00', $now);
+            $rechargeLogAmount = RechargeLogs::where('creater', $uuid)->where('created_at', '>=', $todayDate)->count();
+            $rechargeSettings = SystemSetting::getValueByName('rechargeLimitPerDay') ? : 100;
+            if($rechargeLogAmount >= $rechargeSettings)
+                return response()->json(['msg' => '已达到每日支付数量上限', 'data' => [], 'code' => 202]);
+
             $length = strlen($userUuid);
             $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
             $user = $device ? Appuser::find($device['uid']) : '';
@@ -36,7 +44,6 @@ class SupportPayController extends Controller
                 if(empty($good))
                     return response()->json(['msg' => '产品不存在', 'data' => [], 'code' => 202]);
 
-                $now = time();
                 DB::beginTransaction();
                 try {
                     RechargeLogs::create([
@@ -54,7 +61,13 @@ class SupportPayController extends Controller
                     if (!$user->save())
                         throw new \Exception('开通失败');
                     DB::commit();
-                    return response()->json(['msg' => '开通成功', 'data' => [], 'code' => 200]);
+                    $productName = $request->input('product') == 6 ? '半年包' : '一年包';
+//                    $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('uuid', $uuid)->where('res_status', 1)->count();
+//                    $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->where('uuid', $uuid)->where('res_status', 1)->count();
+//                    $totalMoney = RechargeLogs::where('creater', $uuid)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
+//                    $successMsg = 'See ID：' . $userUuid . '，已开通' . $productName . '。See半年包' . $seeHalf . '个，一年包' . $seeOne . '个。See合计：' . $totalMoney;
+                    $successMsg = 'See ID：' . $userUuid . '，已开通' . $productName;
+                    return response()->json(['msg' => $successMsg, 'data' => '', 'code' => 200]);
                 } catch (\Exception $e) {
                     DB::rollback();
                     $msg = $e->getMessage();
