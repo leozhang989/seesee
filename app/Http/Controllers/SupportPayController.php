@@ -18,17 +18,32 @@ use Illuminate\Support\Facades\Log;
 
 class SupportPayController extends Controller
 {
-//    public function rechargeList(Request $request){
-//        if($request->filled('uuid')){
-//            $uuid = $request->input('uuid', 0);
-//            if(in_array($uuid, ['1011779', '1000047', '1000092'])){
-//                $rechargeList = RechargeLogs::where('creater', $uuid)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at']);
-//                return response()->json(['data' => ['list' => $rechargeList], 'msg' => 'success', 'code' => 200]);
-//            }
-//            return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
-//        }
-//        return response()->json(['data' => [], 'msg' => '参数错误！', 'code' => 202]);
-//    }
+    public function rechargeList(Request $request){
+        if($request->filled('uuid')){
+            $uuid = $request->input('uuid', '');
+            if($uuid == '1000047'){
+                //see data
+                $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
+                $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->where('creater', '1011779')->where('res_status', 1)->count();
+                $seeRechargeList = RechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+
+                //feng data
+                $fengHalf = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
+                $fengOne = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '12')->where('creater', '1011779')->where('res_status', 1)->count();
+                $fengRechargeList = FengRechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+
+                $successMsg = '代付统计数据，获取成功！';
+                $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
+                $data['seeGoods_6'] = $seeHalf;
+                $data['seeGoods_12'] = $seeOne;
+                $data['fengGoods_6'] = $fengHalf;
+                $data['fengGoods_12'] = $fengOne;
+                return response()->json(['data' => $data, 'msg' => $successMsg, 'code' => 200]);
+            }
+            return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
+        }
+        return response()->json(['data' => [], 'msg' => '参数错误！', 'code' => 202]);
+    }
 
     public function recharge(Request $request){
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
