@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Appuser;
+use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\Notice;
+use App\Models\NoticeLog;
+use App\Models\Server;
+use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 
 class RegisterController extends Controller
@@ -46,7 +51,63 @@ class RegisterController extends Controller
                 //update device uid
                 $deviceRes->uid = $userInfo['id'];
                 $deviceRes->save();
-                return response()->json(['data' => [], 'msg' => '注册成功', 'code' => 200]);
+
+                //if has new notice now
+                $newNotice = 0;
+                $noticeUrl = '';
+                $nowDate = date('Y-m-d H:i:s', $now);
+                $today = strtotime(date('Y-m-d', $now));
+                $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+                if ($latestNotice) {
+                    $userNoticeLog = NoticeLog::where('uuid', $deviceRes['uuid'])->where('notice_id', $latestNotice['id'])->first();
+                    $newNotice = $userNoticeLog ? 0 : 1;
+                    $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceRes['uuid']]) ?: '';
+                }
+
+                $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
+                $totalExpiredTime = $deviceRes['free_vip_expired'] > $vipExpiredTime ? $deviceRes['free_vip_expired'] - $now : $vipExpiredTime - $now;
+                $response['userInfo'] = [
+                    'uuid' => $deviceRes['uuid'] ?: '',
+                    'vipExpired' => $totalExpiredTime,
+                    'isVip' => $totalExpiredTime > 0 ? 1 : 0,
+                    'email' => trim($request->input('email')),
+                    'hasNewNotice' => $newNotice,
+                    'noticeUrl' => $noticeUrl,
+                    'paymentUrl' => action('PayController@list', ['token' => $deviceRes['uuid']]),
+                ];
+
+                $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
+
+                //update version settings
+                $hasNewerVersion = 0;
+                $leftDays = 90;
+                $testflightContent = $testflightUrl = '';
+                if ($request->filled('version')) {
+                    $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
+                    $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
+                    if (!in_array($request->input('version'), $appVersions)) {
+                        $latestVersionRes = AppVersion::create([
+                            'app_version' => $request->input('version'),
+                            'content' => '',
+                            'testflight_url' => SystemSetting::getValueByName('testflightUrl') ?: '',
+                            'expired_date' => $today + 90 * 24 * 3600
+                        ]);
+                    }
+
+                    $diffDateInt = $latestVersionRes['expired_date'] - $today;
+                    $leftDays = floor($diffDateInt / (3600 * 24));
+                    $testflightContent = $latestVersionRes['content'];
+                    $testflightUrl = $latestVersionRes['testflight_url'];
+                    if ($latestVersionRes['app_version'] != $request->input('version'))
+                        $hasNewerVersion = 1;
+                }
+
+                $response['testflight']['url'] = $testflightUrl ?: '';
+                $response['testflight']['leftDays'] = $leftDays;
+                $response['testflight']['hasNewer'] = $hasNewerVersion;
+                $response['testflight']['content'] = $testflightContent;
+
+                return response()->json(['data' => $response, 'msg' => '注册成功', 'code' => 200]);
             }
         }
         return response()->json(['data' => [], 'msg' => '注册失败，请重试！', 'code' => 202]);
