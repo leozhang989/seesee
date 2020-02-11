@@ -128,11 +128,14 @@ class AppusersController extends Controller
                     //设置用户session
                     session(['user' => $user['id']]);
 
-                    //检测设备数
-                    $exsitedDevicesCount = Device::where('uid', $user['id'])->count();
-                    $maxSettings = SystemSetting::getValueByName('seeMaxDevices') ?: 3;
-                    if ($exsitedDevicesCount >= $maxSettings)
-                        return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
+                    $allDeviceCodes = Device::where('uid', $user['id'])->pluck('device_code')->toArray();
+                    if(!in_array($request->input('device_code'), $allDeviceCodes)){
+                        //检测设备数
+                        $exsitedDevicesCount = count($allDeviceCodes);
+                        $maxSettings = SystemSetting::getValueByName('seeMaxDevices') ?: 3;
+                        if ($exsitedDevicesCount >= $maxSettings)
+                            return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
+                    }
 
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
                     if ($deviceInfo) {
