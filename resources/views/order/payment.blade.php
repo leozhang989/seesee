@@ -79,7 +79,7 @@
                 <p style="display:table-cell;vertical-align:middle;">
                     <b>购买成功后，重启See APP</b><br/>
                     <b>有效期如未改变，请联系邮箱：</b><br/>
-                    <b>fengchi@protonmail.com</b>
+                    <b>xunjie@protonmail.com</b>
                 </p>
             </div>
             <div class="list-group col-sm-12" style="margin-top: 10px;">

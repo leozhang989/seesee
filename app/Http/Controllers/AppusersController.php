@@ -231,9 +231,9 @@ class AppusersController extends Controller
             if(empty($deviceInfo) && empty($userInfo))
                 return response()->json(['msg' => '用户不存在', 'data' => '', 'code' => 202]);
 
-            $vipExpired = $userInfo ? $userInfo['vip_expired'] : $deviceInfo['free_vip_expired'];
-            $vipExpiredLeft = $vipExpired > $now ? $vipExpired - $now : 0;
-            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $vipExpiredLeft], 'code' => 200]);
+            $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
+            $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
+            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
     }
