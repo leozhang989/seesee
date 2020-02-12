@@ -57,10 +57,10 @@ class AppusersController extends Controller
             }
 
             //支付未上线延长用户有效期
-            if($deviceInfo['free_vip_expired'] - $now < 432000){
-                $deviceInfo->free_vip_expired = $deviceInfo['free_vip_expired'] + 432000;
-                $deviceInfo->save();
-            }
+//            if($deviceInfo['free_vip_expired'] - $now < 432000){
+//                $deviceInfo->free_vip_expired = $deviceInfo['free_vip_expired'] + 432000;
+//                $deviceInfo->save();
+//            }
 
             //if has new notice now
             $newNotice = 0;
@@ -236,6 +236,29 @@ class AppusersController extends Controller
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
+    }
+
+    public function addVip(Request $request){
+        if($request->filled('uuid') && $request->filled('days') && $request->filled('user_uuid')){
+            if($request->input('uuid') == '1000047'){
+                $device = Device::where('uuid', $request->input('user_uuid'))->first();
+                if($device){
+                    $user = Appuser::find($device['uid']);
+                    if($user){
+                        $now = time();
+                        $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
+                        $user->vip_expired = strtotime('+' . $request->input('days') . ' days', $vipExpireAt);
+                        $user->save();
+                        $dateStr = date('Y-m-d', $user['vip_expired']);
+                        return response()->json(['msg' => '增加vip时长成功，最新到期时间: ' . $dateStr, 'data' => '', 'code' => 200]);
+                    }
+                    return response()->json(['msg' => '该用户尚未注册账号', 'data' => '', 'code' => 202]);
+                }
+                return response()->json(['msg' => 'uuid不存在', 'data' => '', 'code' => 202]);
+            }
+            return response()->json(['msg' => '无权限', 'data' => '', 'code' => 202]);
+        }
+        return response()->json(['msg' => '参数错误', 'data' => '', 'code' => 202]);
     }
 
 }

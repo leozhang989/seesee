@@ -44,6 +44,9 @@ Route::group(['middleware' => ['signature']], function() {
 
     //set settlement
     Route::post('/settlement', 'SupportPayController@settlement');
+
+    //add vip
+    Route::post('/add-vip', 'AppusersController@addVip');
 });
 
 
