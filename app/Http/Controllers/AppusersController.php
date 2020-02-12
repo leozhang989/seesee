@@ -247,7 +247,11 @@ class AppusersController extends Controller
                     if($user){
                         $now = time();
                         $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
-                        $user->vip_expired = strtotime('+' . $request->input('days') . ' days', $vipExpireAt);
+                        $freeLeft = 0;
+                        if($device->free_vip_expired > $now && $vipExpireAt == $now)
+                            $freeLeft = $device->free_vip_expired - $now;
+
+                        $user->vip_expired = strtotime('+' . $request->input('days', 0) . ' days', $vipExpireAt) + $freeLeft;
                         $user->save();
                         $dateStr = date('Y-m-d', $user['vip_expired']);
                         return response()->json(['msg' => '增加vip时长成功，最新到期时间: ' . $dateStr, 'data' => '', 'code' => 200]);
