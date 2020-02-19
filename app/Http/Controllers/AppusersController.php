@@ -265,4 +265,9 @@ class AppusersController extends Controller
         return response()->json(['msg' => '参数错误', 'data' => '', 'code' => 202]);
     }
 
+    public function servers(Request $request){
+        $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
+        return response()->json(['msg' => '获取成功', 'data' => $response, 'code' => 200]);
+    }
+
 }
