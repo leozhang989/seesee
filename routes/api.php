@@ -63,4 +63,4 @@ Route::get('/user/vip-time', 'PayController@getVipexpireat');
 Route::post('/paddle/web-hook', 'PayController@webHook');
 
 //server list
-Route::post('/servers', 'AppusersController@servers');
+Route::get('/servers', 'AppusersController@servers');
