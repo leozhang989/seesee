@@ -64,6 +64,11 @@ class SupportPayController extends Controller
             if (in_array($uuid, ['1011779', '1000047', '1000092']) && $userUuid && in_array($request->input('product'), [1, 6, 12]) && in_array($length, [7, 10])) {
                 $user = $good = [];
                 if ($length == 7) {
+                    //同一个账号一天只能开一次
+                    $seeRecord = RechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
+                    if($seeRecord)
+                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
+
                     $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
                     $user = $device ? Appuser::find($device['uid']) : '';
                     $good = Goods::where('status', 1)->where('service_date', $request->input('product'))->first();
@@ -72,6 +77,11 @@ class SupportPayController extends Controller
                 if($length == 10){
                     if($request->input('product') == 1)
                         return response()->json(['msg' => '小风产品暂无开通单月包权限', 'data' => [], 'code' => 202]);
+
+                    //同一个账号一天只能开一次
+                    $fengRecord = FengRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
+                    if($fengRecord)
+                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
 
                     $user = FengUser::where('uuid', $userUuid)->first() ? : '';
                     $good = FengGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
