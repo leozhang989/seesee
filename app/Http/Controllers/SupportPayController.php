@@ -23,6 +23,7 @@ class SupportPayController extends Controller
             $uuid = $request->input('uuid', '');
             if($uuid == '1000047'){
                 //see data
+                $seeSingle = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '1')->where('creater', '1011779')->where('res_status', 1)->count();
                 $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
                 $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->where('creater', '1011779')->where('res_status', 1)->count();
                 $seeRechargeList = RechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
@@ -34,6 +35,7 @@ class SupportPayController extends Controller
 
                 $successMsg = '代付统计数据，获取成功！';
                 $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
+                $data['seeGoods_1'] = $seeSingle;
                 $data['seeGoods_6'] = $seeHalf;
                 $data['seeGoods_12'] = $seeOne;
                 $data['fengGoods_6'] = $fengHalf;
@@ -59,7 +61,8 @@ class SupportPayController extends Controller
                 return response()->json(['msg' => '已达到每日支付数量上限', 'data' => [], 'code' => 202]);
 
             $length = strlen($userUuid);
-            if (in_array($uuid, ['1011779', '1000047', '1000092']) && $userUuid && in_array($request->input('product'), [6, 12]) && in_array($length, [7, 10])) {
+            if (in_array($uuid, ['1011779', '1000047', '1000092']) && $userUuid && in_array($request->input('product'), [1, 6, 12]) && in_array($length, [7, 10])) {
+                $user = $good = [];
                 if ($length == 7) {
                     $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
                     $user = $device ? Appuser::find($device['uid']) : '';
@@ -67,6 +70,9 @@ class SupportPayController extends Controller
                 }
 
                 if($length == 10){
+                    if($request->input('product') == 1)
+                        return response()->json(['msg' => '小风产品暂无开通单月包权限', 'data' => [], 'code' => 202]);
+
                     $user = FengUser::where('uuid', $userUuid)->first() ? : '';
                     $good = FengGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
                 }
@@ -110,8 +116,21 @@ class SupportPayController extends Controller
                         throw new \Exception('开通失败');
 
                     DB::commit();
-                    $productName = $request->input('product') == 6 ? '半年包' : '一年包';
+//                    $productName = $request->input('product') == 6 ? '半年包' : '一年包';
+                    $product = $request->input('product');
+                    switch ($product) {
+                        case 1:
+                            $productName = '单月包';
+                            break;
+                        case 6:
+                            $productName = '半年包';
+                            break;
+                        case 12:
+                            $productName = '一年包';
+                            break;
+                    }
                     //see data
+                    $seeSingle = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
                     $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
                     $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->where('creater', $uuid)->where('res_status', 1)->count();
 //                    $seeTotalMoney = RechargeLogs::where('creater', $uuid)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
@@ -125,6 +144,7 @@ class SupportPayController extends Controller
 
                     $successMsg = '用户 ID：' . $userUuid . '，已开通' . $productName;
                     $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
+                    $data['seeGoods_1'] = $seeSingle;
                     $data['seeGoods_6'] = $seeHalf;
                     $data['seeGoods_12'] = $seeOne;
                     $data['fengGoods_6'] = $fengHalf;
