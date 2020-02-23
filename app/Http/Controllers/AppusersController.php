@@ -24,14 +24,15 @@ class AppusersController extends Controller
             $testflightContent = $testflightUrl = '';
             //update version settings
             if($request->filled('version')){
-                $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
-                $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
+                $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
+                $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
                 if(!in_array($request->input('version'), $appVersions)){
                     $latestVersionRes = AppVersion::create([
                         'app_version' => $request->input('version'),
                         'content' => '',
                         'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
-                        'expired_date' => $nowDate + 90 * 24 * 3600
+                        'expired_date' => $nowDate + 90 * 24 * 3600,
+                        'online' => 0
                     ]);
                 }
                 $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
@@ -178,14 +179,15 @@ class AppusersController extends Controller
                     $leftDays = 90;
                     $testflightContent = $testflightUrl = '';
                     if ($request->filled('version')) {
-                        $appVersions = AppVersion::orderBy('expired_date', 'DESC')->pluck('app_version')->toArray();
-                        $latestVersionRes = AppVersion::orderBy('expired_date', 'DESC')->first();
+                        $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
+                        $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
                         if (!in_array($request->input('version'), $appVersions)) {
                             $latestVersionRes = AppVersion::create([
                                 'app_version' => $request->input('version'),
                                 'content' => '',
                                 'testflight_url' => SystemSetting::getValueByName('testflightUrl') ?: '',
-                                'expired_date' => $today + 90 * 24 * 3600
+                                'expired_date' => $today + 90 * 24 * 3600,
+                                'online' => 0
                             ]);
                         }
 
