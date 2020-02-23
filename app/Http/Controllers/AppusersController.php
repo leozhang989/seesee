@@ -24,7 +24,7 @@ class AppusersController extends Controller
             $testflightContent = $testflightUrl = '';
             //update version settings
             if($request->filled('version')){
-                $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
+                $appVersions = AppVersion::orderBy('id', 'DESC')->pluck('app_version')->toArray();
                 $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
                 if(!in_array($request->input('version'), $appVersions)){
                     $latestVersionRes = AppVersion::create([
@@ -179,7 +179,7 @@ class AppusersController extends Controller
                     $leftDays = 90;
                     $testflightContent = $testflightUrl = '';
                     if ($request->filled('version')) {
-                        $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
+                        $appVersions = AppVersion::orderBy('id', 'DESC')->pluck('app_version')->toArray();
                         $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
                         if (!in_array($request->input('version'), $appVersions)) {
                             $latestVersionRes = AppVersion::create([
