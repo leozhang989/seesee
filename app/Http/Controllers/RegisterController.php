@@ -15,6 +15,10 @@ class RegisterController extends Controller
 {
     public function register(Request $request){
         if($request->filled('email') && $request->filled('password') && $request->filled('device_code')) {
+            //check email
+            if(!filter_var($request->input('email'), FILTER_VALIDATE_EMAIL))
+                return response()->json(['data' => [], 'msg' => '邮箱格式错误，请输入正确的邮箱', 'code' => 202]);
+
             $isExisted = Appuser::where('email', $request->input('email'))->first(['id']);
             if ($isExisted)
                 return response()->json(['data' => [], 'msg' => '该邮箱已注册过，请直接登录', 'code' => 202]);
