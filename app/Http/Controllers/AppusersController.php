@@ -35,10 +35,11 @@ class AppusersController extends Controller
                         'online' => 0
                     ]);
                 }
-                $diffDateInt = $latestVersionRes['expired_date'] - $nowDate;
+                $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
+                $diffDateInt = $userVersion['expired_date'] - $nowDate > 0 ? $userVersion['expired_date'] - $nowDate : 0;
                 $leftDays = floor($diffDateInt / (3600 * 24));
-                $testflightContent = $latestVersionRes['content'];
-                $testflightUrl = $latestVersionRes['testflight_url'];
+                $testflightContent = $userVersion['content'];
+                $testflightUrl = $userVersion['testflight_url'];
                 if($latestVersionRes['app_version'] != $request->input('version'))
                     $hasNewerVersion = 1;
             }
@@ -190,11 +191,11 @@ class AppusersController extends Controller
                                 'online' => 0
                             ]);
                         }
-
-                        $diffDateInt = $latestVersionRes['expired_date'] - $today;
+                        $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
+                        $diffDateInt = $userVersion['expired_date'] - $today > 0 ? $userVersion['expired_date'] - $today : 0;
                         $leftDays = floor($diffDateInt / (3600 * 24));
-                        $testflightContent = $latestVersionRes['content'];
-                        $testflightUrl = $latestVersionRes['testflight_url'];
+                        $testflightContent = $userVersion['content'];
+                        $testflightUrl = $userVersion['testflight_url'];
                         if ($latestVersionRes['app_version'] != $request->input('version'))
                             $hasNewerVersion = 1;
                     }
