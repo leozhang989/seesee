@@ -104,8 +104,11 @@ class RegisterController extends Controller
                     $leftDays = floor($diffDateInt / (3600 * 24));
                     $testflightContent = $userVersion['content'];
                     $testflightUrl = $userVersion['testflight_url'];
-                    if ($latestVersionRes['app_version'] != $request->input('version'))
+                    if ($latestVersionRes['app_version'] != $request->input('version')){
                         $hasNewerVersion = 1;
+                        $testflightContent = $latestVersionRes['content'];
+                        $testflightUrl = $latestVersionRes['testflight_url'];
+                    }
                 }
 
                 $response['testflight']['url'] = $testflightUrl ?: '';
