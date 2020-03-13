@@ -26,6 +26,7 @@ class AppusersController extends Controller
             if($request->filled('version')){
                 $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
                 $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
+                $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
                 if(!in_array($request->input('version'), $appVersions)){
                     $latestVersionRes = AppVersion::create([
                         'app_version' => $request->input('version'),
@@ -34,8 +35,10 @@ class AppusersController extends Controller
                         'expired_date' => $nowDate + 90 * 24 * 3600,
                         'online' => 0
                     ]);
+                }else{
+                    if($userVersion['online'] === 0)
+                        $latestVersionRes = $userVersion;
                 }
-                $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
                 $diffDateInt = $userVersion['expired_date'] - $nowDate > 0 ? $userVersion['expired_date'] - $nowDate : 0;
                 $leftDays = floor($diffDateInt / (3600 * 24));
                 $testflightContent = $userVersion['content'];
@@ -185,6 +188,7 @@ class AppusersController extends Controller
                     if ($request->filled('version')) {
                         $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
                         $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
+                        $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
                         if (!in_array($request->input('version'), $appVersions)) {
                             $latestVersionRes = AppVersion::create([
                                 'app_version' => $request->input('version'),
@@ -193,8 +197,10 @@ class AppusersController extends Controller
                                 'expired_date' => $today + 90 * 24 * 3600,
                                 'online' => 0
                             ]);
+                        }else{
+                            if($userVersion['online'] === 0)
+                                $latestVersionRes = $userVersion;
                         }
-                        $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
                         $diffDateInt = $userVersion['expired_date'] - $today > 0 ? $userVersion['expired_date'] - $today : 0;
                         $leftDays = floor($diffDateInt / (3600 * 24));
                         $testflightContent = $userVersion['content'];
