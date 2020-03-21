@@ -35,7 +35,7 @@
         }
 
         .title {
-            font-size: 20px;
+            font-size: 16px;
         }
 
         .m-b-md {
