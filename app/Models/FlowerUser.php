@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class FlowerUser extends Model
 {
-    protected $table = 'users';
+    protected $table = 'flower_users';
 
     protected $connection = 'mysql_newflower';
 
