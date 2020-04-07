@@ -149,8 +149,8 @@ class SupportPayController extends Controller
                         if($request->input('product') == 0){
                             $user->is_permanent_vip = 1;
                         }elseif($request->input('product') == 1){
-                            $vipExpireAt = $user->vip_expireat > $now ? $user->vip_expireat : $now;
-                            $user->vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
+                            $vipExpireAt = $user->paid_vip_expireat > $now ? $user->paid_vip_expireat : $now;
+                            $user->paid_vip_expireat = strtotime('+1 month', $vipExpireAt);
                         }
                     }
                     if($length == 10) {
