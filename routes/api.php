@@ -47,6 +47,12 @@ Route::group(['middleware' => ['signature']], function() {
 
     //add vip
     Route::post('/add-vip', 'AppusersController@addVip');
+
+    //pc account servers
+    Route::get('/account-servers', 'AppusersController@accountServerList');
+
+    //get servers
+    Route::get('/app-servers', 'AppusersController@serverList');
 });
 
 

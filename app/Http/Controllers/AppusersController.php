@@ -11,6 +11,9 @@ use App\Models\Server;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\AesController;
+use App\Models\AccountServers;
+use App\Models\VipServer;
 
 class AppusersController extends Controller
 {
@@ -284,6 +287,63 @@ class AppusersController extends Controller
     public function servers(Request $request){
         $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
         return response()->json(['msg' => '获取成功', 'data' => $response, 'code' => 200]);
+    }
+
+
+    public function accountServerList(Request $request){
+        if($request->filled('device_code')){
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+            if(empty($deviceInfo))
+                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
+
+            $servers = AccountServers::get(['name', 'address', 'port', 'password', 'secret']);
+            $userInfo = $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
+            $serversRes = [];
+            if($servers){
+                $aesRes = new AesController();
+                $serversRes = $servers->each(function ($item, $key) use ($userInfo, $aesRes) {
+                    $now = time();
+                    if($userInfo['vip_expired'] > $now){
+                        $item['password'] = $aesRes->encrypt($item['password']);
+                    }else{
+                        $item['password'] = $aesRes->encrypt('仅限会员使用');
+                    }
+                });
+            }
+            return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
+        }
+        return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
+    }
+
+    public function serverList(Request $request){
+        if($request->filled('device_code')){
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+            if(empty($deviceInfo))
+                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
+
+            $servers = VipServer::get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+//            $userInfo = $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
+            $serversRes = [];
+            if($servers){
+//                $now = time();
+                $aesRes = new AesController();
+//                $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
+//                $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
+
+                $serversRes = $servers->each(function ($item, $key) use ($aesRes) {
+                    $item['port'] = random_int($item['start_port'], $item['end_port']);
+                    unset($item['start_port'], $item['end_port']);
+                    $item['server_pwd'] = $aesRes->encrypt($item['server_pwd']);
+//                    if($totalExpiredTime > 0){
+//                        $item['server_pwd'] = $aesRes->encrypt($item['server_pwd']);
+//                    }else{
+//                        $item['server_pwd'] = $aesRes->encrypt('仅限会员使用');
+//                    }
+                });
+            }
+            return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
+        }
+        return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
     }
 
 }
