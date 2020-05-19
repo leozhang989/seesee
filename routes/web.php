@@ -31,3 +31,22 @@ Route::get('notices/detail/{id}/{uuid}', 'NoticesController@detail');
 
 //pwd reset page
 Route::get('reset-pwd/confirm/{token}/{email}', 'ResetPwdController@resetPage');
+
+
+//公用使用教程页面
+//首页
+Route::get('sshelp/Shadowsocks', function () {
+    return view('sshelp.shadowsocks');
+});
+//windows教程android
+Route::get('sshelp/windows', function () {
+    return view('sshelp.windows');
+});
+//android教程
+Route::get('sshelp/android', function () {
+    return view('sshelp.android');
+});
+//mac教程
+Route::get('sshelp/mac', function () {
+    return view('sshelp.mac');
+});
