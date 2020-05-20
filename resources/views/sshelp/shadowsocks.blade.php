@@ -30,20 +30,15 @@
 
     <h2 id="shadowsocks-简介">Shadowsocks 使用流程</h2>
     <blockquote>
-        <p> 使用很简单：首先 1 下载安装好客户端 → 2 扫码添加SS/SSR节点信息 → 3 设置启用即可</p>
+        <p> 使用很简单：首先 1 下载安装好客户端 → 2 扫码或复制URL添加SS → 3 设置启用即可</p>
     </blockquote>
     <blockquote>
-        <p> 客户端下载：<a href="https://github.com/shadowsocks/shadowsocks-windows/releases/download/4.1.7.1/Shadowsocks-4.1.7.1.zip" target="_blank">微软Windows</a> |
-            <a href="https://github.com/shadowsocks/shadowsocks-android/releases/download/v4.8.1/shadowsocks-x86-4.8.1.apk" target="_blank">安卓Android</a> |
-            <a href="https://github.com/shadowsocks/ShadowsocksX-NG/releases/download/v1.8.2/ShadowsocksX-NG.app.1.8.2.zip" target="_blank">苹果Mac</a></p>
+        <p> 客户端下载：<a href="http://172.104.91.24/dl/ss-for-windows" target="_blank">微软Windows</a> |
+            <a href="http://172.104.91.24/dl/ss-for-android" target="_blank">安卓Android</a> |
+            <a href="http://172.104.91.24/dl/ss-for-mac" target="_blank">苹果Mac</a></p>
     </blockquote>
 
-    <h2 id="shadowsocks-简介">联系我们</h2>
-    <blockquote>
-        <p> 联系邮箱：<a href="mailto:xunjie@protonmail.com">xunjie@protonmail.com</a></p>
-    </blockquote>
-
-    <h2 id="shadowsocks-简介">Shadowsocks 设置教程</h2>
+    <h2 id="shadowsocks-简介">Shadowsocks 使用教程</h2>
     <table>
         <tbody>
         <tr>
@@ -53,6 +48,11 @@
         </tr>
         </tbody>
     </table>
+
+    <h2 id="shadowsocks-简介">联系我们</h2>
+    <blockquote>
+        <p> 联系邮箱：<a href="mailto:xunjie@protonmail.com">xunjie@protonmail.com</a></p>
+    </blockquote>
 </section>
 </body>
 </html>
