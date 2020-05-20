@@ -52,4 +52,4 @@ Route::get('sshelp/mac', function () {
 });
 
 //deng下载页
-Route::get('deng/download', 'DownloadController@dengDownload');
+Route::get('sssee/download', 'DownloadController@dengDownload');
