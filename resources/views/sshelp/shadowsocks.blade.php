@@ -16,7 +16,7 @@
 </head>
 <body>
 <section class="page-header">
-    <h1 class="project-name">Shadowsocks 使用帮助</h1>
+    <h1 class="project-name">Shadowsocks 使用教程</h1>
 </section>
 
 <section class="main-content">
