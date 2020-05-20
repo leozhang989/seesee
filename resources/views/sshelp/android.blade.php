@@ -13,7 +13,7 @@
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
 
-    <h1><a href="http://xunjie.in/sshelp/Shadowsocks">Shadowsocks</a></h1>
+    <h1><a href="http://xunjie.in/sshelp">Shadowsocks</a></h1>
 
 
     <h1 id="安卓-android-使用-shadowsocks-设置教程">安卓 Android 使用 Shadowsocks 设置教程</h1>
@@ -71,6 +71,6 @@
 
     <p>在您信息配置完成后，我们推荐在功能设置中设置「绕过局域网及中国大陆模式」，该模式可以实现自动代理，其他选项不要启用，就可打开游览器访问 www.google.com 网站进行测试。</p>
 
-    <h3 id="返回首页"><a href="http://xunjie.in/sshelp/Shadowsocks">«&nbsp;返回首页</a></h3>
+    <h3 id="返回首页"><a href="http://xunjie.in/sshelp">«&nbsp;返回首页</a></h3>
 </div>
 </body></html>

@@ -35,7 +35,7 @@ Route::get('reset-pwd/confirm/{token}/{email}', 'ResetPwdController@resetPage');
 
 //公用使用教程页面
 //首页
-Route::get('sshelp/Shadowsocks', function () {
+Route::get('sshelp', function () {
     return view('sshelp.shadowsocks');
 });
 //windows教程android

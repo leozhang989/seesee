@@ -15,7 +15,7 @@
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
 
-    <h1><a href="http://xunjie.in/sshelp/Shadowsocks">Shadowsocks</a></h1>
+    <h1><a href="http://xunjie.in/sshelp">Shadowsocks</a></h1>
 
 
     <h1 id="微软-windows-使用-shadowsocks-设置教程">微软 Windows 使用 Shadowsocks 设置教程</h1>
@@ -95,7 +95,7 @@
     <p><img src="{{ asset('sshelp/images/windows4.jpg') }}" alt=""></p>
 
 
-    <h3 id="返回首页"><a href="http://xunjie.in/sshelp/Shadowsocks">«&nbsp;返回首页</a></h3>
+    <h3 id="返回首页"><a href="http://xunjie.in/sshelp">«&nbsp;返回首页</a></h3>
 </div>
 </body>
 </html>

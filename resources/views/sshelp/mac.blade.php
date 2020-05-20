@@ -15,7 +15,7 @@
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
 
-    <h1><a href="http://xunjie.in/sshelp/Shadowsocks">Shadowsocks</a></h1>
+    <h1><a href="http://xunjie.in/sshelp">Shadowsocks</a></h1>
 
 
     <h1 id="苹果-macos-使用-shadowsocks-设置教程">苹果 macOS 使用 Shadowsocks 设置教程</h1>
@@ -100,7 +100,7 @@
         <li><strong>全局模式</strong> 表示计算机内大多数流量都会经过代理， 不推荐日常使用。</li>
     </ul>
 
-    <h3 id="返回首页"><a href="http://xunjie.in/sshelp/Shadowsocks">«&nbsp;返回首页</a></h3>
+    <h3 id="返回首页"><a href="http://xunjie.in/sshelp">«&nbsp;返回首页</a></h3>
 </div>
 </body>
 </html>
