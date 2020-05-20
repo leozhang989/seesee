@@ -50,3 +50,6 @@ Route::get('sshelp/android', function () {
 Route::get('sshelp/mac', function () {
     return view('sshelp.mac');
 });
+
+//deng下载页
+Route::get('deng/download', 'DownloadController@dengDownload');
