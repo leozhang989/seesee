@@ -10,7 +10,7 @@
 {"headline":"苹果 macOS 使用 Shadowsocks 设置教程","@type":"WebPage","url":"https://xunjie.in/sshelp/mac","description":"Shadowsocks 终极使用指南","@context":"https://schema.org"}</script>
     <!-- End Jekyll SEO tag -->
 
-    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelp/css/mac_style.css') }}">
+    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelpres/css/mac_style.css') }}">
 </head>
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
@@ -42,15 +42,15 @@
 
     <p>双击解压 <code class="language-plaintext highlighter-rouge">ShadowsocksX-NG.x.x.x.zip</code> , 获取 <code class="language-plaintext highlighter-rouge">ShadowsocksX-NG</code>。</p>
 
-    <p><img src="{{ asset('sshelp/images/mac1.png') }}" alt="安装客户端"></p>
+    <p><img src="{{ asset('sshelpres/images/mac1.png') }}" alt="安装客户端"></p>
 
     <p>将 “ShadowsocksX-NG” 拖移到 “访达”里面的 “应用程序”。</p>
 
-    <p><img src="{{ asset('sshelp/images/mac2.gif') }}" alt="&quot;ShadowsocksX-NG&quot; 移动到 &quot;访达&quot; 里面的 &quot;应用程序&quot;"></p>
+    <p><img src="{{ asset('sshelpres/images/mac2.gif') }}" alt="&quot;ShadowsocksX-NG&quot; 移动到 &quot;访达&quot; 里面的 &quot;应用程序&quot;"></p>
 
     <p>在 “应用程序” 中双击 “ShadowsocksX-NG” &gt; 选择 “打开”。</p>
 
-    <p><img src="{{ asset('sshelp/images/mac3.png') }}" alt="选择打开"></p>
+    <p><img src="{{ asset('sshelpres/images/mac3.png') }}" alt="选择打开"></p>
 
     <h2 id="第二步-获取-shadowsocks-账号信息">第二步 获取 Shadowsocks 账号信息</h2>
 
@@ -61,10 +61,10 @@
     <h4 id="在您的电脑上-执行下列操作">在您的电脑上， 执行下列操作：</h4>
 
     <ul>
-        <li>点击屏幕顶部菜单栏的 <img src="{{ asset('sshelp/images/mac5.png') }}" alt="menu_icon_disabled"> &gt; “服务器” &gt; “服务器设置”。</li>
+        <li>点击屏幕顶部菜单栏的 <img src="{{ asset('sshelpres/images/mac5.png') }}" alt="menu_icon_disabled"> &gt; “服务器” &gt; “服务器设置”。</li>
     </ul>
 
-    <p><img src="{{ asset('sshelp/images/mac6.png') }}" alt="点击屏幕最上方菜单栏"></p>
+    <p><img src="{{ asset('sshelpres/images/mac6.png') }}" alt="点击屏幕最上方菜单栏"></p>
 
     <ul>
         <li>点击窗口上的 “+” &gt; 填写 “地址” &gt; 填写 “服务端口” &gt; 选择 ”加密方法”。</li>
@@ -73,26 +73,26 @@
         <li>当显示 <code class="language-plaintext highlighter-rouge">Shadowsocks: On</code>时，表示系统代理已经打开。</li>
     </ul>
 
-    <p><img src="{{ asset('sshelp/images/mac7.png') }}" alt="服务器设置，打开ss"></p>
+    <p><img src="{{ asset('sshelpres/images/mac7.png') }}" alt="服务器设置，打开ss"></p>
 
     <h4 id="可以通过二维码方式单独增加节点-在您的电脑上-执行下列操作">可以通过二维码方式单独增加节点， 在您的电脑上， 执行下列操作：</h4>
 
     <p>此二维码同样适用于其他客户端。</p>
 
     <ul>
-        <li>点击屏幕顶部菜单栏的 <img src="{{ asset('sshelp/images/mac5.png') }}" alt="menu_icon_disabled"> &gt; “扫描屏幕上的二维码” &gt; 当看到 “已添加新的Shadowsocks服务器”，代表添加成功。</li>
+        <li>点击屏幕顶部菜单栏的 <img src="{{ asset('sshelpres/images/mac5.png') }}" alt="menu_icon_disabled"> &gt; “扫描屏幕上的二维码” &gt; 当看到 “已添加新的Shadowsocks服务器”，代表添加成功。</li>
         <li>点击 “打开Shadowsocks” 。</li>
         <li>当显示 <code class="language-plaintext highlighter-rouge">Shadowsocks: On</code>时，表示系统代理已经打开。</li>
     </ul>
 
-    <p><img src="{{ asset('sshelp/images/mac8.png') }}" alt="打开ss"></p>
+    <p><img src="{{ asset('sshelpres/images/mac8.png') }}" alt="打开ss"></p>
 
     <h2 id="配置系统代理模式">配置系统代理模式</h2>
     <ul>
-        <li>点击屏幕右上方菜单栏的 <img src="{{ asset('sshelp/images/mac5.png') }}" alt="menu_icon_disabled">  &gt; “PAC自动模式”。</li>
+        <li>点击屏幕右上方菜单栏的 <img src="{{ asset('sshelpres/images/mac5.png') }}" alt="menu_icon_disabled">  &gt; “PAC自动模式”。</li>
     </ul>
 
-    <p><img src="{{ asset('sshelp/images/mac9.png') }}" alt="pac设置"></p>
+    <p><img src="{{ asset('sshelpres/images/mac9.png') }}" alt="pac设置"></p>
 
     <h2 id="其他">其他</h2>
     <ul>

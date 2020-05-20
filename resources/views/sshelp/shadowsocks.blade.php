@@ -12,7 +12,7 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#157878">
-    <link rel="stylesheet" href="{{ asset('sshelp/css/ssstyle.css') }}">
+    <link rel="stylesheet" href="{{ asset('sshelpres/css/ssstyle.css') }}">
 </head>
 <body>
 <section class="page-header">

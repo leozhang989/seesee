@@ -8,7 +8,7 @@
     <script type="application/ld+json">
 {"headline":"安卓 Android 使用 Shadowsocks 设置教程","@type":"WebPage","url":"https://xunjie.in/sshelp/android","description":"Shadowsocks 终极使用指南","@context":"https://schema.org"}</script>
 
-    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelp/css/android_style.css') }}">
+    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelpres/css/android_style.css') }}">
 </head>
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
@@ -41,7 +41,7 @@
 
     <p>有多种配置节点信息的方法，可以根据你的习惯和需要选择</p>
 
-    <p><img src="{{ asset('sshelp/images/android1.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/android1.png') }}" alt=""></p>
 
     <h3 id="推荐扫二维码配置">推荐，扫二维码配置</h3>
 
@@ -57,11 +57,11 @@
 
     <p>1、在添加节点过程中出现如下提示，请下载安装Google Play服务框架、Google Play 服务、Google Play 谷歌三件套。</p>
 
-    <p><img src="{{ asset('sshelp/images/android2.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/android2.png') }}" alt=""></p>
 
     <p>2、若是下载谷歌三件套后仍然无法使用，部分手机自带的商城里下载【谷歌安装器】后可正常使用。</p>
 
-    <p><img src="{{ asset('sshelp/images/android3.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/android3.png') }}" alt=""></p>
 
     <p>3、若仍不能使用，可以尝试ROOT你的手机，请 www.baidu.com 或者 www.google.com</p>
 

@@ -10,7 +10,7 @@
 {"headline":"微软 Windows 使用 Shadowsocks 设置教程","@type":"WebPage","url":"https://xunjie.in/sshelp/windows","description":"Shadowsocks 终极使用指南","@context":"https://schema.org"}</script>
     <!-- End Jekyll SEO tag -->
 
-    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelp/css/windows_style.css') }}">
+    <style class="anchorjs"></style><link rel="stylesheet" href="{{ asset('sshelpres/css/windows_style.css') }}">
 </head>
 <body>
 <div class="container-lg px-3 my-5 markdown-body">
@@ -50,7 +50,7 @@
 
     <p>4、然后可以打开 www.google.com 进行测试。注：若游览器无法打开google.com等网页，可能是你的游览器有插件或者设置了代理，可以尝试更换游览器测试一下。</p>
 
-    <p><img src="{{ asset('sshelp/images/windows1.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/windows1.png') }}" alt=""></p>
 
     <h2 id="最后-其他设置说明">最后 其他设置说明</h2>
 
@@ -64,7 +64,7 @@
 
     <p>3、程序自动识别SS地址并导入服务器节点信息，最后启用系统代理即可使用</p>
 
-    <p><img src="{{ asset('sshelp/images/windows2.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/windows2.png') }}" alt=""></p>
 
     <p>方法二、扫二维码配置【推荐】	通过扫描屏幕上的二维码，自动配置，推荐</p>
 
@@ -74,7 +74,7 @@
 
     <p>3、程序自动识别二维码并导入服务器节点信息，最后启用系统代理即可使用</p>
 
-    <p><img src="{{ asset('sshelp/images/windows3.png') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/windows3.png') }}" alt=""></p>
 
     <p>方法三、手动编辑服务器配置	添加服务器，并逐一配置相关节点信息</p>
 
@@ -92,7 +92,7 @@
 
     <p>3、关于PAC更新，你可以直接从 <a href="https://github.com/gfwlist/gfwlist">GFWList</a> （由第三方维护）更新 PAC 文件，或者你可以手动编辑本地pac文件。需要更新PAC：依次操作：PAC -&gt;从GFW List更新PAC （等待更新完毕后）-&gt;使用本地PAC-&gt;启动系统代理。</p>
 
-    <p><img src="{{ asset('sshelp/images/windows4.jpg') }}" alt=""></p>
+    <p><img src="{{ asset('sshelpres/images/windows4.jpg') }}" alt=""></p>
 
 
     <h3 id="返回首页"><a href="http://xunjie.in/sshelp">«&nbsp;返回首页</a></h3>
