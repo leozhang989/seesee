@@ -38,6 +38,11 @@
             <a href="https://github.com/shadowsocks/ShadowsocksX-NG/releases/download/v1.8.2/ShadowsocksX-NG.app.1.8.2.zip" target="_blank">苹果Mac</a></p>
     </blockquote>
 
+    <h2 id="shadowsocks-简介">联系我们</h2>
+    <blockquote>
+        <p> 联系邮箱：<a href="mailto:xunjie@protonmail.com">xunjie@protonmail.com</a></p>
+    </blockquote>
+
     <h2 id="shadowsocks-简介">Shadowsocks 设置教程</h2>
     <table>
         <tbody>
