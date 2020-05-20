@@ -162,7 +162,7 @@
 <div class="g-header other-header clearfix">
     <div class="container">
         <div class="head-title pull-left">
-            SEE 下载地址
+            See账号 下载地址
         </div>
         <div class="logo pull-right">
             <img src="{{ asset('download-page/images/deng_head_logo.jpg') }}" alt="">
@@ -194,14 +194,14 @@
         </li>
         <li class="item">
             <div class="item-title">
-                <h2>步骤2<span>获取SEE VPN</span></h2>
+                <h2>步骤2<span>获取See 账号</span></h2>
             </div>
             <div class="con">
                 <img class="img" src="{{ asset('download-page/images/deng_logo.png') }}" alt="">
                 <div class="between">
                     <div class="con-item">
                         <div class="des">
-                            <p>SEE VPN</p>
+                            <p>See 账号</p>
                             <p>官方内测版本</p>
                         </div>
                         <a class="btn J-download" data-type="ios" href="{{ $testFlightUrl }}"
