@@ -35,9 +35,11 @@ class SupportPayController extends Controller
                 //flower data
                 $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->where('creater', '1011779')->where('res_status', 1)->count();
                 $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->where('creater', '1011779')->where('res_status', 1)->count();
+                $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
                 $flowerRechargeList = FlowerRechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                 //feng data
+                $fengSingle = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '1')->where('creater', '1011779')->where('res_status', 1)->count();
                 $fengHalf = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
                 $fengOne = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '12')->where('creater', '1011779')->where('res_status', 1)->count();
                 $fengRechargeList = FengRechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
@@ -47,10 +49,12 @@ class SupportPayController extends Controller
                 $data['seeGoods_1'] = $seeSingle;
                 $data['seeGoods_6'] = $seeHalf;
                 $data['seeGoods_12'] = $seeOne;
+                $data['fengGoods_1'] = $fengSingle;
                 $data['fengGoods_6'] = $fengHalf;
                 $data['fengGoods_12'] = $fengOne;
                 $data['flowerGoods_0'] = $flowerP;
                 $data['flowerGoods_1'] = $flowerOne;
+                $data['flowerGoods_6'] = $flowerHalf;
                 return response()->json(['data' => $data, 'msg' => $successMsg, 'code' => 200]);
             }
             return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
@@ -87,8 +91,8 @@ class SupportPayController extends Controller
                 }
 
                 if ($length == 8) {
-                    if(in_array($request->input('product'), [6, 12]))
-                        return response()->json(['msg' => '小花产品暂无开通半年和一年包权限', 'data' => [], 'code' => 202]);
+                    if($request->input('product') == 12)
+                        return response()->json(['msg' => '小花产品暂无开通一年包权限', 'data' => [], 'code' => 202]);
                     //同一个账号一天只能开一次
                     $flowerRecord = FlowerRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
                     if($flowerRecord)
@@ -102,9 +106,6 @@ class SupportPayController extends Controller
                 }
 
                 if($length == 10){
-                    if($request->input('product') == 1)
-                        return response()->json(['msg' => '小风产品暂无开通单月包权限', 'data' => [], 'code' => 202]);
-
                     //同一个账号一天只能开一次
                     $fengRecord = FengRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
                     if($fengRecord)
@@ -148,9 +149,9 @@ class SupportPayController extends Controller
                         ]);
                         if($request->input('product') == 0){
                             $user->is_permanent_vip = 1;
-                        }elseif($request->input('product') == 1){
+                        }else{
                             $vipExpireAt = $user->paid_vip_expireat > $now ? $user->paid_vip_expireat : $now;
-                            $user->paid_vip_expireat = strtotime('+1 month', $vipExpireAt);
+                            $user->paid_vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
                         }
                     }
                     if($length == 10) {
@@ -197,9 +198,11 @@ class SupportPayController extends Controller
                     //flower data
                     $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->where('creater', $uuid)->where('res_status', 1)->count();
                     $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
+                    $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
                     $flowerRechargeList = FlowerRechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     //feng data
+                    $fengSingle = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
                     $fengHalf = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
                     $fengOne = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '12')->where('creater', $uuid)->where('res_status', 1)->count();
 //                    $fengTotalMoney = FengRechargeLogs::where('creater', $uuid)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->sum('price');
@@ -210,11 +213,14 @@ class SupportPayController extends Controller
                     $data['seeGoods_1'] = $seeSingle;
                     $data['seeGoods_6'] = $seeHalf;
                     $data['seeGoods_12'] = $seeOne;
+
+                    $data['fengGoods_1'] = $fengSingle;
                     $data['fengGoods_6'] = $fengHalf;
                     $data['fengGoods_12'] = $fengOne;
 
                     $data['flowerGoods_0'] = $flowerP;
                     $data['flowerGoods_1'] = $flowerOne;
+                    $data['flowerGoods_6'] = $flowerHalf;
 //                    $data['totalMoney'] = $seeTotalMoney + $fengTotalMoney;
 //                    $data['payMoney'] = $data['totalMoney'] - ($seeHalf + $seeOne + $fengHalf + $fengOne) * 15;
 //                    $data['earnMoney'] = $data['totalMoney'] - $data['payMoney'] > 0 ? $data['totalMoney'] - $data['payMoney'] : 0;
