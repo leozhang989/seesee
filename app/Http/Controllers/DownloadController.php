@@ -13,5 +13,9 @@ class DownloadController extends Controller
         return view('deng-download', ['testFlightUrl' => $dengTestFlightUrl]);
     }
 
+    public function flowerDownload(Request $request){
+        $flowerTestFlightUrl = SystemSetting::getValueByName('flowerTestFlightUrl') ? : '';
+        return view('flower-download', ['testFlightUrl' => $flowerTestFlightUrl]);
+    }
 
 }

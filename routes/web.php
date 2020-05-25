@@ -53,3 +53,6 @@ Route::get('sshelp/mac', function () {
 
 //deng下载页
 Route::get('sssee/download', 'DownloadController@dengDownload');
+
+//deng下载页
+Route::get('flower/download', 'DownloadController@flowerDownload');
