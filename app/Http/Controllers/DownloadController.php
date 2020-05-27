@@ -18,4 +18,9 @@ class DownloadController extends Controller
         return view('flower-download', ['testFlightUrl' => $flowerTestFlightUrl]);
     }
 
+    public function seeDownload(Request $request){
+        $seeTestFlightUrl = SystemSetting::getValueByName('seeTestFlightUrl') ? : '';
+        return view('see-download', ['testFlightUrl' => $seeTestFlightUrl]);
+    }
+
 }

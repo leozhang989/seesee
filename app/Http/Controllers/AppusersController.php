@@ -7,6 +7,7 @@ use App\Models\AppVersion;
 use App\Models\Device;
 use App\Models\Notice;
 use App\Models\NoticeLog;
+use App\Models\SeeVersion;
 use App\Models\Server;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
@@ -250,9 +251,25 @@ class AppusersController extends Controller
             if(empty($deviceInfo) && empty($userInfo))
                 return response()->json(['msg' => '用户不存在', 'data' => '', 'code' => 202]);
 
+            //新版testFlight版本信息
+            $testFlight = [];
+            $testflightUrl = SystemSetting::getValueByName('seeTestFlightUrl') ? : '';
+            $testflightContent = '';
+            $hasNewerVersion = 0;
+            if($request->filled('version')){
+                $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
+                if($request->input('version', 0) < $latestVersionRes['app_version']){
+                    $hasNewerVersion = 1;
+                    $testflightContent = $latestVersionRes['content'];
+                }
+            }
+            $testFlight['url'] = $testflightUrl;
+            $testFlight['hasNewer'] = $hasNewerVersion;
+            $testFlight['content'] = $testflightContent;
+
             $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
             $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
-            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime], 'code' => 200]);
+            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
     }
