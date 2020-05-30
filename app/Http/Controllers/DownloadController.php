@@ -23,4 +23,9 @@ class DownloadController extends Controller
         return view('see-download', ['testFlightUrl' => $seeTestFlightUrl]);
     }
 
+    public function fengDownload(Request $request){
+        $fengTestFlightUrl = SystemSetting::getValueByName('fengTestFlightUrl') ? : '';
+        return view('feng-download', ['testFlightUrl' => $fengTestFlightUrl]);
+    }
+
 }
