@@ -133,7 +133,7 @@
             width: 1.64rem;
             height: 0.66rem;
             line-height: 0.66rem;
-            background: #52afad;
+            background: #1e1e1b;
             border-radius: 0.33rem;
             text-align: center;
             font-size: 0.32rem;
