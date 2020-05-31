@@ -239,10 +239,11 @@ class SupportPayController extends Controller
     public function settlement(Request $request){
         if($request->filled('uuid')){
             $uuid = $request->input('uuid', 0);
-            if(in_array($uuid, ['1011779', '1000047', '1000092'])){
-                $seeRes = RechargeLogs::where('creater', $uuid)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->get();
-                $fengRes = FengRechargeLogs::where('creater', $uuid)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->get();
-                $flowerRes = FlowerRechargeLogs::where('creater', $uuid)->where('app_name', 'Flower')->where('res_status', 1)->where('is_dealed', 0)->get();
+            if(in_array($uuid, ['1000047', '1000092'])){
+                $tUuids = ['1011779', '1000047', '1000092'];
+                $seeRes = RechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->get();
+                $fengRes = FengRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->get();
+                $flowerRes = FlowerRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Flower')->where('res_status', 1)->where('is_dealed', 0)->get();
                 if($seeRes){
                     $seeTotalMoney = $seeRes->sum('price');
                     $seeAmount = count($seeRes);
