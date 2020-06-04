@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AesController;
 use App\Models\AccountServers;
 use App\Models\VipServer;
+use Illuminate\Support\Facades\Log;
 
 class AppusersController extends Controller
 {
@@ -241,6 +242,7 @@ class AppusersController extends Controller
 
 
     public function queryUserVip(Request $request){
+        Log::Info('app version:' . $request->input('version'));
         if($request->filled('device_code')){
             $now = time();
             $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
