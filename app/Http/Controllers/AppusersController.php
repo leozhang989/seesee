@@ -241,12 +241,12 @@ class AppusersController extends Controller
 
 
     public function queryUserVip(Request $request){
-        if($request->filled('uuid')){
+        if($request->filled('device_code')){
             $now = time();
-            $deviceInfo = Device::where('uuid', $request->input('uuid'))->first();
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
             $userInfo = [];
-            if($request->filled('email') && $deviceInfo)
-                $userInfo = Appuser::find($deviceInfo['uid']);
+            if($request->filled('email'))
+                $userInfo = Appuser::where('email', $request->input('email'))->first();
 
             if(empty($deviceInfo) && empty($userInfo))
                 return response()->json(['msg' => '用户不存在', 'data' => '', 'code' => 202]);
@@ -267,8 +267,12 @@ class AppusersController extends Controller
             $testFlight['hasNewer'] = $hasNewerVersion;
             $testFlight['content'] = $testflightContent;
 
-            $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
-            $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
+            $totalExpiredTime = 0;
+            if($deviceInfo){
+                $totalExpiredTime = $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0;
+            }
+            if($userInfo)
+                $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
