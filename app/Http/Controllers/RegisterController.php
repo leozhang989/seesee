@@ -85,34 +85,44 @@ class RegisterController extends Controller
                 //update version settings
                 $hasNewerVersion = 0;
                 $leftDays = 90;
-                $testflightContent = $testflightUrl = '';
-                if ($request->filled('version')) {
-                    $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
-                    $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
-                    $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
-                    if (!in_array($request->input('version'), $appVersions)) {
-                        $latestVersionRes = AppVersion::create([
-                            'app_version' => $request->input('version'),
-                            'content' => '',
-                            'testflight_url' => SystemSetting::getValueByName('testflightUrl') ?: '',
-                            'expired_date' => $today + 90 * 24 * 3600,
-                            'online' => 0
-                        ]);
-                    }else{
-                        if($userVersion['online'] === 0)
-                            $latestVersionRes = $userVersion;
-                    }
-
-                    $diffDateInt = $userVersion['expired_date'] - $today > 0 ? $userVersion['expired_date'] - $today : 0;
-                    $leftDays = floor($diffDateInt / (3600 * 24));
-                    $testflightContent = $userVersion['content'];
-                    $testflightUrl = $userVersion['testflight_url'];
-                    if ($latestVersionRes['app_version'] != $request->input('version')){
+                $testflightContent = '';
+                $testflightUrl = SystemSetting::getValueByName('seeTestFlightUrl') ? : '';
+                if($request->filled('version')){
+                    $latestVersionRes = AppVersion::where('online', 1)->orderBy('app_version', 'DESC')->first();
+                    $userVersionNo = $request->input('version', 0);
+                    if($userVersionNo < $latestVersionRes['app_version']) {
                         $hasNewerVersion = 1;
                         $testflightContent = $latestVersionRes['content'];
-                        $testflightUrl = $latestVersionRes['testflight_url'];
                     }
                 }
+
+//                if ($request->filled('version')) {
+//                    $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
+//                    $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
+//                    $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
+//                    if (!in_array($request->input('version'), $appVersions)) {
+//                        $latestVersionRes = AppVersion::create([
+//                            'app_version' => $request->input('version'),
+//                            'content' => '',
+//                            'testflight_url' => SystemSetting::getValueByName('testflightUrl') ?: '',
+//                            'expired_date' => $today + 90 * 24 * 3600,
+//                            'online' => 0
+//                        ]);
+//                    }else{
+//                        if($userVersion['online'] === 0)
+//                            $latestVersionRes = $userVersion;
+//                    }
+//
+//                    $diffDateInt = $userVersion['expired_date'] - $today > 0 ? $userVersion['expired_date'] - $today : 0;
+//                    $leftDays = floor($diffDateInt / (3600 * 24));
+//                    $testflightContent = $userVersion['content'];
+//                    $testflightUrl = $userVersion['testflight_url'];
+//                    if ($latestVersionRes['app_version'] != $request->input('version')){
+//                        $hasNewerVersion = 1;
+//                        $testflightContent = $latestVersionRes['content'];
+//                        $testflightUrl = $latestVersionRes['testflight_url'];
+//                    }
+//                }
 
                 $response['testflight']['url'] = $testflightUrl ?: '';
                 $response['testflight']['leftDays'] = $leftDays;
