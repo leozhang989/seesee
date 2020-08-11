@@ -10,7 +10,9 @@ use App\Models\NoticeLog;
 use App\Models\SeeVersion;
 use App\Models\Server;
 use App\Models\SystemSetting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AesController;
 use App\Models\AccountServers;
@@ -277,10 +279,16 @@ class AppusersController extends Controller
             $testflightContent = '';
             $hasNewerVersion = 0;
             if($request->filled('version')){
+                $cacheVersion = 0;
+                if(Cache::has($request->input('device_code'))){
+                    $cacheVersion = Cache::get($request->input('device_code'));
+                }
                 $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
-                if($request->input('version', 0) < $latestVersionRes['app_version']){
+                if(($request->input('version', 0) < $latestVersionRes['app_version']) && ($cacheVersion == 0 || $cacheVersion != $latestVersionRes['app_version'])){
                     $hasNewerVersion = 1;
                     $testflightContent = $latestVersionRes['content'];
+                    $expiresAt = Carbon::now()->addHours(12);
+                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
                 }
             }
             $testFlight['url'] = $testflightUrl;
