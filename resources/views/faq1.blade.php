@@ -87,9 +87,9 @@
     </style>
 </head>
 <body style="display: block;margin: 1em;">
-<h1 class="title">TestFlight无法接入APPStore解决方法</h1>
+<h1 class="title">部分用户TestFlight无法接入APPStore解决方法</h1>
 <div class="article" style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 20px;word-break: break-word;">
-    <p>最近安装TestFlight时一直出现无法接入appstore connect问题，有些客户打开会提示不可用：</p>
+    <p>最近部分用户安装TestFlight时一直出现无法接入appstore connect问题，有些客户打开会提示不可用：</p>
     <br>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
