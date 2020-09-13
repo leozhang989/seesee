@@ -165,8 +165,18 @@ class AppusersController extends Controller
                     if ($deviceInfo) {
                         $deviceInfo->uid = $user['id'];
                         $deviceInfo->save();
-                    } else
-                        return response()->json(['data' => [], 'msg' => '登录失败，设备不存在', 'code' => 202]);
+                    } else {
+                        $uuid = $this->generateUUID();
+                        $freeDays = SystemSetting::getValueByName('freeDays');
+                        $deviceInfo = Device::create([
+                            'uuid' => $uuid,
+                            'device_code' => $request->input('device_code'),
+                            'is_master' => 0,
+                            'status' => 1,
+                            'free_vip_expired' => strtotime('+' . $freeDays . ' day'),
+                            'uid' => $user['id']
+                        ]);
+                    }
 
 //                $totalIntegral = $user['integral'];
                     unset($user['id'], $user['created_at'], $user['updated_at'], $user['name']);
