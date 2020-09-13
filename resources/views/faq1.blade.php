@@ -5,7 +5,7 @@
     <meta name="viewport"
           content="width=device-width, height=device-height, inital-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>TestFlight无法接入APPStore解决方法</title>
+    <title>部分用户TestFlight无法接入APPStore解决方法</title>
     <style>
         body{
             font-family: -apple-system,SF UI Display,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
@@ -93,7 +93,7 @@
     <br>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="300" data-height="650"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="{{ asset('images/1.png') }}"></div>
+            <div class="image-view" data-width="300" data-height="650"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/1.png"></div>
         </div>
     </div>
     <p>其实是因为苹果官方对TF签名分发的地域进行了限制，有些地区用户是正常的，有些地区的用户就会收到上面的提示。</p>
@@ -103,7 +103,7 @@
     </ol>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="{{ asset('images/2.png') }}"></div>
+            <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/2.png"></div>
         </div>
     </div>
     <ol start="2">
@@ -111,7 +111,7 @@
     </ol>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="{{ asset('images/3.png') }}"></div>
+            <div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/3.png"></div>
         </div>
     </div>
     <ol start="3">
@@ -119,7 +119,7 @@
     </ol>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="{{ asset('images/4.png') }}"></div>
+            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/4.png"></div>
         </div>
     </div>
     <ol start="4">
