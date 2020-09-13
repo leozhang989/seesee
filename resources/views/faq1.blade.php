@@ -103,12 +103,6 @@
 		</div>
 		</div>
 		<p>其实是因为苹果官方对TF签名分发的地域进行了限制，有些地区用户是正常的，有些地区的用户就会收到上面的提示。</p>
-		<blockquote>
-		<p>苹果TF签名其实就是上架TestFlight，应用同样要经过苹果审核，审核通过后，用户通过Safari浏览器点击下载链接，进入TestFlight中的下载界面，点击“接受”安装内测应用。</p>
-		</blockquote>
-		<blockquote>
-		<p>上架到TestFlight中的应用不会出现掉签的现象，但是会有测试有效期，超过有效期后要重新上传新版本上去</p>
-		</blockquote>
 		<h3>如何解决TestFlight 访问限制？</h3>
 		<ol>
 		<li>打开设置- 无线局域网 - 已连接的WIFI - 点击最右侧的“i”标识</li>
