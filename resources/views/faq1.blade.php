@@ -99,7 +99,7 @@
 		<div class="image-package">
 		<div class="image-container" style="max-width: 300px; max-height: 650px; background-color: transparent;">
 		<div class="image-container-fill" style="padding-bottom: 216.67000000000002%;"></div>
-		<div class="image-view" data-width="300" data-height="650"><img style="cursor: zoom-in;" class="" src="{{ asset('images/1.webp') }}"></div>
+		<div class="image-view" data-width="300" data-height="650"><img style="cursor: zoom-in;" class="" src="{{ asset('images/1.png') }}"></div>
 		</div>
 		</div>
 		<p>其实是因为苹果官方对TF签名分发的地域进行了限制，有些地区用户是正常的，有些地区的用户就会收到上面的提示。</p>
@@ -110,7 +110,7 @@
 		<div class="image-package">
 		<div class="image-container" style="max-width: 500px; max-height: 460px; background-color: transparent;">
 		<div class="image-container-fill" style="padding-bottom: 92.0%;"></div>
-		<div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;" class="" src="{{ asset('images/2.webp') }}"></div>
+		<div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;" class="" src="{{ asset('images/2.png') }}"></div>
 		</div>
 		</div>
 		<ol start="2">
@@ -119,7 +119,7 @@
 		<div class="image-package">
 		<div class="image-container" style="max-width: 500px; max-height: 468px; background-color: transparent;">
 		<div class="image-container-fill" style="padding-bottom: 93.60000000000001%;"></div>
-		<div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;" class="" src="{{ asset('images/3.webp') }}"></div>
+		<div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;" class="" src="{{ asset('images/3.png') }}"></div>
 		</div>
 		</div>
 		<ol start="3">
@@ -128,7 +128,7 @@
 		<div class="image-package">
 		<div class="image-container" style="max-width: 500px; max-height: 627px; background-color: transparent;">
 		<div class="image-container-fill" style="padding-bottom: 125.4%;"></div>
-		<div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;" class="" src="{{ asset('images/4.webp') }}"></div>
+		<div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;" class="" src="{{ asset('images/4.png') }}"></div>
 		</div>
 		</div>
 		<ol start="4">
