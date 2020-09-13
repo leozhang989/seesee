@@ -37,21 +37,12 @@
             overflow: hidden;
             text-align: center;
         }
-        .image-packge{
-            width: 100%;
-            margin: 0;
-            text-align: center;
-            font-size: 0;
-        }
         .image-container{
             position: relative;
             z-index: 95;
             background-color: #e6e6e6;
             transition: background-color .1s linear;
             margin: 0 auto;
-        }
-        .image-container-fill{
-            z-index: 90;
         }
         hr{
             margin: 0 0 20px;
@@ -95,7 +86,7 @@
         }
     </style>
 </head>
-<body style="display: block;margin: 3em;">
+<body style="display: block;margin: 1em;">
 <h1 class="title">TestFlight无法接入APPStore解决方法</h1>
 <div class="article" style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 20px;word-break: break-word;">
     <p>最近安装TestFlight时一直出现无法接入appstore connect问题，有些客户打开会提示不可用：</p>
