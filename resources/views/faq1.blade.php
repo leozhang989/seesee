@@ -13,6 +13,10 @@
             word-break: break-all;
         }
         ol{
+            font-size: 16px;
+            font-weight: 400;
+            line-height: 1.7;
+            color: #2f2f2f;
             display: block;
             list-style-type: decimal;
             margin-block-start: 1em;
@@ -97,7 +101,7 @@
         </div>
     </div>
     <p>其实是因为苹果官方对TF签名分发的地域进行了限制，有些地区用户是正常的，有些地区的用户就会收到上面的提示。</p>
-    <h3>如何解决TestFlight 访问限制？</h3>
+    <h5 style="font-size: 22px;margin: 20px 0 15px;">如何解决TestFlight 访问限制？</h5>
     <ol>
         <li>打开设置- 无线局域网 - 已连接的WIFI - 点击最右侧的“i”标识</li>
     </ol>
