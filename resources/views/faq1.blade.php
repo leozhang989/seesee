@@ -8,6 +8,7 @@
     <title>TestFlight无法接入APPStore解决方法</title>
     <style>
         body{
+            font-family: -apple-system,SF UI Display,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
             word-break: break-word!important;
             word-break: break-all;
         }
@@ -71,7 +72,6 @@
             margin: 15px 0;
             font-size: 30px;
             font-weight: 700;
-            font-family: -apple-system,SF UI Display,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,WenQuanYi Micro Hei,sans-serif;
             line-height: 1.4;
             color: #2f2f2f;
         }
