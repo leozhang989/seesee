@@ -63,3 +63,8 @@ Route::get('see/download', 'DownloadController@seeDownload');
 //newfeng下载页
 Route::get('feng/download', 'DownloadController@fengDownload');
 
+//all apps tf无法连接appstore问题解决页
+Route::get('app/faq1', function () {
+    return view('faq1');
+});
+
