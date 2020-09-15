@@ -132,9 +132,9 @@
     <hr>
     <blockquote>
         <p><strong>关于DNS服务器，一个失效就换另外一个，多试验几次总有个能用的</strong><br>
-            <strong>腾讯 DNS：</strong>119.29.29.29、182.254.116.116<br>
-            <strong>阿里 DNS：</strong>223.5.5.5、223.6.6.6<br>
-            <strong>百度 DNS：</strong>180.76.76.76</p>
+            <strong>DNS1：</strong>218.85.157.99<br>
+            <strong>DNS2：</strong>218.85.152.99<br>
+            <strong>DNS3：</strong>114.114.114.114</p>
     </blockquote>
 </div>
 </body>
