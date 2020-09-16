@@ -67,4 +67,6 @@ Route::get('feng/download', 'DownloadController@fengDownload');
 Route::get('app/faq1', function () {
     return view('faq1');
 });
-
+Route::get('app/faq2', function () {
+    return view('faq2');
+});
