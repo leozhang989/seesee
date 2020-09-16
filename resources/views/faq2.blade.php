@@ -129,25 +129,25 @@
     <p><strong>- 第一步：在苹果 <code>app store</code> -> 搜索 <code>腾讯加速器</code> 如下：</strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/21.webp"></div>
+            <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/21.png"></div>
         </div>
     </div>
     <p><strong>- 第二步：下载 <code>腾讯加速器</code></strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/22.webp"></div>
+            <div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/22.png"></div>
         </div>
     </div>
     <p><strong>- 第三步：搜索 <code>steam</code></strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/23.webp"></div>
+            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/23.png"></div>
         </div>
     </div>
     <p><strong>- 第四步：选中 <code>Steam移动版</code> 点击 加速</strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/24.webp"></div>
+            <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/24.png"></div>
         </div>
     </div>
     <p>到此就完成了，打开 Testflight 就可以正常访问了</p>
