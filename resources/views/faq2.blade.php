@@ -129,7 +129,7 @@
         </div>
     </div>
     <h4 style="font-size: 22px;margin: 20px 0 15px;">方案二：腾讯加速器 解决方案</h4>
-    <p><strong>- 第一步：在苹果 <code>app store</code> -> 搜索 <code>腾讯加速器</code> 如下：</strong></p>
+    <p><strong>- 第一步：在苹果 <code>app store</code> -> 搜索 <code>腾讯加速器</code> 并下载，如下：</strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
             <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/21.png"></div>
@@ -147,6 +147,7 @@
             <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/24.png"></div>
         </div>
     </div>
+    <p>到此就完成了，打开 TestFlight 就可以正常访问了</p>
     <h4 style="font-size: 22px;margin: 20px 0 15px;">方案三：WI-FI DNS 解决方案</h4>
     <p>在手机 设置 -> 无线局域网 -> 选中当前Wi-Fi右侧的 感叹号 ! -> 配置DNS -> 自动改为手动 如下操作。</p>
     <ul>
@@ -156,7 +157,6 @@
     </ul>
     <p><code>注意: 下载完成后，DNS 把手动还原为自动，不然可能影响网速</code></p>
     <p><a href="http://xunjie.in/app/faq1" target="_blank">完整教程</a></p>
-    <p>到此就完成了，打开 TestFlight 就可以正常访问了</p>
 </div>
 </body>
 </html>
