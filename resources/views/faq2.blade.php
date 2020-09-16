@@ -115,8 +115,15 @@
 <body style="display: block;margin: 1em;">
 <h1 class="title">部分用户TestFlight无法接入APPStore解决方法</h1>
 <div class="article" style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 20px;word-break: break-word;">
-    <p>近期部分用户反馈testflight无法正常访问，会出现testflight无法接入App Store connect无法载入APP的提示，今天我们就来汇总一下该问题的解决方案。</p>
-    <h4 style="font-size: 22px;margin: 20px 0 15px;">方案一：WI-FI DNS 解决方案</h4>
+    <p>近期部分用户反馈TestFlight无法正常访问，会出现TestFlight无法接入App Store connect无法载入APP的提示，今天我们就来汇总一下该问题的解决方案。</p>
+    <h4 style="font-size: 22px;margin: 20px 0 15px;">方案一：使用我们VPN客户端的用户解决方案</h4>
+    <p>进入服务器列表，选择全局服务器中任意一台，连接上以后，重新加载TestFlight。</p>
+    <div class="image-package">
+        <div class="image-container" style="max-width: 100%; background-color: transparent;">
+            <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/25.png"></div>
+        </div>
+    </div>
+    <h4 style="font-size: 22px;margin: 20px 0 15px;">方案二：WI-FI DNS 解决方案</h4>
     <p>在手机 设置 -> 无线局域网 -> 选中当前Wi-Fi右侧的 感叹号 ! -> 配置DNS -> 自动改为手动 如下操作。</p>
     <ul>
         <li><code>在配置 DNS中删除之前的DNS，添加新服务器输入谷歌的 DNS ： 8.8.4.4 或者 8.8.8.8</code></li>
@@ -125,32 +132,26 @@
     </ul>
     <p><code>注意: 下载完成后，DNS 把手动还原为自动，不然可能影响网速</code></p>
     <p><a href="http://xunjie.in/app/faq1" target="_blank">完整教程</a></p>
-    <h4 style="font-size: 22px;margin: 20px 0 15px;">方案二：VPN 解决</h4>
+    <h4 style="font-size: 22px;margin: 20px 0 15px;">方案三：VPN 解决方案</h4>
     <p><strong>- 第一步：在苹果 <code>app store</code> -> 搜索 <code>腾讯加速器</code> 如下：</strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
             <div class="image-view" data-width="500" data-height="460"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/21.png"></div>
         </div>
     </div>
-    <p><strong>- 第二步：下载 <code>腾讯加速器</code></strong></p>
-    <div class="image-package">
-        <div class="image-container" style="max-width: 100%; background-color: transparent;">
-            <div class="image-view" data-width="500" data-height="468"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/22.png"></div>
-        </div>
-    </div>
-    <p><strong>- 第三步：搜索 <code>steam</code></strong></p>
+    <p><strong>- 第二步：打开<code>腾讯加速器</code>，搜索 <code>steam</code></strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
             <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/23.png"></div>
         </div>
     </div>
-    <p><strong>- 第四步：选中 <code>Steam移动版</code> 点击 加速</strong></p>
+    <p><strong>- 第三步：选中 <code>Steam移动版</code> 点击 加速</strong></p>
     <div class="image-package">
         <div class="image-container" style="max-width: 100%; background-color: transparent;">
             <div class="image-view" data-width="500" data-height="627"><img style="cursor: zoom-in;width: 80%;height: auto;" class="" src="http://216.24.190.156/images/24.png"></div>
         </div>
     </div>
-    <p>到此就完成了，打开 Testflight 就可以正常访问了</p>
+    <p>到此就完成了，打开 TestFlight 就可以正常访问了</p>
 </div>
 </body>
 </html>
