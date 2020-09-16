@@ -113,7 +113,7 @@
     </style>
 </head>
 <body style="display: block;margin: 1em;">
-<h1 class="title">部分用户TestFlight无法接入APPStore解决方法</h1>
+<h1 class="title">部分用户Testflight无法连接AppStore Connect的解决方案</h1>
 <div class="article" style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 20px;word-break: break-word;">
     <p>近期部分用户反馈TestFlight无法正常访问，会出现TestFlight无法接入App Store connect无法载入APP的提示，今天我们就来汇总一下该问题的解决方案。</p>
     <h4 style="font-size: 22px;margin: 20px 0 15px;">方案一：使用我们VPN客户端的用户解决方案</h4>
