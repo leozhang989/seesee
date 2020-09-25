@@ -59,6 +59,11 @@ Route::group(['middleware' => ['signature']], function() {
 //reset pwd api
 Route::post('/reset-pwd', 'ResetPwdController@newPassword');
 
+Route::group(['middleware' => ['throttle:20']], function() {
+    //进群领福利
+    Route::post('/get-group-gift', 'ResetPwdController@getGroupGift');
+});
+
 //发起支付
 Route::get('/order/create', 'PayController@createOrder');
 

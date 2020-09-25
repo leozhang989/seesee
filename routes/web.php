@@ -70,3 +70,8 @@ Route::get('app/faq1', function () {
 Route::get('app/faq2', function () {
     return view('faq2');
 });
+
+//领取进群福利 页面
+Route::get('group-gift', function () {
+    return view('group-gift');
+});
