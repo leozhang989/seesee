@@ -11,6 +11,7 @@ use App\Models\ResetEmailLog;
 use Illuminate\Http\Request;
 use App\Models\GroupGiftlLog;
 use App\Models\SystemSetting;
+use App\Models\FengDevice;
 
 class ResetPwdController extends Controller
 {
@@ -84,29 +85,39 @@ class ResetPwdController extends Controller
 //        return response()->json(['msg' => '修改失败', 'data' => '', 'code' => 202]);
     }
 
+    public function groupGiftPage(Request $request, $token = ''){
+        return view('group-gift', ['token' => $token]);
+    }
+
     public function getGroupGift(Request $request){
-        if($request->filled('uuid')){
+        if($request->filled('uuid') || $request->filled('token')){
+            $tokens = ['sYBdOvDtQfR0wSCN'];
+            $token = $request->input('token', '');
+            if(!in_array($token, $tokens))
+                return response()->json(['msg' => '链接已失效！', 'data' => '', 'code' => 202]);
+
             $userUuid = $request->input('uuid');
-            $userDeviceCodes = Device::where('uuid', $userUuid)->pluck('device_code');
             $giftRes = GroupGiftlLog::where('user_uuid', $userUuid)->first();
             if($giftRes)
                 return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
 
-            $recordCodes = GroupGiftlLog::pluck('device_code');
-            foreach ($userDeviceCodes as $code) {
-                foreach ($recordCodes as $rcodes) {
-                    $rcodesAry = $rcodes ? json_decode($rcodes, TRUE) : [];
-                    if(in_array($code, $rcodesAry))
-                        return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
-                }
-            }
             //add vip time
             $length = strlen($userUuid);
             $now = time();
+            $userDeviceCodes = [];
             if(in_array($length, [7, 8, 10])){
                 $groupGiftDays = SystemSetting::getValueByName('GroupGiftDays') ? : 0;
                 if ($length == 7) {
                     $appName = 'see';
+                    $userDeviceCodes = Device::where('uuid', $userUuid)->pluck('device_code');
+                    $recordCodes = GroupGiftlLog::where('app_name', $appName)->pluck('device_code');
+                    foreach ($userDeviceCodes as $code) {
+                        foreach ($recordCodes as $rcodes) {
+                            $rcodesAry = $rcodes ? json_decode($rcodes, TRUE) : [];
+                            if(in_array($code, $rcodesAry))
+                                return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
+                        }
+                    }
                     $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
                     $user = $device ? Appuser::find($device['uid']) : '';
                     if(empty($user))
@@ -132,6 +143,15 @@ class ResetPwdController extends Controller
                 if ($length == 10) {
                     $appName = 'feng';
                     $user = FengUser::where('uuid', $userUuid)->first();
+                    $userDeviceCodes = FengDevice::where('uid', $user['uid'])->pluck('device_code');
+                    $recordCodes = GroupGiftlLog::where('app_name', $appName)->pluck('device_code');
+                    foreach ($userDeviceCodes as $code) {
+                        foreach ($recordCodes as $rcodes) {
+                            $rcodesAry = $rcodes ? json_decode($rcodes, TRUE) : [];
+                            if(in_array($code, $rcodesAry))
+                                return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
+                        }
+                    }
                     if(empty($user))
                         return response()->json(['msg' => '用户uuid不存在', 'data' => '', 'code' => 202]);
                     if($user->vip_expireat > $now)

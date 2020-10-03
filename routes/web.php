@@ -72,6 +72,7 @@ Route::get('app/faq2', function () {
 });
 
 //领取进群福利 页面
-Route::get('group-gift', function () {
-    return view('group-gift');
-});
+Route::get('group-gift/{token}', 'ResetPwdController@groupGiftPage');
+//Route::get('group-gift/{token}', function () {
+//    return view('group-gift');
+//});

@@ -78,7 +78,7 @@
             ele.attr('disabled', "true").removeClass("btn-primary").addClass("btn-secondary");
             var url = '/api/get-group-gift';
             var uuid = $("#uuid").val();
-            $.post(url, {'uuid' : uuid},function(result){
+            $.post(url, {'uuid' : uuid, 'token' : '{{$token}}'},function(result){
                 console.log(result);
                 if (result.code == 200) {
                     $("#errors").hide();
