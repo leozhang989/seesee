@@ -87,9 +87,19 @@ class ResetPwdController extends Controller
     public function getGroupGift(Request $request){
         if($request->filled('uuid')){
             $userUuid = $request->input('uuid');
+            $userDeviceCodes = Device::where('uuid', $userUuid)->pluck('device_code');
             $giftRes = GroupGiftlLog::where('user_uuid', $userUuid)->first();
             if($giftRes)
                 return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
+
+            $recordCodes = GroupGiftlLog::pluck('device_code');
+            foreach ($userDeviceCodes as $code) {
+                foreach ($recordCodes as $rcodes) {
+                    $rcodesAry = $rcodes ? json_decode($rcodes, TRUE) : [];
+                    if(in_array($code, $rcodesAry))
+                        return response()->json(['msg' => '您已领取过，请勿重复领取！', 'data' => '', 'code' => 202]);
+                }
+            }
             //add vip time
             $length = strlen($userUuid);
             $now = time();
@@ -105,7 +115,7 @@ class ResetPwdController extends Controller
                     $user->vip_expired = strtotime('+' . $groupGiftDays . ' days', $vipExpireAt);
                 }
                 if ($length == 8) {
-                    return response()->json(['msg' => '福利领取失败1', 'data' => '', 'code' => 202]);
+                    return response()->json(['msg' => '福利领取失败', 'data' => '', 'code' => 202]);
 
 //                    $appName = 'flower';
 //                    $user = FlowerUser::where('uuid', $userUuid)->first();
@@ -120,21 +130,20 @@ class ResetPwdController extends Controller
 //                        $user->free_expireat = strtotime('+' . $groupGiftDays . ' days', $user->free_expireat);
                 }
                 if ($length == 10) {
-                    return response()->json(['msg' => '福利领取失败2', 'data' => '', 'code' => 202]);
-//                    $appName = 'feng';
-//                    $user = FengUser::where('uuid', $userUuid)->first();
-//                    if(empty($user))
-//                        return response()->json(['msg' => '用户uuid不存在', 'data' => '', 'code' => 202]);
-//                    if($user->vip_expireat > $now)
-//                        $user->vip_expireat = strtotime('+' . $groupGiftDays . ' days', $user->vip_expireat);
-//                    else
-//                        $user->ad_vip_expireat = strtotime('+' . $groupGiftDays . ' days', $user->ad_vip_expireat);
+                    $appName = 'feng';
+                    $user = FengUser::where('uuid', $userUuid)->first();
+                    if(empty($user))
+                        return response()->json(['msg' => '用户uuid不存在', 'data' => '', 'code' => 202]);
+                    if($user->vip_expireat > $now)
+                        $user->vip_expireat = strtotime('+' . $groupGiftDays . ' days', $user->vip_expireat);
+                    else
+                        $user->ad_vip_expireat = strtotime('+' . $groupGiftDays . ' days', $user->ad_vip_expireat);
                 }
                 if (!$user->save())
                     return response()->json(['msg' => '福利领取失败', 'data' => '', 'code' => 202]);
 
                 //record
-                $insertData = ['user_uuid' => $userUuid, 'get_time' => $now, 'gift_days' => $groupGiftDays, 'app_name' => $appName];
+                $insertData = ['user_uuid' => $userUuid, 'get_time' => $now, 'gift_days' => $groupGiftDays, 'app_name' => $appName, 'device_code' => json_encode($userDeviceCodes)];
                 GroupGiftlLog::create($insertData);
                 return response()->json(['msg' => '福利领取成功', 'data' => '', 'code' => 200]);
             }

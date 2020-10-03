@@ -60,7 +60,7 @@
                 </div>
                 <form action="##" method="post" onSubmit="return false;" name="resetForm">
                     <div class="form-group">
-                        <input name="uuid" type="number" class="form-control" id="uuid" placeholder="输入uuid领取福利">
+                        <input name="uuid" type="number" class="form-control" id="uuid" placeholder="输入用户ID">
                     </div>
                     <button name="submitButton" type="submit" class="btn btn-primary btn-block" id="get-gift">领取福利</button>
                     <small id="tips" class="form-text text-success hide"></small>

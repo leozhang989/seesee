@@ -9,6 +9,6 @@ class GroupGiftlLog extends Model
     protected $table = 'group_gift_logs';
 
     protected $fillable = [
-        'user_uuid', 'get_time', 'gift_days', 'app_name'
+        'user_uuid', 'get_time', 'gift_days', 'app_name', 'device_code'
     ];
 }
