@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Announcement;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
@@ -305,13 +306,23 @@ class AppusersController extends Controller
             $testFlight['hasNewer'] = $hasNewerVersion;
             $testFlight['content'] = $testflightContent;
 
+            //展示公告
+            $announcement = Announcement::where('online', 1)->orderBy('id', 'desc')->first();
+            $userAnnouncement['online'] = 0;
+            $userAnnouncement['content'] = $userAnnouncement['redirect_url'] = '';
+            if($announcement){
+                $userAnnouncement['online'] = $announcement['online'] ? 1 : 0;
+                $userAnnouncement['content'] = $announcement['content'] ? : '';
+                $userAnnouncement['redirect_url'] = $announcement['redirect_url'] ? : '';
+            }
+
             $totalExpiredTime = 0;
             if($deviceInfo){
                 $totalExpiredTime = $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0;
             }
             if($userInfo)
                 $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
-            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight], 'code' => 200]);
+            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
     }
