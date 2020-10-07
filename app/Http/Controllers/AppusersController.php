@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\AesController;
 use App\Models\AccountServers;
 use App\Models\VipServer;
+use App\Models\ServersList;
 
 class AppusersController extends Controller
 {
@@ -409,6 +410,62 @@ class AppusersController extends Controller
 //                    }else{
 //                        $item['server_pwd'] = $aesRes->encrypt('仅限会员使用');
 //                    }
+                });
+            }
+            return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
+        }
+        return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
+    }
+
+    public function newServerList(Request $request){
+        if($request->filled('device_code')){
+            $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+            if(empty($deviceInfo))
+                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
+
+            $currentIP = $request->input('ip', '');
+            $currentServerGid = 0;
+            $currentServer = [];
+            if($currentIP){
+                $currentServer = ServersList::where('address', $currentIP)->first();
+                $currentServerGid = $currentServer ? $currentServer['server_gid'] : 0;
+            }
+            //get all server gids
+//            $listIds = ServersList::where('server_gid', '!=', $currentServerGid)->inRandomOrder()->pluck('id', 'server_gid');
+            $query = ServersList::groupBy('server_gid');
+            if($currentServerGid)
+                $query = $query->where('server_gid', '!=', $currentServerGid);
+
+            $serverListGIds = $query->pluck('server_gid');
+            $sids = [];
+            foreach ($serverListGIds as $key => $gid) {
+                $serverGroupRate = ServersList::where('server_gid', $gid)->sum('random_rate');
+                $serverGroup = ServersList::where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
+                if(empty($serverGroup))
+                    continue;
+
+                $randomValue = random_int(1, $serverGroupRate);
+                $total = 0;
+                foreach ($serverGroup as $k => $server) {
+                    $total += $server['random_rate'];
+                    if($total >= $randomValue){
+                        $sids[] = $server['id'];
+                        break;
+                    }
+                }
+            }
+            if($currentServer)
+                array_push($sids, $currentServer['id']);
+
+            $servers = ServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+
+            $serversRes = [];
+            if($servers){
+                $aesRes = new AesController();
+                $serversRes = $servers->each(function ($item, $key) use ($aesRes) {
+                    $item['port'] = random_int($item['start_port'], $item['end_port']);
+                    unset($item['start_port'], $item['end_port']);
+                    $item['server_pwd'] = $aesRes->encrypt($item['server_pwd']);
                 });
             }
             return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);

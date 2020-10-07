@@ -53,6 +53,9 @@ Route::group(['middleware' => ['signature']], function() {
 
     //get servers
     Route::get('/app-servers', 'AppusersController@serverList');
+
+    //get random servers
+    Route::get('/random-servers', 'AppusersController@newServerList');
 });
 
 
