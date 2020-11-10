@@ -6,6 +6,8 @@ use App\Models\Announcement;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\FengDevice;
+use App\Models\FlowerUser;
 use App\Models\Notice;
 use App\Models\NoticeLog;
 use App\Models\SeeVersion;
@@ -441,6 +443,75 @@ class AppusersController extends Controller
             foreach ($serverListGIds as $key => $gid) {
                 $serverGroupRate = ServersList::where('server_gid', $gid)->sum('random_rate');
                 $serverGroup = ServersList::where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
+                if(empty($serverGroup))
+                    continue;
+
+                $randomValue = random_int(1, $serverGroupRate);
+                $total = 0;
+                foreach ($serverGroup as $k => $server) {
+                    $total += $server['random_rate'];
+                    if($total >= $randomValue){
+                        $sids[] = $server['id'];
+                        break;
+                    }
+                }
+            }
+            if($currentServer)
+                array_push($sids, $currentServer['id']);
+
+            $servers = ServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+
+            $serversRes = [];
+            if($servers){
+                $aesRes = new AesController();
+                $serversRes = $servers->each(function ($item, $key) use ($aesRes) {
+                    $item['port'] = random_int($item['start_port'], $item['end_port']);
+                    unset($item['start_port'], $item['end_port']);
+                    $item['server_pwd'] = $aesRes->encrypt($item['server_pwd']);
+                });
+            }
+            return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
+        }
+        return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
+    }
+
+
+    public function appServerList(Request $request){
+        if($request->filled('device_code') && $request->filled('appname')){
+            $appname = $request->input('appname', 'see');
+            $deviceInfo = '';
+            switch ($appname) {
+                case 'see':
+                    $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+                    break;
+                case 'feng':
+                    $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+                    break;
+                case 'flower':
+                    $deviceInfo = FlowerUser::where('code', $request->input('device_code'))->first();
+                    break;
+            }
+            if(empty($deviceInfo))
+                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
+
+            $currentIP = $request->input('ip', '');
+            $currentServerGid = 0;
+            $currentServer = [];
+            if($currentIP){
+                $currentServer = ServersList::where('address', $currentIP)->where('appname', $appname)->first();
+                $currentServerGid = $currentServer ? $currentServer['server_gid'] : 0;
+            }
+            //get all server gids
+//            $listIds = ServersList::where('server_gid', '!=', $currentServerGid)->inRandomOrder()->pluck('id', 'server_gid');
+            $query = ServersList::where('appname', $appname)->groupBy('server_gid');
+            if($currentServerGid)
+                $query = $query->where('server_gid', '!=', $currentServerGid);
+
+            $serverListGIds = $query->pluck('server_gid');
+            $sids = [];
+            foreach ($serverListGIds as $key => $gid) {
+                $serverGroupRate = ServersList::where('appname', $appname)->where('server_gid', $gid)->sum('random_rate');
+                $serverGroup = ServersList::where('appname', $appname)->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
                 if(empty($serverGroup))
                     continue;
 
