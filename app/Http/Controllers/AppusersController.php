@@ -7,6 +7,7 @@ use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
 use App\Models\FengDevice;
+use App\Models\FlowerAdServers;
 use App\Models\FlowerUser;
 use App\Models\Notice;
 use App\Models\NoticeLog;
@@ -479,6 +480,7 @@ class AppusersController extends Controller
 
     public function appServerList(Request $request){
         if($request->filled('device_code') && $request->filled('appname')){
+            $now = time();
             $appname = $request->input('appname', 'see');
             $deviceInfo = '';
             switch ($appname) {
@@ -495,41 +497,57 @@ class AppusersController extends Controller
             if(empty($deviceInfo))
                 return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
 
-            $currentIP = $request->input('ip', '');
-            $currentServerGid = 0;
-            $currentServer = [];
-            if($currentIP){
-                $currentServer = AppServersList::where('address', $currentIP)->where('appname', $appname)->first();
-                $currentServerGid = $currentServer ? $currentServer['server_gid'] : 0;
-            }
-            //get all server gids
+            if($appname === 'flower' && $deviceInfo['paid_vip_expireat'] <= $now && $deviceInfo['is_permanent_vip'] != 1){
+                $servers = FlowerAdServers::get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+            }else {
+                $currentIP = $request->input('ip', '');
+                $currentServerGid = 0;
+                $currentServer = [];
+                if ($currentIP) {
+                    $currentServer = AppServersList::where('address', $currentIP)->where(function ($query) use($appname) {
+                        $query->where('appname', $appname)
+                            ->orWhere('appname', '');
+                    })->first();
+                    $currentServerGid = $currentServer ? $currentServer['server_gid'] : 0;
+                }
+                //get all server gids
 //            $listIds = AppServersList::where('server_gid', '!=', $currentServerGid)->inRandomOrder()->pluck('id', 'server_gid');
-            $query = AppServersList::where('appname', $appname)->groupBy('server_gid');
-            if($currentServerGid)
-                $query = $query->where('server_gid', '!=', $currentServerGid);
+                $query = AppServersList::where(function ($query) use($appname) {
+                    $query->where('appname', $appname)
+                        ->orWhere('appname', '');
+                })->groupBy('server_gid');
+                if ($currentServerGid)
+                    $query = $query->where('server_gid', '!=', $currentServerGid);
 
-            $serverListGIds = $query->pluck('server_gid');
-            $sids = [];
-            foreach ($serverListGIds as $key => $gid) {
-                $serverGroupRate = AppServersList::where('appname', $appname)->where('server_gid', $gid)->sum('random_rate');
-                $serverGroup = AppServersList::where('appname', $appname)->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
-                if(empty($serverGroup))
-                    continue;
+                $serverListGIds = $query->pluck('server_gid');
+                $sids = [];
+                foreach ($serverListGIds as $key => $gid) {
+                    $serverGroupRate = AppServersList::where(function ($query) use($appname) {
+                        $query->where('appname', $appname)
+                            ->orWhere('appname', '');
+                    })->where('server_gid', $gid)->sum('random_rate');
+                    $serverGroup = AppServersList::where(function ($query) use($appname) {
+                        $query->where('appname', $appname)
+                            ->orWhere('appname', '');
+                    })->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
+                    if (empty($serverGroup))
+                        continue;
 
-                $randomValue = random_int(1, $serverGroupRate);
-                $total = 0;
-                foreach ($serverGroup as $k => $server) {
-                    $total += $server['random_rate'];
-                    if($total >= $randomValue){
-                        $sids[] = $server['id'];
-                        break;
+                    $randomValue = random_int(1, $serverGroupRate);
+                    $total = 0;
+                    foreach ($serverGroup as $k => $server) {
+                        $total += $server['random_rate'];
+                        if ($total >= $randomValue) {
+                            $sids[] = $server['id'];
+                            break;
+                        }
                     }
                 }
-            }
-            if($currentServer)
-                array_push($sids, $currentServer['id']);
+                if ($currentServer)
+                    array_push($sids, $currentServer['id']);
 
-            $servers = AppServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+                $servers = AppServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd', 'server_gid']);
+            }
 
             $serversRes = [];
             if($servers){
