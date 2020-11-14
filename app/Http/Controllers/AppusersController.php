@@ -7,6 +7,7 @@ use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
 use App\Models\FengDevice;
+use App\Models\FengUser;
 use App\Models\FlowerAdServers;
 use App\Models\FlowerUser;
 use App\Models\Notice;
@@ -379,6 +380,58 @@ class AppusersController extends Controller
                 $serversRes = $servers->each(function ($item, $key) use ($userInfo, $aesRes) {
                     $now = time();
                     if($userInfo['vip_expired'] > $now){
+                        $item['password'] = $aesRes->encrypt($item['password']);
+                    }else{
+                        $item['password'] = $aesRes->encrypt('仅限会员使用');
+                    }
+                });
+            }
+            return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
+        }
+        return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
+    }
+
+    public function appAccountServerList(Request $request){
+        if($request->filled('device_code') && $request->filled('appname')){
+            $now = time();
+            $appname = $request->input('appname', 'see');
+            $deviceInfo = '';
+            $isvip = 0;
+            switch ($appname) {
+                case 'see':
+                    $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+                    $userInfo = $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
+                    $isvip = ($userInfo && $userInfo['vip_expired'] > $now) ? 1 : 0;
+                    break;
+                case 'feng':
+                    $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+                    $userInfo = $deviceInfo['uid'] ? FengUser::find($deviceInfo['uid']) : [];
+                    $isvip = ($userInfo && $userInfo['vip_expireat'] > $now) ? 1 : 0;
+                    break;
+                case 'flower':
+                    $deviceInfo = FlowerUser::where('code', $request->input('device_code'))->first();
+                    $totalVipExpired = $deviceInfo['vip_expireat'] > $now ? $deviceInfo['vip_expireat'] - $now : 0;
+                    $vipType = 0;
+                    if($deviceInfo['paid_vip_expireat'] > $now){
+                        $vipType = 2;
+                    }else{
+                        if($totalVipExpired > 0)
+                            $vipType = 1;
+                    }
+                    $vipType = $deviceInfo['is_permanent_vip'] ? 3 : $vipType;
+                    $isvip = $vipType >= 2 ? 1 : 0;
+                    break;
+            }
+            if(empty($deviceInfo))
+                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
+
+            $servers = AccountServers::get(['name', 'address', 'port', 'password', 'secret']);
+
+            $serversRes = [];
+            if($servers){
+                $aesRes = new AesController();
+                $serversRes = $servers->each(function ($item, $key) use ($isvip, $aesRes) {
+                    if($isvip){
                         $item['password'] = $aesRes->encrypt($item['password']);
                     }else{
                         $item['password'] = $aesRes->encrypt('仅限会员使用');
