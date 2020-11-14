@@ -21,6 +21,7 @@ use App\Http\Controllers\AesController;
 use App\Models\AccountServers;
 use App\Models\VipServer;
 use App\Models\ServersList;
+use App\Models\AppServersList;
 
 class AppusersController extends Controller
 {
@@ -498,20 +499,20 @@ class AppusersController extends Controller
             $currentServerGid = 0;
             $currentServer = [];
             if($currentIP){
-                $currentServer = ServersList::where('address', $currentIP)->where('appname', $appname)->first();
+                $currentServer = AppServersList::where('address', $currentIP)->where('appname', $appname)->first();
                 $currentServerGid = $currentServer ? $currentServer['server_gid'] : 0;
             }
             //get all server gids
-//            $listIds = ServersList::where('server_gid', '!=', $currentServerGid)->inRandomOrder()->pluck('id', 'server_gid');
-            $query = ServersList::where('appname', $appname)->groupBy('server_gid');
+//            $listIds = AppServersList::where('server_gid', '!=', $currentServerGid)->inRandomOrder()->pluck('id', 'server_gid');
+            $query = AppServersList::where('appname', $appname)->groupBy('server_gid');
             if($currentServerGid)
                 $query = $query->where('server_gid', '!=', $currentServerGid);
 
             $serverListGIds = $query->pluck('server_gid');
             $sids = [];
             foreach ($serverListGIds as $key => $gid) {
-                $serverGroupRate = ServersList::where('appname', $appname)->where('server_gid', $gid)->sum('random_rate');
-                $serverGroup = ServersList::where('appname', $appname)->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
+                $serverGroupRate = AppServersList::where('appname', $appname)->where('server_gid', $gid)->sum('random_rate');
+                $serverGroup = AppServersList::where('appname', $appname)->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
                 if(empty($serverGroup))
                     continue;
 
@@ -528,7 +529,7 @@ class AppusersController extends Controller
             if($currentServer)
                 array_push($sids, $currentServer['id']);
 
-            $servers = ServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+            $servers = AppServersList::whereIn('id', $sids)->get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
 
             $serversRes = [];
             if($servers){
