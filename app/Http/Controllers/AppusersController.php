@@ -532,9 +532,9 @@ class AppusersController extends Controller
 
 
     public function appServerList(Request $request){
-        if($request->filled('device_code') && $request->filled('appname')){
+        if($request->filled('device_code')){
             $now = time();
-            $appname = $request->input('appname', 'see');
+            $appname = $request->filled('appname') ? $request->input('appname') : 'see';
             $deviceInfo = '';
             switch ($appname) {
                 case 'see':
