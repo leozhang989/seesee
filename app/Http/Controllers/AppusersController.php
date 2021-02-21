@@ -651,7 +651,7 @@ class AppusersController extends Controller
             $now = time();
             $viptime = $request->input('viptime', 0);
             if($viptime == 540 || ($viptime >= 1 && $viptime <= 30)){
-                if($viptime === 540){
+                if($viptime == 540){
                     $flowerUser = FlowerUsers::where('uuid', $request->input('uuid'))->where('is_permanent_vip', 1)->first();
                     $errorMsg = '该用户不是永久VIP，不可开通540天';
                 }
