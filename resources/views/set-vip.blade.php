@@ -58,7 +58,7 @@
                 <div class="text-center" style="margin-bottom: 14%;">
                     <img src="{{ asset('seesee/images/see_logo.png') }}" class="rounded" alt="" style="height: 100px;width: auto;">
                 </div>
-                <form action="#" method="post" onSubmit="" name="setForm">
+                <form action="#" method="post" onSubmit="return false" name="setForm">
                     <div class="form-group">
                         <input name="uuid" type="text" class="form-control" id="uuid" placeholder="小花uuid">
                     </div>
@@ -87,7 +87,7 @@
         //     subBtu.classList.add("btn-secondary");
         // }
         $('#set-vip').click(function() {
-            // $("#reset-pwd").disabled().removeClass("btn-primary").addClass("btn-secondary");
+            // $("#set-vip").disabled().removeClass("btn-primary").addClass("btn-secondary");
             var url = '/api/set-vip';
             var uuid = $("#uuid").val();
             var email = $("#email").val();
