@@ -84,3 +84,6 @@ Route::post('/paddle/web-hook', 'PayController@webHook');
 
 //server list
 Route::get('/servers', 'AppusersController@servers');
+
+//set flower vip
+Route::post('/set-vip', 'AppusersController@setFlowerVipApi');

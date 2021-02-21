@@ -33,6 +33,10 @@ Route::get('notices/detail/{id}/{uuid}', 'NoticesController@detail');
 Route::get('reset-pwd/confirm/{token}/{email}', 'ResetPwdController@resetPage');
 
 
+//flower set vip page
+Route::get('set-flower-vip/{token}', 'AppusersController@setFlowerVip');
+
+
 //公用使用教程页面
 //首页
 Route::get('sshelp', function () {

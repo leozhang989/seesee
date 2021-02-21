@@ -10,6 +10,8 @@ use App\Models\FengDevice;
 use App\Models\FengUser;
 use App\Models\FlowerAdServers;
 use App\Models\FlowerUser;
+use App\Models\FlowerUsers;
+use App\Models\FlowerVipSetLogs;
 use App\Models\Notice;
 use App\Models\NoticeLog;
 use App\Models\SeeVersion;
@@ -614,6 +616,73 @@ class AppusersController extends Controller
             return response()->json(['msg' => '获取成功', 'data' => $serversRes, 'code' => 200]);
         }
         return response()->json(['msg' => '获取失败，参数错误', 'data' => '', 'code' => 202]);
+    }
+
+
+    //转移小花页面
+    public function setFlowerVip($token = ''){
+        if($token && $token === 'hisuPbRyf4gnXtj3olQaAIK1VdUHB6rF'){
+            return view('set-vip', ['token' => $token]);
+        }
+        return view('error', ['errorMsg' => '链接异常']);
+    }
+
+    public function setFlowerVipApi(Request $request){
+        if($request->filled('uuid') && $request->filled('email') && $request->filled('token') && $request->filled('viptime') && $request->filled('adminpass')){
+            if($request->input('token') !== 'hisuPbRyf4gnXtj3olQaAIK1VdUHB6rF')
+                return response()->json(['msg' => '页面链接异常', 'data' => '', 'code' => 202]);
+
+            if(!in_array($request->input('adminpass', 0), [1234, 8888]))
+                return response()->json(['msg' => '管理员密码错误', 'data' => '', 'code' => 202]);
+
+            $email = $request->input('email', '');
+            if(empty($email))
+                return response()->json(['msg' => 'see邮箱账号不能为空', 'data' => '', 'code' => 202]);
+            $seeUser = Appuser::where('email', trim($email))->first();
+            if(empty($seeUser))
+                return response()->json(['msg' => '该邮箱尚未注册see账户，请找用户确认', 'data' => '', 'code' => 202]);
+
+            $uuid = $request->input('uuid', '');
+            if($request->input('adminpass', 0) === 1234){
+                if(empty($uuid))
+                    return response()->json(['msg' => '小花uuid不能为空', 'data' => '', 'code' => 202]);
+            }
+
+            $now = time();
+            $viptime = $request->input('viptime', 0);
+            if($viptime === 540 || ($viptime >= 1 && $viptime <= 30)){
+                if($viptime === 540){
+                    $flowerUser = FlowerUsers::where('uuid', $request->input('uuid'))->where('is_permanent_vip', 1)->first();
+                    $errorMsg = '该用户不是永久VIP，不可开通540天';
+                }
+                if($viptime >= 1 && $viptime <= 30){
+                    $flowerUser = FlowerUsers::where('uuid', $request->input('uuid'))->first();
+                    $errorMsg = '该用户不存在，不可转移VIP';
+                }
+                if($uuid){
+                    if(empty($flowerUser))
+                        return response()->json(['msg' => $errorMsg, 'data' => '', 'code' => 202]);
+
+                    if ($flowerUser['processed'] === 1)
+                        return response()->json(['msg' => '该用户已转移过', 'data' => '', 'code' => 202]);
+
+                    $flowerUser->processed = 1;
+                    $flowerUser->save();
+                }
+                $start = $seeUser['vip_expired'] > $now ? $seeUser['vip_expired'] : $now;
+                $seeUser->vip_expired = $start + $viptime * 24 * 3600;
+                $seeUser->save();
+                //记录开通日志
+                FlowerVipSetLogs::create([
+                    'admin_name' => $request->input('adminpass', 0) === 1234 ? '代付' : '机子毛',
+                    'flower_uuid' => $uuid,
+                    'see_email' => $email,
+                    'viptime' => $viptime
+                ]);
+                return response()->json(['msg' => '转移成功', 'data' => '', 'code' => 200]);
+            }
+        }
+        return response()->json(['msg' => '参数写错了吧，再看看', 'data' => '', 'code' => 202]);
     }
 
 }
