@@ -61,14 +61,18 @@
                 <form action="#" method="post" onSubmit="return false" name="setForm">
                     <div class="form-group">
                         <div class="row">
-                            <div class="col-md-10">
+                            <div class="col-sm-10">
                                 <input name="uuid" type="text" class="form-control" id="uuid" placeholder="小花uuid">
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-sm-2">
                                 <button name="queryuuid" class="btn btn-primary btn-block" id="queryuuid">查询VIP</button>
                             </div>
-                            <small id="querytips" class="form-text text-success hide"></small>
-                            <small id="queryerrors" class="form-text text-danger hide"></small>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-12">
+                                <small id="querytips" class="form-text text-success hide"></small>
+                                <small id="queryerrors" class="form-text text-danger hide"></small>
+                            </div>
                         </div>
                     </div>
                     <div class="form-group">
