@@ -60,7 +60,14 @@
                 </div>
                 <form action="#" method="post" onSubmit="return false" name="setForm">
                     <div class="form-group">
-                        <input name="uuid" type="text" class="form-control" id="uuid" placeholder="小花uuid">
+                        <div class="row">
+                            <div class="col-md-10">
+                                <input name="uuid" type="text" class="form-control" id="uuid" placeholder="小花uuid">
+                            </div>
+                            <div class="col-md-2">
+                                <button name="queryuuid" class="btn btn-primary btn-block" id="queryuuid">查询VIP</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="form-group">
                         <input name="email" type="email" class="form-control" id="email" placeholder="see邮箱账号">
@@ -101,6 +108,21 @@
                 }else{
                     $("#tips").hide();
                     $("#errors").show().text(result.msg);
+                }
+            });
+        });
+
+        $('#queryuuid').click(function() {
+            var url = '/api/query-flower-vip';
+            var uuid = $("#uuid").val();
+            var token = $("#token").val();
+            $.post(url, {'uuid' : uuid, 'token': token},function(result){
+                if (result.code == 200) {
+                    $("#queryerrors").hide();
+                    $("#querytips").show().text(result.msg);
+                }else{
+                    $("#querytips").hide();
+                    $("#queryerrors").show().text(result.msg);
                 }
             });
         });

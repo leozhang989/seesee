@@ -685,4 +685,42 @@ class AppusersController extends Controller
         return response()->json(['msg' => '参数写错了吧，再看看', 'data' => '', 'code' => 202]);
     }
 
+    public function queryFlowerVip(Request $request)
+    {
+        if($request->filled('uuid') && $request->filled('token')){
+            if($request->input('token') !== 'hisuPbRyf4gnXtj3olQaAIK1VdUHB6rF')
+                return response()->json(['msg' => '页面链接异常', 'data' => '', 'code' => 202]);
+
+            $uuid = $request->input('uuid', '');
+            if(empty($uuid))
+                return response()->json(['msg' => '小花uuid不能为空', 'data' => '', 'code' => 202]);
+
+            $flowerUser = FlowerUsers::where('uuid', $uuid)->first();
+            if(empty($flowerUser))
+                return response()->json(['msg' => '会员不存在', 'data' => '', 'code' => 202]);
+
+            $msg = $uuid;
+            if($flowerUser['is_permanent_vip'] === 1)
+                $msg = '永久VIP，';
+
+            $now = time();
+            if($flowerUser['paid_vip_expireat'] > $now){
+                $viptime = round(($flowerUser['paid_vip_expireat']- $now) / (24 * 3600));
+                $msg = '付费VIP，剩余' . $viptime . '天，';
+            }
+
+            if($flowerUser['free_expireat'] > $now){
+                $viptime = round(($flowerUser['free_expireat']- $now) / (24 * 3600));
+                $msg = '广告VIP，剩余' . $viptime . '天，';
+            }
+
+            $msg .= '该会员 未转移';
+            if($flowerUser['processed'])
+                $msg .= '该会员 已转移';
+
+            return response()->json(['msg' => $msg, 'data' => '', 'code' => 200]);
+        }
+        return response()->json(['msg' => '参数写错了吧，再看看', 'data' => '', 'code' => 202]);
+    }
+
 }

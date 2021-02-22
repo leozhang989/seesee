@@ -87,3 +87,6 @@ Route::get('/servers', 'AppusersController@servers');
 
 //set flower vip
 Route::post('/set-vip', 'AppusersController@setFlowerVipApi');
+
+//query flower vip
+Route::post('/query-flower-vip', 'AppusersController@queryFlowerVip');
