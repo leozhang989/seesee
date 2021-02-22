@@ -67,6 +67,8 @@
                             <div class="col-md-2">
                                 <button name="queryuuid" class="btn btn-primary btn-block" id="queryuuid">查询VIP</button>
                             </div>
+                            <small id="querytips" class="form-text text-success hide"></small>
+                            <small id="queryerrors" class="form-text text-danger hide"></small>
                         </div>
                     </div>
                     <div class="form-group">
