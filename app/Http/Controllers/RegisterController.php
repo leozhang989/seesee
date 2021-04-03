@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\FlowerTransferLogs;
 use App\Models\Notice;
 use App\Models\NoticeLog;
 use App\Models\Server;
@@ -26,6 +27,11 @@ class RegisterController extends Controller
             $deviceRes = Device::where('device_code', $request->input('device_code'))->first();
             if(empty($deviceRes))
                 return response()->json(['data' => [], 'msg' => '设备无效', 'code' => 202]);
+
+            //小花永久转移会员无需注册
+            $transferUser = FlowerTransferLogs::where('device_code', $request->input('device_code'))->where('vip_type', 'permanent-vip')->first();
+            if($transferUser)
+                return response()->json(['data' => [], 'msg' => '永久会员仅限一台设备使用，暂不支持注册账号', 'code' => 202]);
 
             $now = time();
 //            $today = strtotime(date('Y-m-d', $now));
