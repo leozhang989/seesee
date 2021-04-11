@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\devicesUuidRelations;
 use App\Models\FengDevice;
 use App\Models\FengUser;
 use App\Models\FlowerAdServers;
@@ -27,6 +28,7 @@ use App\Models\AccountServers;
 use App\Models\VipServer;
 use App\Models\ServersList;
 use App\Models\AppServersList;
+use Illuminate\Support\Facades\Schema;
 
 class AppusersController extends Controller
 {
@@ -48,43 +50,35 @@ class AppusersController extends Controller
                 }
             }
 
-//            if($request->filled('version')){
-//                $appVersions = AppVersion::where('online', 1)->orderBy('id', 'DESC')->pluck('app_version')->toArray();
-//                $latestVersionRes = AppVersion::where('online', 1)->orderBy('id', 'DESC')->first();
-//                $userVersion = AppVersion::where('app_version', $request->input('version'))->first();
-//                if(!in_array($request->input('version'), $appVersions)){
-//                    $latestVersionRes = AppVersion::create([
-//                        'app_version' => $request->input('version'),
-//                        'content' => '',
-//                        'testflight_url' => SystemSetting::getValueByName('testflightUrl') ? : '',
-//                        'expired_date' => $nowDate + 90 * 24 * 3600,
-//                        'online' => 0
-//                    ]);
-//                }else{
-//                    if($userVersion['online'] === 0)
-//                        $latestVersionRes = $userVersion;
-//                }
-//                $diffDateInt = $userVersion['expired_date'] - $nowDate > 0 ? $userVersion['expired_date'] - $nowDate : 0;
-//                $leftDays = floor($diffDateInt / (3600 * 24));
-//                $testflightContent = $userVersion['content'];
-//                $testflightUrl = $userVersion['testflight_url'];
-//                if ($latestVersionRes['app_version'] != $request->input('version')){
-//                    $hasNewerVersion = 1;
-//                    $testflightContent = $latestVersionRes['content'];
-//                    $testflightUrl = $latestVersionRes['testflight_url'];
-//                }
-//            }
-
             $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
             if(empty($deviceInfo)){
-                $uuid = $this->generateUUID();
                 $freeDays = SystemSetting::getValueByName('freeDays');
+                //查询关联表是否已经有老设备的关联记录
+                $deviceRes = Schema::hasTable('devices_uuid_relations') ? devicesUuidRelations::where('device_code', $request->input('device_code'))->first() : [];
+                if($deviceRes){
+                    $uuid = $deviceRes['uuid'];
+                    $freeVipExpired = $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : $now;
+                }else{
+                    $uuid = $this->generateUUID();
+                    if(empty($uuid))
+                        return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
+
+                    $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                    if(Schema::hasTable('devices_uuid_relations')){
+                        devicesUuidRelations::create([
+                            'uuid' => $uuid,
+                            'device_code' => $request->input('device_code'),
+                            'free_vip_expired' => $freeVipExpired,
+                            'uid' => 0
+                        ]);
+                    }
+                }
                 $deviceInfo = Device::create([
                     'uuid' => $uuid,
                     'device_code' => $request->input('device_code'),
                     'is_master' => 0,
                     'status' => 1,
-                    'free_vip_expired' => strtotime('+' . $freeDays . ' day'),
+                    'free_vip_expired' => $freeVipExpired,
                     'uid' => 0
                 ]);
 
@@ -180,14 +174,33 @@ class AppusersController extends Controller
                         $deviceInfo->uid = $user['id'];
                         $deviceInfo->save();
                     } else {
-                        $uuid = $this->generateUUID();
                         $freeDays = SystemSetting::getValueByName('freeDays');
+                        //查询关联表是否已经有老设备的关联记录
+                        $deviceRes = Schema::hasTable('devices_uuid_relations') ? devicesUuidRelations::where('device_code', $request->input('device_code'))->first() : [];
+                        if($deviceRes){
+                            $uuid = $deviceRes['uuid'];
+                            $freeVipExpired = $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : $now;
+                        }else{
+                            $uuid = $this->generateUUID();
+                            if(empty($uuid))
+                                return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
+
+                            $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                            if(Schema::hasTable('devices_uuid_relations')) {
+                                devicesUuidRelations::create([
+                                    'uuid' => $uuid,
+                                    'device_code' => $request->input('device_code'),
+                                    'free_vip_expired' => $freeVipExpired,
+                                    'uid' => $user['id']
+                                ]);
+                            }
+                        }
                         $deviceInfo = Device::create([
                             'uuid' => $uuid,
                             'device_code' => $request->input('device_code'),
                             'is_master' => 0,
                             'status' => 1,
-                            'free_vip_expired' => strtotime('+' . $freeDays . ' day'),
+                            'free_vip_expired' => $freeVipExpired,
                             'uid' => $user['id']
                         ]);
                     }
