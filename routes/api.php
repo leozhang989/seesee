@@ -54,7 +54,7 @@ Route::group(['middleware' => ['signature']], function() {
     //get servers
     Route::get('/app-servers', 'AppusersController@serverList');
 
-    //get random servers 一切换旧版至大池子
+    //get random servers 已切换旧版至大池子
     Route::get('/random-servers', 'AppusersController@appServerList');
 
     //get random servers by all apps

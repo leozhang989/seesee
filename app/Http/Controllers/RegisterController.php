@@ -5,12 +5,15 @@ namespace App\Http\Controllers;
 use App\Models\Appuser;
 use App\Models\AppVersion;
 use App\Models\Device;
+use App\Models\devicesUuidRelations;
 use App\Models\FlowerTransferLogs;
 use App\Models\Notice;
 use App\Models\NoticeLog;
 use App\Models\Server;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class RegisterController extends Controller
 {
@@ -24,16 +27,51 @@ class RegisterController extends Controller
             if ($isExisted)
                 return response()->json(['data' => [], 'msg' => '该邮箱已注册过，请直接登录', 'code' => 202]);
 
+//            $deviceRes = Device::where('device_code', $request->input('device_code'))->first();
+//            if(empty($deviceRes))
+//                return response()->json(['data' => [], 'msg' => '设备无效', 'code' => 202]);
+
+            //注册时写入设备
+            $deviceResRela = null;
             $deviceRes = Device::where('device_code', $request->input('device_code'))->first();
-            if(empty($deviceRes))
-                return response()->json(['data' => [], 'msg' => '设备无效', 'code' => 202]);
+            $now = time();
+            if (empty($deviceRes)) {
+                $freeDays = SystemSetting::getValueByName('freeDays');
+                //查询关联表是否已经有老设备的关联记录
+                $deviceResRela = Schema::hasTable('devices_uuid_relations') ? devicesUuidRelations::where('device_code', $request->input('device_code'))->first() : [];
+                if($deviceResRela){
+                    $uuid = $deviceResRela['uuid'];
+                    $freeVipExpired = $deviceResRela['free_vip_expired'] > $now ? $deviceResRela['free_vip_expired'] : $now;
+                }else{
+                    $uuid = $this->generateUUID();
+                    if(empty($uuid))
+                        return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
+
+                    $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                    if(Schema::hasTable('devices_uuid_relations')) {
+                        $deviceResRela = devicesUuidRelations::create([
+                            'uuid' => $uuid,
+                            'device_code' => $request->input('device_code'),
+                            'free_vip_expired' => $freeVipExpired,
+                            'uid' => 0
+                        ]);
+                    }
+                }
+                $deviceRes = Device::create([
+                    'uuid' => $uuid,
+                    'device_code' => $request->input('device_code'),
+                    'is_master' => 0,
+                    'status' => 1,
+                    'free_vip_expired' => $freeVipExpired,
+                    'uid' => 0
+                ]);
+            }
 
             //小花永久转移会员无需注册
             $transferUser = FlowerTransferLogs::where('device_code', $request->input('device_code'))->where('vip_type', 'permanent-vip')->first();
             if($transferUser)
                 return response()->json(['data' => [], 'msg' => '永久会员仅限一台设备使用，暂不支持注册账号', 'code' => 202]);
 
-            $now = time();
 //            $today = strtotime(date('Y-m-d', $now));
             //首次注册时分配广告会员分组
 //            $groupInfo =  '';
@@ -61,6 +99,10 @@ class RegisterController extends Controller
                 //update device uid
                 $deviceRes->uid = $userInfo['id'];
                 $deviceRes->save();
+                if($deviceResRela) {
+                    $deviceResRela->uid = $userInfo['id'];
+                    $deviceResRela->save();
+                }
 
                 //if has new notice now
                 $newNotice = 0;
@@ -139,5 +181,15 @@ class RegisterController extends Controller
             }
         }
         return response()->json(['data' => [], 'msg' => '注册失败，请重试！', 'code' => 202]);
+    }
+
+    protected function generateUUID(){
+        $lastUser = DB::table('devices')
+            ->latest()
+            ->first();
+        $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
+        $length = strlen($lastUuid) - 1;
+        $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
+        return $uuid;
     }
 }
