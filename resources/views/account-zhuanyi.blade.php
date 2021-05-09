@@ -108,7 +108,7 @@
      style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 70px;word-break: break-word;">
     <p>亲爱的用户您好：</p>
     <p>目前使用的See TestFlight地址失效，所有的用户转移到新APP，下面是最新的TestFlight下载地址。</p>
-    <p>您已注册过See APP账号，您的账号是 <strong>{{$email}}</strong>，请在升级APP后直接登录新APP即可继续使用。</p>
+    <p>您已注册过See APP账号，您的账号是 <strong>{{$email}}</strong>，请下载新APP后直接登录即可继续使用。</p>
     <div class="download-cont">
         <div class="download-btn">
             <a class="download-link" href="https://testflight.apple.com/join/KoHLIzlw">下载 新版本See</a>
