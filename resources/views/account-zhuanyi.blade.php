@@ -69,6 +69,37 @@
             border: solid 2px #dc5b41;
             border-radius: 6px;
         }
+
+        .download-cont{
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .download-btn {
+            background-color: #dc5b41;
+            text-align: center;
+            height: 50px;
+            width: 280px;
+            line-height: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 25px;
+            box-shadow: 6px 6px 8px #dddddd;
+        }
+
+        .download-btn:active {
+            background-color: #af4934;
+        }
+
+        .download-btn a {
+            display: inline-block;
+            width: 100%;
+            height: 50px;
+            line-height: 50px;
+            text-decoration: none;
+            color: #fff;
+        }
     </style>
 </head>
 <body style="display: block;margin: 1em;">
@@ -76,8 +107,14 @@
 <div class="article"
      style="display: block;font-weight: 400;line-height: 1.8;margin-bottom: 70px;word-break: break-word;">
     <p>亲爱的用户您好：</p>
-    <p>目前使用的See TestFlight地址失效，后续将无法继续更新，所有的用户转移到新APP。</p>
-    <p>您已注册过See APP账号，您的账号是 {{$email}}，请在升级APP后直接登录新APP即可继续使用。</p>
+    <p>目前使用的See TestFlight地址失效，所有的用户转移到新APP，下面是最新的TestFlight下载地址。</p>
+    <p>您已注册过See APP账号，您的账号是 <strong>{{$email}}</strong>，请在升级APP后直接登录新APP即可继续使用。</p>
+    <div class="download-cont">
+        <div class="download-btn">
+            <a class="download-link" href="#">下载 新版本See</a>
+        </div>
+    </div>
+    <p>忘记密码的直接找回密码就可以了，注意查看邮件垃圾箱。</p>
     <p><strong>如有问题联系邮箱：xunjie@protonmail.com</strong></p>
 </div>
 </body>
