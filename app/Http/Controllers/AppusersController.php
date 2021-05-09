@@ -218,19 +218,19 @@ class AppusersController extends Controller
                     $today = strtotime(date('Y-m-d', $now));
                     $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
                     if ($latestNotice) {
-//                        if($request->input('version') != 3) {
-//                            $newNotice = 1;
-//                            if(empty($deviceInfo['uid'])){
-//                                $token = md5($uuid . 'seedevicezhuanyi');
-//                                $noticeUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $uuid, 'token' => $token]) ? : '';
-//                            }else{
-//                                $noticeUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $uuid]) ? : '';
-//                            }
-//                        }else{
+                        if($request->input('version') != 3) {
+                            $newNotice = 1;
+                            if(empty($deviceInfo['uid'])){
+                                $token = md5($uuid . 'seedevicezhuanyi');
+                                $noticeUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $uuid, 'token' => $token]) ? : '';
+                            }else{
+                                $noticeUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $uuid]) ? : '';
+                            }
+                        }else{
                             $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
                             $newNotice = $userNoticeLog ? 0 : 1;
                             $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ?: '';
-//                        }
+                        }
                     }
 
                     $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
