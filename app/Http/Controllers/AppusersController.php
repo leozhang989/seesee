@@ -361,6 +361,7 @@ class AppusersController extends Controller
     }
 
     public function addVip(Request $request){
+        return response()->json(['msg' => 'OK', 'data' => '', 'code' => 200]);
         if($request->filled('uuid') && $request->filled('days') && $request->filled('user_uuid')){
             if($request->input('uuid') == '1000047'){
                 $device = Device::where('uuid', $request->input('user_uuid'))->first();
