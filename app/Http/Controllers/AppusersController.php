@@ -19,6 +19,7 @@ use App\Models\NoticeLog;
 use App\Models\SeeVersion;
 use App\Models\Server;
 use App\Models\SystemSetting;
+use App\Models\TransferLogs;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -201,7 +202,8 @@ class AppusersController extends Controller
                             'is_master' => 0,
                             'status' => 1,
                             'free_vip_expired' => $freeVipExpired,
-                            'uid' => $user['id']
+                            'uid' => $user['id'],
+                            'device_model' => $request->input('model', '')
                         ]);
                     }
 
@@ -315,7 +317,7 @@ class AppusersController extends Controller
             $testflightUrl = SystemSetting::getValueByName('seeTestFlightUrl') ? : '';
             $testflightContent = '';
             $hasNewerVersion = 0;
-            if($request->filled('version')){
+            if($request->filled('version') && $request->input('version') != 3){
                 $cacheVersion = 0;
                 if(Cache::has($request->input('device_code'))){
                     $cacheVersion = Cache::get($request->input('device_code'));
@@ -348,7 +350,12 @@ class AppusersController extends Controller
             }
             if($userInfo)
                 $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
-            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement], 'code' => 200]);
+
+            $isSupportPay = 1;
+            if(in_array($deviceInfo['uuid'], ['1023492']))
+                $isSupportPay = 1;
+
+            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
     }
@@ -739,6 +746,68 @@ class AppusersController extends Controller
             return response()->json(['msg' => $msg, 'data' => '', 'code' => 200]);
         }
         return response()->json(['msg' => '参数写错了吧，再看看', 'data' => '', 'code' => 202]);
+    }
+
+    public function seeAccountZhuanyiPage(string $uuid)
+    {
+        $device = Device::where('uuid', $uuid)->first();
+        $user = $device ? Appuser::find($device['uid']) : [];
+        if(empty($user))
+            return '';
+
+        return view('account-zhuanyi', ['email' => $user['email']]);
+    }
+
+    public function seeDeviceZhuanyiPage(string $uuid, string $token)
+    {
+        if(empty($uuid) || empty($token))
+            return '';
+
+        $device = Device::where('uuid', $uuid)->first();
+        if(empty($device) || ($device && $device['uid']))
+            return '';
+
+        $now = time();
+        $days = $device['free_vip_expired'] > $now ? round(($device['free_vip_expired'] - $now) / (24 * 3600)) : 0;
+        return view('device-zhuanyi', ['uuid' => $uuid, 'token' => $token, 'time' => $days]);
+    }
+
+    public function seeDeviceZhuanyiApi(string $email, string $uuid, string $token)
+    {
+        DB::beginTransaction();
+        try {
+            if(empty($email) || empty($uuid) || empty($token))
+                throw new \Exception('请输入正确的邮箱账号');
+
+            $key = $uuid . 'seedevicezhuanyi';
+            $localToken = md5($key);
+            if($localToken !== $token)
+                throw new \Exception('参数错误，请刷新页面重试');
+
+            $oldDevice = Device::where('uuid', $uuid)->first();
+            $user = Appuser::where('email', $email)->first();
+            if(empty($oldDevice) || empty($user))
+                throw new \Exception('会员信息查询失败，请稍后重试');
+
+            if($oldDevice['transfered'])
+                throw new \Exception('您已完成转移，无需重复操作');
+
+            $now = time();
+            $flowerUser = FlowerTransferLogs::where('device_code', $oldDevice['device_code'])->first();
+            $isPermanentVip = $flowerUser && $flowerUser['vip_type'] === 'permanent-vip' ? 1 : 0;
+            $leftTime = $oldDevice['free_vip_expired'] - $now > 0 ? $oldDevice['free_vip_expired'] - $now : 0;
+            $currentTime = $user->vip_expired > $now ? $user->vip_expired : $now;
+            $user->vip_expired = $currentTime + $leftTime;
+            $user->is_permanent_vip = $isPermanentVip;
+            $user->save();
+            $oldDevice->transfered = 1;
+            $oldDevice->save();
+            DB::commit();
+            return response()->json(['msg' => '新版SEE VIP 到期时间为：' . date('Y-m-d H:i', $user->vip_expired), 'data' => $email, 'code' => 200]);
+        }catch (\Exception $e){
+            DB::rollBack();
+            return response()->json(['msg' => $e->getMessage(), 'data' => '', 'code' => 202]);
+        }
     }
 
 }

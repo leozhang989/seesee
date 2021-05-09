@@ -80,3 +80,9 @@ Route::get('group-gift/{token}', 'ResetPwdController@groupGiftPage');
 //Route::get('group-gift/{token}', function () {
 //    return view('group-gift');
 //});
+
+//seesee有账号VIP转移
+Route::get('see/account-zhuanyi/{uuid}', 'AppusersController@seeAccountZhuanyiPage');
+
+//seese设备VIP转移
+Route::get('see/device-zhuanyi/{uuid}/{token}', 'AppusersController@seeDeviceZhuanyiPage');
