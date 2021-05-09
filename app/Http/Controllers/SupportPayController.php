@@ -25,7 +25,7 @@ class SupportPayController extends Controller
     public function rechargeList(Request $request){
         if($request->filled('uuid')){
             $uuid = $request->input('uuid', '');
-            if($uuid == '1000047'){
+            if(in_array($uuid, ['1000047', '1023492'])){
                 //see data
                 $seeSingle = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '1')->where('creater', '1011779')->where('res_status', 1)->count();
                 $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->where('creater', '1011779')->where('res_status', 1)->count();
@@ -77,7 +77,7 @@ class SupportPayController extends Controller
                 return response()->json(['msg' => '已达到每日支付数量上限', 'data' => [], 'code' => 202]);
 
             $length = strlen($userUuid);
-            if (in_array($uuid, ['1011779', '1000047', '1000092']) && $userUuid && in_array($request->input('product'), [0, 1, 6, 12]) && in_array($length, [7, 8, 10])) {
+            if (in_array($uuid, ['1011779', '1000047', '1000092', '1023492']) && $userUuid && in_array($request->input('product'), [0, 1, 6, 12]) && in_array($length, [7, 8, 10])) {
                 $user = $good = [];
                 if ($length == 7) {
                     //同一个账号一天只能开一次
@@ -239,8 +239,8 @@ class SupportPayController extends Controller
     public function settlement(Request $request){
         if($request->filled('uuid')){
             $uuid = $request->input('uuid', 0);
-            if(in_array($uuid, ['1000047', '1000092'])){
-                $tUuids = ['1011779', '1000047', '1000092'];
+            if(in_array($uuid, ['1000047', '1000092', '1023492'])){
+                $tUuids = ['1011779', '1000047', '1000092', '1023492'];
                 $seeRes = RechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->get();
                 $fengRes = FengRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->get();
                 $flowerRes = FlowerRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Flower')->where('res_status', 1)->where('is_dealed', 0)->get();
