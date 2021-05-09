@@ -100,10 +100,10 @@ class AppusersController extends Controller
                 if($request->input('version') != 3) {
                     $newNotice = 1;
                     if(empty($deviceInfo['uid'])){
-                        $token = md5($uuid . 'seedevicezhuanyi');
-                        $noticeUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $uuid, 'token' => $token]) ? : '';
+                        $token = md5($deviceInfo['uuid'] . 'seedevicezhuanyi');
+                        $noticeUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $deviceInfo['uuid'], 'token' => $token]) ? : '';
                     }else{
-                        $noticeUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $uuid]) ? : '';
+                        $noticeUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $deviceInfo['uuid']]) ? : '';
                     }
                 }else{
                     $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
