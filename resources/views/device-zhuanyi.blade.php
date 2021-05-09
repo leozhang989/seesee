@@ -152,7 +152,7 @@
     <p><strong>1、下载新版See TestFlight版本</strong></p>
     <div class="download-cont">
         <div class="download-btn">
-            <a class="download-link" href="#">下载 新版本See</a>
+            <a class="download-link" href="https://testflight.apple.com/join/KoHLIzlw">下载 新版本See</a>
         </div>
     </div>
     <p><strong>2、转移操作：</strong></p>

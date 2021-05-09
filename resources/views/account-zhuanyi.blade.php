@@ -111,7 +111,7 @@
     <p>您已注册过See APP账号，您的账号是 <strong>{{$email}}</strong>，请在升级APP后直接登录新APP即可继续使用。</p>
     <div class="download-cont">
         <div class="download-btn">
-            <a class="download-link" href="#">下载 新版本See</a>
+            <a class="download-link" href="https://testflight.apple.com/join/KoHLIzlw">下载 新版本See</a>
         </div>
     </div>
     <p>忘记密码的直接找回密码就可以了，注意查看邮件垃圾箱。</p>
