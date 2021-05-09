@@ -356,7 +356,10 @@ class AppusersController extends Controller
             $testFlight['content'] = $testflightContent;
 
             //展示公告
-            $announcement = Announcement::where('online', 1)->orderBy('id', 'desc')->first();
+            if($request->input('version') == 3)
+                $announcement = Announcement::find(4);
+            else
+                $announcement = Announcement::find(3);
             $userAnnouncement['online'] = 0;
             $userAnnouncement['content'] = $userAnnouncement['redirect_url'] = '';
             if($announcement){
