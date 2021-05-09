@@ -353,6 +353,14 @@ class AppusersController extends Controller
                 $userAnnouncement['online'] = $announcement['online'] ? 1 : 0;
                 $userAnnouncement['content'] = $announcement['content'] ? : '';
                 $userAnnouncement['redirect_url'] = $announcement['redirect_url'] ? : '';
+                if($announcement['id'] == 4){
+                    if(empty($deviceInfo['uid'])){
+                        $token = md5($deviceInfo['uuid'] . 'seedevicezhuanyi');
+                        $userAnnouncement['redirect_url'] = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $deviceInfo['uuid'], 'token' => $token]) ? : '';
+                    }else{
+                        $userAnnouncement['redirect_url'] = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $deviceInfo['uuid']]) ? : '';
+                    }
+                }
             }
 
             $totalExpiredTime = 0;
