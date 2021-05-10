@@ -176,9 +176,9 @@ class AppusersController extends Controller
                             return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
                     }
                     //小花转移的永久VIP用户只能登录一台设备
-                    $transferUser = FlowerTransferLogs::where('email', trim($request->input('email')))->where('vip_type', 'permanent-vip')->first();
-                    if($transferUser && $transferUser['device_code'] !== $request->input('device_code'))
-                        return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
+//                    $transferUser = FlowerTransferLogs::where('email', trim($request->input('email')))->where('vip_type', 'permanent-vip')->first();
+//                    if($transferUser && $transferUser['device_code'] !== $request->input('device_code'))
+//                        return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
 
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
                     if ($deviceInfo) {
