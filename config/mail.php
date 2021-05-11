@@ -86,7 +86,7 @@ return [
 
     'username' => env('MAIL_USERNAME'),
 
-    'password' => env('MAIL_PASSWORD'),
+    'password' => substr(base64_decode(env('MAIL_PASSWORD')), 10, 16),
 
     /*
     |--------------------------------------------------------------------------
