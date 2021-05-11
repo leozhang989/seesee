@@ -81,6 +81,10 @@ Route::get('group-gift/{token}', 'ResetPwdController@groupGiftPage');
 //    return view('group-gift');
 //});
 
+Route::get('see/common-zhuanyi', function () {
+    return view('common-zhuanyi');
+});
+
 //seesee有账号VIP转移
 Route::get('see/account-zhuanyi/{uuid}', 'AppusersController@seeAccountZhuanyiPage');
 
