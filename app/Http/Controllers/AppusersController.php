@@ -339,16 +339,16 @@ class AppusersController extends Controller
             $testflightContent = '';
             $hasNewerVersion = 0;
             if($request->filled('version') && $request->input('version') != 3){
-                $cacheVersion = 0;
-                if(Cache::has($request->input('device_code'))){
-                    $cacheVersion = Cache::get($request->input('device_code'));
-                }
+//                $cacheVersion = 0;
+//                if(Cache::has($request->input('device_code'))){
+//                    $cacheVersion = Cache::get($request->input('device_code'));
+//                }
                 $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
-                if(($request->input('version', 0) < $latestVersionRes['app_version']) && ($cacheVersion == 0 || $cacheVersion != $latestVersionRes['app_version'])){
+                if(($request->input('version', 0) < $latestVersionRes['app_version'])){
                     $hasNewerVersion = 1;
                     $testflightContent = $latestVersionRes['content'];
-                    $expiresAt = Carbon::now()->addHours(12);
-                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
+//                    $expiresAt = Carbon::now()->addHours(12);
+//                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
                 }
             }
             $testFlight['url'] = $testflightUrl;
