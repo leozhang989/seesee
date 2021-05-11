@@ -32,7 +32,7 @@ class ResetPwdController extends Controller
             $res = ResetEmailLog::create($insertData);
             if ($res) {
                 $to = $request->input('email');
-                $subject = '风速帐号密码重置';
+                $subject = 'See帐号密码重置';
                 $status = SendEMail::send($to, $subject, $resetUrl);
                 if ($status)
                     return response()->json(['msg' => '发送成功', 'data' => $res['id'], 'code' => 200]);
