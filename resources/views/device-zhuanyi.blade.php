@@ -157,12 +157,12 @@
     </div>
     <p><strong>2、转移操作：</strong></p>
     <p>你的See ID为：<strong>{{$uuid}}</strong>，转移后将获得 <strong>{{$time}}</strong> 天See VIP，谢谢支持。</p>
-    <p><strong>请输入新版See账号（新版See注册完成的账号）：</strong></p>
+    <p><strong>请输入新版See邮箱账号（一定是邮箱哦！）：</strong></p>
     <div class="email-cont">
         <div class="email-input">
-            <input type="text" name="see-uuid" id="see-uuid" value="" placeholder="请输入新版See账号"/>
+            <input type="text" name="see-uuid" id="see-uuid" value="" placeholder="请输入新版See邮箱账号"/>
         </div>
-        <p class="error-notice">请输入新版See账号</p>
+        <p class="error-notice">请输入新版See邮箱账号（新版See注册完成的邮箱账号）</p>
         <p class="success-notice"></p>
         <p class="waiting-notice">转移操作中，请勿关闭页面...</p>
     </div>
