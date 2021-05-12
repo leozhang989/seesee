@@ -354,6 +354,12 @@ class AppusersController extends Controller
                 if(($request->input('version', 0) < $latestVersionRes['app_version'])){
                     $hasNewerVersion = 1;
                     $testflightContent = $latestVersionRes['content'];
+                    if(empty($deviceInfo['uid'])){
+                        $token = md5($deviceInfo['uuid'] . 'seedevicezhuanyi');
+                        $testflightUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $deviceInfo['uuid'], 'token' => $token]) ? : '';
+                    }else{
+                        $testflightUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $deviceInfo['uuid']]) ? : '';
+                    }
 //                    $expiresAt = Carbon::now()->addHours(12);
 //                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
                 }
