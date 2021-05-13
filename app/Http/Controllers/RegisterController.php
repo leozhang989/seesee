@@ -38,7 +38,7 @@ class RegisterController extends Controller
             if (empty($deviceRes)) {
                 $freeDays = SystemSetting::getValueByName('freeDays');
                 //查询关联表是否已经有老设备的关联记录
-                $deviceResRela = Schema::hasTable('devices_uuid_relations') ? devicesUuidRelations::where('device_code', $request->input('device_code'))->first() : [];
+                $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
                 if($deviceResRela){
                     $uuid = $deviceResRela['uuid'];
                     $freeVipExpired = $deviceResRela['free_vip_expired'] > $now ? $deviceResRela['free_vip_expired'] : $now;
@@ -48,14 +48,12 @@ class RegisterController extends Controller
                         return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
 
                     $freeVipExpired = strtotime('+' . $freeDays . ' day');
-                    if(Schema::hasTable('devices_uuid_relations')) {
-                        $deviceResRela = devicesUuidRelations::create([
-                            'uuid' => $uuid,
-                            'device_code' => $request->input('device_code'),
-                            'free_vip_expired' => $freeVipExpired,
-                            'uid' => 0
-                        ]);
-                    }
+                    $deviceResRela = devicesUuidRelations::create([
+                        'uuid' => $uuid,
+                        'device_code' => $request->input('device_code'),
+                        'free_vip_expired' => $freeVipExpired,
+                        'uid' => 0
+                    ]);
                 }
                 $deviceRes = Device::create([
                     'uuid' => $uuid,
@@ -68,9 +66,9 @@ class RegisterController extends Controller
             }
 
             //小花永久转移会员无需注册
-            $transferUser = FlowerTransferLogs::where('device_code', $request->input('device_code'))->where('vip_type', 'permanent-vip')->first();
-            if($transferUser)
-                return response()->json(['data' => [], 'msg' => '永久会员仅限一台设备使用，暂不支持注册账号', 'code' => 202]);
+//            $transferUser = FlowerTransferLogs::where('device_code', $request->input('device_code'))->where('vip_type', 'permanent-vip')->first();
+//            if($transferUser)
+//                return response()->json(['data' => [], 'msg' => '永久会员仅限一台设备使用，暂不支持注册账号', 'code' => 202]);
 
 //            $today = strtotime(date('Y-m-d', $now));
             //首次注册时分配广告会员分组

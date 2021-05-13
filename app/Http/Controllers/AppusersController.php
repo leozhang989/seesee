@@ -180,6 +180,24 @@ class AppusersController extends Controller
 //                    if($transferUser && $transferUser['device_code'] !== $request->input('device_code'))
 //                        return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
 
+                    //永久会员限制一台设备
+                    if($user['is_permanent_vip'] == 1){  //一定是转移过的 一定有一台设备
+                        $deviceData = Device::where('uid', $user['id'])->orderBy('created_at', 'DESC')->first();
+                        if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
+                            return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
+                        }
+                    }else{
+                        $transferRes = FlowerTransferLogs::where('email', $user['email'])->where('vip_type', 'permanent-vip')->first();
+                        if($transferRes){
+                            $user->is_permanent_vip = 1;
+                            $user->save();
+                            $deviceData = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('created_at', 'DESC')->first();
+                            if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
+                                return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
+                            }
+                        }
+                    }
+
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
                     if ($deviceInfo) {
                         $uuid = $deviceInfo['uuid'];
@@ -188,7 +206,7 @@ class AppusersController extends Controller
                     } else {
                         $freeDays = SystemSetting::getValueByName('freeDays');
                         //查询关联表是否已经有老设备的关联记录
-                        $deviceRes = Schema::hasTable('devices_uuid_relations') ? devicesUuidRelations::where('device_code', $request->input('device_code'))->first() : [];
+                        $deviceRes = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
                         if($deviceRes){
                             $uuid = $deviceRes['uuid'];
                             $freeVipExpired = $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : $now;
@@ -198,14 +216,12 @@ class AppusersController extends Controller
                                 return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
 
                             $freeVipExpired = strtotime('+' . $freeDays . ' day');
-                            if(Schema::hasTable('devices_uuid_relations')) {
-                                devicesUuidRelations::create([
-                                    'uuid' => $uuid,
-                                    'device_code' => $request->input('device_code'),
-                                    'free_vip_expired' => $freeVipExpired,
-                                    'uid' => $user['id']
-                                ]);
-                            }
+                            devicesUuidRelations::create([
+                                'uuid' => $uuid,
+                                'device_code' => $request->input('device_code'),
+                                'free_vip_expired' => $freeVipExpired,
+                                'uid' => $user['id']
+                            ]);
                         }
                         $deviceInfo = Device::create([
                             'uuid' => $uuid,
