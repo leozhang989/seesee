@@ -202,6 +202,7 @@ class AppusersController extends Controller
                     if ($deviceInfo) {
                         $uuid = $deviceInfo['uuid'];
                         $deviceInfo->uid = $user['id'];
+                        $deviceInfo->device_model = trim($request->input('model', ''));
                         $deviceInfo->save();
                     } else {
                         $freeDays = SystemSetting::getValueByName('freeDays');

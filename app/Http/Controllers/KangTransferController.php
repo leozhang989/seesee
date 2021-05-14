@@ -53,7 +53,10 @@ class KangTransferController extends Controller
                 $this->checkDeviceModel($payTime, [$device]);
             }else{
                 //判断设备型号对不对
-                $devices = Device::where('uid', $user['id'])->where('transfered', 1)->get()->toArray();
+                $devices = Device::where('uid', $user['id'])->get()->toArray();
+                if(empty($devices))
+                    throw new \Exception('未查询到用户设备，稍后重试');
+
                 $deviceId = $this->checkDeviceModel($payTime, $devices);
                 $device = Device::find($deviceId);
             }
@@ -83,9 +86,6 @@ class KangTransferController extends Controller
     }
 
     protected function checkDeviceModel(string $payTime, array $devices){
-        if(empty($payTime) || empty($devices))
-            throw new \Exception('查询设备类型参数错误');
-
         $userPayTime = date('Y-m-d', strtotime($payTime));
         $correct = 0;
         $newestTime = '0000-00-00';
@@ -107,7 +107,7 @@ class KangTransferController extends Controller
             throw new \Exception('用户设备类型中有iPhone，需要确认设备类型');
 
         if(empty($correct))
-            throw new \Exception('用户没有满足要求的设备');
+            throw new \Exception('用户没有满足要求的设备型号');
 
         return $correct;
     }
