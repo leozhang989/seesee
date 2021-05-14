@@ -78,7 +78,7 @@ class KangTransferController extends Controller
                 $user->save();
             }
             DB::commit();
-            return response()->json(['msg' => '开通成功，到期时间是：', 'data' => '', 'code' => 200]);
+            return response()->json(['msg' => '开通成功，到期时间是：' . date('Y-m-d H:i:s', $user['vip_expired']), 'data' => '', 'code' => 200]);
         }catch (\Exception $e){
             DB::rollBack();
             return response()->json(['msg' => $e->getMessage(), 'data' => '', 'code' => 202]);
