@@ -90,3 +90,7 @@ Route::get('see/account-zhuanyi/{uuid}', 'AppusersController@seeAccountZhuanyiPa
 
 //seese设备VIP转移
 Route::get('see/device-zhuanyi/{uuid}/{token}', 'AppusersController@seeDeviceZhuanyiPage');
+
+
+//kang VIP转移
+Route::get('kang/transfer-page/uht1i7xlm6wfs8ob', 'KangTransferController@kangTransferPage');
