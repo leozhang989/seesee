@@ -92,7 +92,7 @@ class KangTransferController extends Controller
         $isIphone = 0;
         $typeString = '';
         foreach ($devices as $device) {
-            $typeString .= $device['device_model' ? $device['device_model'] . ' ' : '';
+            $typeString .= $device['device_model'] ? $device['device_model'] . ' ' : '';
             if(isset($device['device_model']) && $device['device_model'] === 'iPhone'){
                 $isIphone = 1;
                 continue;
