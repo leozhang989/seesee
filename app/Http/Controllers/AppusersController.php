@@ -414,7 +414,7 @@ class AppusersController extends Controller
                 $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
 
             $isSupportPay = 0;
-            if(in_array($deviceInfo['uuid'], ['1023492']))
+            if(in_array($deviceInfo['uuid'], ['1023492', '1027653']))
                 $isSupportPay = 1;
 
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
