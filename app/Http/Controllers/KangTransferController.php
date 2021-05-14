@@ -70,7 +70,7 @@ class KangTransferController extends Controller
                 'kang_pay_time' => date('Y-m-d H:i:s', strtotime($payTime)),
                 'kang_device_code' => $code ?? ''
             ];
-            $newlog = TransferLogs::create($logData);
+            $newlog = FlowerTransferLogs::create($logData);
             if($newlog){
                 $start = $user->vip_expired > $now ? $user->vip_expired : $now;
                 $user->vip_expired = strtotime('+10 years', $start);
