@@ -89,7 +89,7 @@ class RegisterController extends Controller
                 'password' => MD5($request->input('password')),
                 'phone' => '',
                 'free_vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
-                'vip_expired' => 0,
+                'vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
                 'vip_left_time' => 0
             ];
             $userInfo = Appuser::create($insertData);
