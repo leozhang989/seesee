@@ -182,7 +182,7 @@ class AppusersController extends Controller
 
                     //永久会员限制一台设备
                     if($user['is_permanent_vip'] == 1){  //一定是转移过的 一定有一台设备
-                        $deviceData = Device::where('uid', $user['id'])->orderBy('created_at', 'DESC')->first();
+                        $deviceData = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('created_at', 'DESC')->first();
                         if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
                             return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
                         }
