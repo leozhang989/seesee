@@ -90,7 +90,9 @@ class KangTransferController extends Controller
         $correct = 0;
         $newestTime = '0000-00-00';
         $isIphone = 0;
+        $typeString = '';
         foreach ($devices as $device) {
+            $typeString .= $device['device_model'] . ' ';
             if(isset($device['device_model']) && $device['device_model'] === 'iPhone'){
                 $isIphone = 1;
                 continue;
@@ -106,8 +108,10 @@ class KangTransferController extends Controller
         if($isIphone)
             throw new \Exception('用户设备类型中有iPhone，需要确认设备类型');
 
-        if(empty($correct))
-            throw new \Exception('用户没有满足要求的设备型号');
+        if(empty($correct)){
+            $ext = $typeString ? '用户当前的机型有：' . $typeString : '';
+            throw new \Exception('用户没有满足要求的设备型号' . $ext);
+        }
 
         return $correct;
     }
