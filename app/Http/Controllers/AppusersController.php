@@ -354,9 +354,9 @@ class AppusersController extends Controller
                     }
                 }else{
                     $cacheVersion = 0;
-                    if (Cache::has($request->input('device_code'))) {
-                        $cacheVersion = Cache::get($request->input('device_code'));
-                    }
+//                    if (Cache::has($request->input('device_code'))) {
+//                        $cacheVersion = Cache::get($request->input('device_code'));
+//                    }
                     if (($request->input('version', 0) < $latestVersionRes['app_version']) && empty($cacheVersion)) {
                         $hasNewerVersion = 1;
                         $testflightContent = $latestVersionRes['content'];
