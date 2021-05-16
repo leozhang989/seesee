@@ -97,7 +97,7 @@ class AppusersController extends Controller
             $nowDate = date('Y-m-d H:i:s', $now);
             $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
             if($latestNotice) {
-                if($request->input('version') != 3) {
+                if($request->input('version') != 3 && $request->input('version') != 4) {
                     $newNotice = 1;
                     if(empty($deviceInfo['uid'])){
                         $token = md5($deviceInfo['uuid'] . 'seedevicezhuanyi');
@@ -236,7 +236,7 @@ class AppusersController extends Controller
                     }
 
                     //记录转移
-                    if ($request->input('version') == 3 && $deviceInfo['transfered'] === 0) {
+                    if (($request->input('version') == 3 || $request->input('version') == 4) && $deviceInfo['transfered'] === 0) {
                         $deviceInfo->transfered = 1;
                         $deviceInfo->transfered_time = $now;
                         $deviceInfo->save();
@@ -252,7 +252,7 @@ class AppusersController extends Controller
                     $today = strtotime(date('Y-m-d', $now));
                     $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
                     if ($latestNotice) {
-                        if($request->input('version') != 3) {
+                        if($request->input('version') != 3 && $request->input('version') != 4) {
                             $newNotice = 1;
                             if(empty($deviceInfo['uid'])){
                                 $token = md5($uuid . 'seedevicezhuanyi');
@@ -339,23 +339,30 @@ class AppusersController extends Controller
             $testflightUrl = SystemSetting::getValueByName('seeTestFlightUrl') ? : '';
             $testflightContent = '';
             $hasNewerVersion = 0;
-            if($request->filled('version') && $request->input('version') != 3){
-//                $cacheVersion = 0;
-//                if(Cache::has($request->input('device_code'))){
-//                    $cacheVersion = Cache::get($request->input('device_code'));
-//                }
+            if($request->filled('version')){
                 $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
-                if(($request->input('version', 0) < $latestVersionRes['app_version'])){
+                if($request->input('version') >= 15 && $request->input('version') <= 30) {
                     $hasNewerVersion = 1;
-                    $testflightContent = $latestVersionRes['content'];
-                    if(empty($deviceInfo['uid'])){
+                    $testflightContent = '亲爱的用户，该版本TestFlight地址失效，我们为大家转移到新TestFlight地址。
+转移通知可在首页消息中心、首页最底部和点击更新按钮查看。
+有任何问题联系xunjie@pm.me';
+                    if (empty($deviceInfo['uid'])) {
                         $token = md5($deviceInfo['uuid'] . 'seedevicezhuanyi');
-                        $testflightUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $deviceInfo['uuid'], 'token' => $token]) ? : '';
-                    }else{
-                        $testflightUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $deviceInfo['uuid']]) ? : '';
+                        $testflightUrl = action('AppusersController@seeDeviceZhuanyiPage', ['uuid' => $deviceInfo['uuid'], 'token' => $token]) ?: '';
+                    } else {
+                        $testflightUrl = action('AppusersController@seeAccountZhuanyiPage', ['uuid' => $deviceInfo['uuid']]) ?: '';
                     }
-//                    $expiresAt = Carbon::now()->addHours(12);
-//                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
+                }else{
+                    $cacheVersion = 0;
+                    if (Cache::has($request->input('device_code'))) {
+                        $cacheVersion = Cache::get($request->input('device_code'));
+                    }
+                    if (($request->input('version', 0) < $latestVersionRes['app_version']) && empty($cacheVersion)) {
+                        $hasNewerVersion = 1;
+                        $testflightContent = $latestVersionRes['content'];
+                        $expiresAt = Carbon::now()->addHours(12);
+                        Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
+                    }
                 }
             }
             $testFlight['url'] = $testflightUrl;
@@ -363,7 +370,7 @@ class AppusersController extends Controller
             $testFlight['content'] = $testflightContent;
 
             //展示公告
-            if($request->input('version') != 3)
+            if($request->input('version') != 3 && $request->input('version') != 4)
                 $announcement = Announcement::find(4);
             else
                 $announcement = Announcement::find(3);
