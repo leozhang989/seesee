@@ -300,7 +300,7 @@ class AppusersController extends Controller
                     $response['testflight']['hasNewer'] = $hasNewerVersion;
                     $response['testflight']['content'] = $testflightContent;
 
-                    if($request->filled('device_identifier', '')){
+                    if($request->filled('device_identifier')){
                         $deviceInfo->device_identifier = $request->input('device_identifier', '');
                         $deviceInfo->save();
                     }
@@ -401,7 +401,7 @@ class AppusersController extends Controller
             if(in_array($deviceInfo['uuid'], ['1023492', '1027653']))
                 $isSupportPay = 1;
 
-            if($request->filled('device_identifier', '')){
+            if($request->filled('device_identifier')){
                 $deviceInfo->device_identifier = $request->input('device_identifier', '');
                 $deviceInfo->save();
             }
