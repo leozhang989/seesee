@@ -358,7 +358,7 @@ class AppusersController extends Controller
                         $cacheVersion = Cache::get($request->input('device_code'));
                     }
                     if (($request->input('version', 0) < $latestVersionRes['app_version']) && empty($cacheVersion)) {
-                        $hasNewerVersion = 0;
+                        $hasNewerVersion = 1;
                         $testflightContent = $latestVersionRes['content'];
                         $expiresAt = Carbon::now()->addHours(12);
                         Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
