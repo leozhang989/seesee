@@ -175,6 +175,11 @@ class RegisterController extends Controller
                 $response['testflight']['hasNewer'] = $hasNewerVersion;
                 $response['testflight']['content'] = $testflightContent;
 
+                if($request->filled('device_identifier', '')){
+                    $deviceRes->device_identifier = $request->input('device_identifier', '');
+                    $deviceRes->save();
+                }
+
                 return response()->json(['data' => $response, 'msg' => '注册成功', 'code' => 200]);
             }
         }

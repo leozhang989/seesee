@@ -300,6 +300,11 @@ class AppusersController extends Controller
                     $response['testflight']['hasNewer'] = $hasNewerVersion;
                     $response['testflight']['content'] = $testflightContent;
 
+                    if($request->filled('device_identifier', '')){
+                        $deviceInfo->device_identifier = $request->input('device_identifier', '');
+                        $deviceInfo->save();
+                    }
+
                     return response()->json(['data' => $response, 'msg' => '登陆成功', 'code' => 200]);
                 }
                 return response()->json(['data' => [], 'msg' => '账号或密码错误', 'code' => 202]);
@@ -388,6 +393,11 @@ class AppusersController extends Controller
             $isSupportPay = 0;
             if(in_array($deviceInfo['uuid'], ['1023492', '1027653']))
                 $isSupportPay = 1;
+
+            if($request->filled('device_identifier', '')){
+                $deviceInfo->device_identifier = $request->input('device_identifier', '');
+                $deviceInfo->save();
+            }
 
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }

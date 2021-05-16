@@ -8,6 +8,6 @@ class Device extends Model
 {
     protected $table = 'devices';
 
-    protected $fillable = ['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired', 'uid', 'transfered', 'transfered_time', 'device_model'];
+    protected $fillable = ['uuid', 'device_code', 'is_master', 'status', 'free_vip_expired', 'uid', 'transfered', 'transfered_time', 'device_model', 'device_identifier'];
 
 }
