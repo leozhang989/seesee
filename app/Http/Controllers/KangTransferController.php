@@ -6,6 +6,7 @@ namespace App\Http\Controllers;
 use App\Models\Appuser;
 use App\Models\Device;
 use App\Models\DeviceTypeMaps;
+use App\Models\DeviceIdentifierMaps;
 use App\Models\FlowerTransferLogs;
 use App\Models\SystemSetting;
 use App\Models\TransferLogs;
@@ -89,22 +90,22 @@ class KangTransferController extends Controller
         $userPayTime = date('Y-m-d', strtotime($payTime));
         $correct = 0;
         $newestTime = '0000-00-00';
-        $isIphone = 0;
+        $empty = 0;
         foreach ($devices as $device) {
-            if(isset($device['device_model']) && $device['device_model'] === 'iPhone'){
-                $isIphone = 1;
+            if(empty($device['device_identifier'])){
+                $empty = 1;
                 continue;
             }
 
-            $mapDevice = DeviceTypeMaps::where('device_type', $device['device_model'])->where('starttime', '<=', $userPayTime)->first();
+            $mapDevice = DeviceIdentifierMaps::where('device_identifier', $device['device_identifier'])->where('starttime', '<=', $userPayTime)->first();
             if($mapDevice && ($mapDevice['starttime'] > $newestTime)) {
-                $isIphone = 0;
+                $empty = 0;
                 $newestTime = $mapDevice['starttime'];
                 $correct = $mapDevice['id'];
             }
         }
-        if($isIphone)
-            throw new \Exception('用户设备类型中有iPhone，需要确认设备类型');
+        if($empty)
+            throw new \Exception('用户设备类型未获取到，需要人工确认设备类型');
 
         if(empty($correct))
             throw new \Exception('用户没有满足要求的设备');
