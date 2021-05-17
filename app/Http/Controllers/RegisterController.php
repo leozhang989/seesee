@@ -89,7 +89,7 @@ class RegisterController extends Controller
                 'password' => MD5($request->input('password')),
                 'phone' => '',
                 'free_vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
-                'vip_expired' => 0,
+                'vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
                 'vip_left_time' => 0
             ];
             $userInfo = Appuser::create($insertData);
@@ -174,6 +174,11 @@ class RegisterController extends Controller
                 $response['testflight']['leftDays'] = $leftDays;
                 $response['testflight']['hasNewer'] = $hasNewerVersion;
                 $response['testflight']['content'] = $testflightContent;
+
+                if($request->filled('device_identifier')){
+                    $deviceRes->device_identifier = $request->input('device_identifier', '');
+                    $deviceRes->save();
+                }
 
                 return response()->json(['data' => $response, 'msg' => '注册成功', 'code' => 200]);
             }
