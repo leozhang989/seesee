@@ -103,10 +103,10 @@ class KangTransferController extends Controller
             $typeString .= $userDeviceType['device_type'] ? $userDeviceType['device_type'] . ' ' : '';
 
             $mapDevice = DeviceIdentifierMaps::where('device_identifier', $device['device_identifier'])->where('starttime', '<=', $userPayTime)->first();
-            if($mapDevice && ($mapDevice['starttime'] > $newestTime)) {
+            if($mapDevice && (strtotime($mapDevice['starttime']) > strtotime($newestTime))) {
                 $empty = 0;
                 $newestTime = $mapDevice['starttime'];
-                $correct = $mapDevice['id'];
+                $correct = $device['id'];
             }
         }
         if($empty)
