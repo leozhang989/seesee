@@ -33,9 +33,11 @@ class KangTransferController extends Controller
                 throw new \Exception('时间格式错误');
 
             $now = time();
-            $devicelog = FlowerTransferLogs::where('kang_device_code', $code)->first();
-            if($devicelog)
-                throw new \Exception('这台康设备已经转移过了');
+            if($code) {
+                $devicelog = FlowerTransferLogs::where('kang_device_code', $code)->first();
+                if ($devicelog)
+                    throw new \Exception('这台康设备已经转移过了');
+            }
 
             $user = Appuser::where('email', $account)->first();
             if(empty($user)){
