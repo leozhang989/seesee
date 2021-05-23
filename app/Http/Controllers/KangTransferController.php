@@ -26,7 +26,7 @@ class KangTransferController extends Controller
             if(empty($account) || empty($payTime) || empty($pwd))
                 throw new \Exception('参数不完整');
 
-            if($pwd !== 'qwerty123')
+            if($pwd !== '889900')
                 throw new \Exception('admin密码错误');
 
             if(!strtotime($payTime))
