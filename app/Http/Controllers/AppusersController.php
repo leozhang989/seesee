@@ -148,12 +148,19 @@ class AppusersController extends Controller
     }
 
     protected function generateUUID(){
-        $lastUser = DB::table('devices')
-            ->latest()
-            ->first();
-        $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
-        $length = strlen($lastUuid) - 1;
-        $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
+        $uuid = '';
+        for ($x=0; $x<=5; $x++){
+            $lastUser = DB::table('devices')
+                ->latest()
+                ->first();
+            $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
+            $length = strlen($lastUuid) - 1;
+            $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
+            $ex = Device::where('uuid', $uuid)->first();
+            if(empty($ex))
+                break;
+        }
+
         return $uuid;
     }
 
