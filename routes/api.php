@@ -91,8 +91,6 @@ Route::post('/set-vip', 'AppusersController@setFlowerVipApi');
 //query flower vip
 Route::post('/query-flower-vip', 'AppusersController@queryFlowerVip');
 
-//server list
 Route::get('/see/transfer/{email}/{uuid}/{token}', 'AppusersController@seeDeviceZhuanyiApi');
-
 
 Route::get('/kang/transfer/{account}/{payTime}/{pwd}/{code?}', 'KangTransferController@kangTransferApi');

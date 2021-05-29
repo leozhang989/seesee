@@ -672,7 +672,7 @@ class AppusersController extends Controller
                     if (empty($serverGroup))
                         continue;
 
-                    $randomValue = random_int(1, $serverGroupRate);
+                    $randomValue = $serverGroupRate >= 1 ? random_int(1, $serverGroupRate) : 0;
                     $total = 0;
                     foreach ($serverGroup as $k => $server) {
                         $total += $server['random_rate'];
