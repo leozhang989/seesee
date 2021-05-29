@@ -669,10 +669,10 @@ class AppusersController extends Controller
                         $query->where('appname', $appname)
                             ->orWhere('appname', '');
                     })->where('server_gid', $gid)->orderBy('id')->get(['random_rate', 'id']);
-                    if (empty($serverGroup))
+                    if (empty($serverGroup) || empty($serverGroupRate))
                         continue;
 
-                    $randomValue = $serverGroupRate >= 1 ? random_int(1, $serverGroupRate) : 0;
+                    $randomValue = random_int(1, $serverGroupRate);
                     $total = 0;
                     foreach ($serverGroup as $k => $server) {
                         $total += $server['random_rate'];
