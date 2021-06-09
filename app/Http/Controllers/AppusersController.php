@@ -193,17 +193,18 @@ class AppusersController extends Controller
                         if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
                             return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
                         }
-                    }else{
-                        $transferRes = FlowerTransferLogs::where('email', $user['email'])->where('vip_type', 'permanent-vip')->first();
-                        if($transferRes){
-                            $user->is_permanent_vip = 1;
-                            $user->save();
-                            $deviceData = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('created_at', 'DESC')->first();
-                            if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
-                                return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
-                            }
-                        }
                     }
+//                    else{
+//                        $transferRes = FlowerTransferLogs::where('email', $user['email'])->where('vip_type', 'permanent-vip')->first();
+//                        if($transferRes){
+//                            $user->is_permanent_vip = 1;
+//                            $user->save();
+//                            $deviceData = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('created_at', 'DESC')->first();
+//                            if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
+//                                return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
+//                            }
+//                        }
+//                    }
 
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
                     if ($deviceInfo) {
