@@ -30,13 +30,13 @@ class SupportPayController extends Controller
                 $seeSingle = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '1')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
                 $seeHalf = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '6')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
                 $seeOne = RechargeLogs::where('is_dealed', 0)->where('app_name', 'See')->where('product', '12')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
-                $seeRechargeList = RechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+                $seeRechargeList = RechargeLogs::whereIn('creater', ['1011779', '1027653'])->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                 //flower data
-                $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
-                $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
-                $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
-                $flowerRechargeList = FlowerRechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+//                $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
+//                $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
+//                $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
+//                $flowerRechargeList = FlowerRechargeLogs::where('creater', '1011779')->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                 //feng data
                 $fengSingle = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '1')->whereIn('creater', ['1011779', '1027653'])->where('res_status', 1)->count();
@@ -45,16 +45,17 @@ class SupportPayController extends Controller
                 $fengRechargeList = FengRechargeLogs::whereIn('creater', ['1011779', '1027653'])->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                 $successMsg = '代付统计数据，获取成功！';
-                $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList, $flowerRechargeList);
+                $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
+//                $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList, $flowerRechargeList);
                 $data['seeGoods_1'] = $seeSingle;
                 $data['seeGoods_6'] = $seeHalf;
                 $data['seeGoods_12'] = $seeOne;
                 $data['fengGoods_1'] = $fengSingle;
                 $data['fengGoods_6'] = $fengHalf;
                 $data['fengGoods_12'] = $fengOne;
-                $data['flowerGoods_0'] = $flowerP;
-                $data['flowerGoods_1'] = $flowerOne;
-                $data['flowerGoods_6'] = $flowerHalf;
+//                $data['flowerGoods_0'] = $flowerP;
+//                $data['flowerGoods_1'] = $flowerOne;
+//                $data['flowerGoods_6'] = $flowerHalf;
                 return response()->json(['data' => $data, 'msg' => $successMsg, 'code' => 200]);
             }
             return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
@@ -70,8 +71,9 @@ class SupportPayController extends Controller
             $todayDate = date('Y-m-d 00:00:00', $now);
             $seeRechargeLogAmount = RechargeLogs::where('creater', $uuid)->where('created_at', '>=', $todayDate)->count();
             $fengRechargeLogAmount = FengRechargeLogs::where('creater', $uuid)->where('created_at', '>=', $todayDate)->count();
-            $flowerRechargeLogAmount = FlowerRechargeLogs::where('creater', $uuid)->where('created_at', '>=', $todayDate)->count();
-            $totalAmount = $seeRechargeLogAmount + $fengRechargeLogAmount + $flowerRechargeLogAmount;
+//            $flowerRechargeLogAmount = FlowerRechargeLogs::where('creater', $uuid)->where('created_at', '>=', $todayDate)->count();
+            $totalAmount = $seeRechargeLogAmount + $fengRechargeLogAmount;
+//            $totalAmount = $seeRechargeLogAmount + $fengRechargeLogAmount + $flowerRechargeLogAmount;
             $rechargeSettings = SystemSetting::getValueByName('rechargeLimitPerDay') ? : 100;
             if($totalAmount >= $rechargeSettings)
                 return response()->json(['msg' => '已达到每日支付数量上限', 'data' => [], 'code' => 202]);
@@ -90,20 +92,20 @@ class SupportPayController extends Controller
                     $good = Goods::where('status', 1)->where('service_date', $request->input('product'))->first();
                 }
 
-                if ($length == 8) {
-                    if($request->input('product') == 12)
-                        return response()->json(['msg' => '小花产品暂无开通一年包权限', 'data' => [], 'code' => 202]);
-                    //同一个账号一天只能开一次
-                    $flowerRecord = FlowerRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
-                    if($flowerRecord)
-                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
-
-                    $user = FlowerUser::where('uuid', $userUuid)->first();
-                    if($user->is_permanent_vip == 1)
-                        return response()->json(['msg' => '该用户已开通过永久VIP，请确认是否操作？', 'data' => [], 'code' => 202]);
-
-                    $good = FlowerGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
-                }
+//                if ($length == 8) {
+//                    if($request->input('product') == 12)
+//                        return response()->json(['msg' => '小花产品暂无开通一年包权限', 'data' => [], 'code' => 202]);
+//                    //同一个账号一天只能开一次
+//                    $flowerRecord = FlowerRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
+//                    if($flowerRecord)
+//                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
+//
+//                    $user = FlowerUser::where('uuid', $userUuid)->first();
+//                    if($user->is_permanent_vip == 1)
+//                        return response()->json(['msg' => '该用户已开通过永久VIP，请确认是否操作？', 'data' => [], 'code' => 202]);
+//
+//                    $good = FlowerGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
+//                }
 
                 if($length == 10){
                     //同一个账号一天只能开一次
@@ -136,24 +138,24 @@ class SupportPayController extends Controller
                         $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
                         $user->vip_expired = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
                     }
-                    if($length == 8) {
-                        FlowerRechargeLogs::create([
-                            'creater' => $uuid,
-                            'uuid' => $userUuid,
-                            'product' => $request->input('product'),
-                            'price' => $good['price'],
-                            'is_dealed' => 0,
-                            'res_status' => 1,
-                            'app_name' => 'Flower',
-                            'settlement_id' => 0
-                        ]);
-                        if($request->input('product') == 0){
-                            $user->is_permanent_vip = 1;
-                        }else{
-                            $vipExpireAt = $user->paid_vip_expireat > $now ? $user->paid_vip_expireat : $now;
-                            $user->paid_vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
-                        }
-                    }
+//                    if($length == 8) {
+//                        FlowerRechargeLogs::create([
+//                            'creater' => $uuid,
+//                            'uuid' => $userUuid,
+//                            'product' => $request->input('product'),
+//                            'price' => $good['price'],
+//                            'is_dealed' => 0,
+//                            'res_status' => 1,
+//                            'app_name' => 'Flower',
+//                            'settlement_id' => 0
+//                        ]);
+//                        if($request->input('product') == 0){
+//                            $user->is_permanent_vip = 1;
+//                        }else{
+//                            $vipExpireAt = $user->paid_vip_expireat > $now ? $user->paid_vip_expireat : $now;
+//                            $user->paid_vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
+//                        }
+//                    }
                     if($length == 10) {
                         FengRechargeLogs::create([
                             'creater' => $uuid,
@@ -196,10 +198,10 @@ class SupportPayController extends Controller
                     $seeRechargeList = RechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     //flower data
-                    $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->where('creater', $uuid)->where('res_status', 1)->count();
-                    $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
-                    $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
-                    $flowerRechargeList = FlowerRechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
+//                    $flowerP= FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '0')->where('creater', $uuid)->where('res_status', 1)->count();
+//                    $flowerOne = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
+//                    $flowerHalf = FlowerRechargeLogs::where('is_dealed', 0)->where('app_name', 'Flower')->where('product', '6')->where('creater', $uuid)->where('res_status', 1)->count();
+//                    $flowerRechargeList = FlowerRechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     //feng data
                     $fengSingle = FengRechargeLogs::where('is_dealed', 0)->where('app_name', 'Feng')->where('product', '1')->where('creater', $uuid)->where('res_status', 1)->count();
@@ -209,7 +211,8 @@ class SupportPayController extends Controller
                     $fengRechargeList = FengRechargeLogs::where('creater', $uuid)->where('is_dealed', 0)->where('res_status', 1)->orderBy('created_at', 'DESC')->limit(100)->get(['uuid', 'product', 'is_dealed', 'created_at'])->toArray();
 
                     $successMsg = '用户 ID：' . $userUuid . '，已开通' . $productName;
-                    $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList, $flowerRechargeList);
+//                    $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList, $flowerRechargeList);
+                    $data['rechargeList'] = array_merge($seeRechargeList, $fengRechargeList);
                     $data['seeGoods_1'] = $seeSingle;
                     $data['seeGoods_6'] = $seeHalf;
                     $data['seeGoods_12'] = $seeOne;
@@ -218,9 +221,9 @@ class SupportPayController extends Controller
                     $data['fengGoods_6'] = $fengHalf;
                     $data['fengGoods_12'] = $fengOne;
 
-                    $data['flowerGoods_0'] = $flowerP;
-                    $data['flowerGoods_1'] = $flowerOne;
-                    $data['flowerGoods_6'] = $flowerHalf;
+//                    $data['flowerGoods_0'] = $flowerP;
+//                    $data['flowerGoods_1'] = $flowerOne;
+//                    $data['flowerGoods_6'] = $flowerHalf;
 //                    $data['totalMoney'] = $seeTotalMoney + $fengTotalMoney;
 //                    $data['payMoney'] = $data['totalMoney'] - ($seeHalf + $seeOne + $fengHalf + $fengOne) * 15;
 //                    $data['earnMoney'] = $data['totalMoney'] - $data['payMoney'] > 0 ? $data['totalMoney'] - $data['payMoney'] : 0;
@@ -243,7 +246,7 @@ class SupportPayController extends Controller
                 $tUuids = ['1011779', '1000047', '1000092', '1023492', '1027653'];
                 $seeRes = RechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'See')->where('res_status', 1)->where('is_dealed', 0)->get();
                 $fengRes = FengRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Feng')->where('res_status', 1)->where('is_dealed', 0)->get();
-                $flowerRes = FlowerRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Flower')->where('res_status', 1)->where('is_dealed', 0)->get();
+//                $flowerRes = FlowerRechargeLogs::whereIn('creater', $tUuids)->where('app_name', 'Flower')->where('res_status', 1)->where('is_dealed', 0)->get();
                 if($seeRes){
                     $seeTotalMoney = $seeRes->sum('price');
                     $seeAmount = count($seeRes);
@@ -263,25 +266,25 @@ class SupportPayController extends Controller
                     $settleRes->settlement_status = 1;
                     $settleRes->save();
                 }
-                if($flowerRes){
-                    $flowerTotalMoney = $flowerRes->sum('price');
-                    $flowerAmount = count($flowerRes);
-                    $settleRes = FlowerSettlementList::create([
-                        'settlement_user' => $uuid,
-                        'settlement_status' => 0,
-                        'settlement_amount' => $flowerAmount,
-                        'total_money' => $flowerTotalMoney,
-                        'earn_money' => 15 * $flowerAmount,
-                        'pay_money' => $flowerTotalMoney - 15 * $flowerAmount > 0 ? $flowerTotalMoney - 15 * $flowerAmount : 0
-                    ]);
-                    foreach ($flowerRes as $recharge) {
-                        $recharge->settlement_id = $settleRes['id'];
-                        $recharge->is_dealed = 1;
-                        $recharge->save();
-                    }
-                    $settleRes->settlement_status = 1;
-                    $settleRes->save();
-                }
+//                if($flowerRes){
+//                    $flowerTotalMoney = $flowerRes->sum('price');
+//                    $flowerAmount = count($flowerRes);
+//                    $settleRes = FlowerSettlementList::create([
+//                        'settlement_user' => $uuid,
+//                        'settlement_status' => 0,
+//                        'settlement_amount' => $flowerAmount,
+//                        'total_money' => $flowerTotalMoney,
+//                        'earn_money' => 15 * $flowerAmount,
+//                        'pay_money' => $flowerTotalMoney - 15 * $flowerAmount > 0 ? $flowerTotalMoney - 15 * $flowerAmount : 0
+//                    ]);
+//                    foreach ($flowerRes as $recharge) {
+//                        $recharge->settlement_id = $settleRes['id'];
+//                        $recharge->is_dealed = 1;
+//                        $recharge->save();
+//                    }
+//                    $settleRes->settlement_status = 1;
+//                    $settleRes->save();
+//                }
                 if($fengRes){
                     $fengTotalMoney = $fengRes->sum('price');
                     $fengAmount = count($fengRes);
