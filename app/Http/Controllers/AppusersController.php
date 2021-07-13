@@ -403,7 +403,7 @@ class AppusersController extends Controller
                 $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
 
             $isSupportPay = 0;
-            if(in_array($deviceInfo['uuid'], ['1023492', '1027653']))
+            if(in_array($deviceInfo['uuid'], ['1023492', '1027653', '1023501']))
                 $isSupportPay = 1;
 
             if($request->filled('device_identifier')){

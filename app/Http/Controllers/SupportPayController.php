@@ -16,6 +16,7 @@ use App\Models\Goods;
 use App\Models\RechargeLogs;
 use App\Models\SettlementList;
 use App\Models\SystemSetting;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -79,7 +80,7 @@ class SupportPayController extends Controller
                 return response()->json(['msg' => '已达到每日支付数量上限', 'data' => [], 'code' => 202]);
 
             $length = strlen($userUuid);
-            if (in_array($uuid, ['1011779', '1000047', '1000092', '1023492', '1027653']) && $userUuid && in_array($request->input('product'), [0, 1, 6, 12]) && in_array($length, [7, 8, 10])) {
+            if (in_array($uuid, ['1011779', '1000047', '1000092', '1023492', '1027653', '1023501']) && $userUuid && in_array($request->input('product'), [0, 1, 6, 12]) && in_array($length, [7, 8, 10])) {
                 $user = $good = [];
                 if ($length == 7) {
                     //同一个账号一天只能开一次
@@ -168,6 +169,7 @@ class SupportPayController extends Controller
                             'settlement_id' => 0
                         ]);
                         $vipExpireAt = $user->vip_expireat > $now ? $user->vip_expireat : $now;
+//                        $user->vip_expireat = Carbon::createFromTimestamp($vipExpireAt)->addMonth()->getTimestamp();
                         $user->vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
                     }
                     if (!$user->save())
