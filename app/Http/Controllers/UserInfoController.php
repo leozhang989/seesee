@@ -297,4 +297,9 @@ class UserInfoController extends Controller
 
         return $uuid;
     }
+
+    public function updateUserUuid()
+    {
+
+    }
 }
