@@ -8,6 +8,9 @@ use App\Models\Device;
 use App\Models\devicesUuidRelations;
 use App\Models\Notice;
 use App\Models\NoticeLog;
+use App\Models\Order;
+use App\Models\RechargeLogs;
+use App\Models\Seedevice;
 use App\Models\Seeuser;
 use App\Models\SeeVersion;
 use App\Models\Server;
@@ -36,14 +39,6 @@ class UserInfoController extends Controller
                         $maxSettings = SystemSetting::getValueByName('seeMaxDevices') ?: 3;
                         if ($exsitedDevicesCount >= $maxSettings)
                             return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
-                    }
-
-                    //永久会员限制一台设备
-                    if($user['is_permanent_vip'] == 1){  //一定是转移过的 一定有一台设备
-                        $deviceData = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('created_at', 'DESC')->first();
-                        if($deviceData && $deviceData['device_code'] != $request->input('device_code', '')){
-                            return response()->json(['data' => [], 'msg' => '永久用户仅限一台设备永久使用，不支持多设备同时登录', 'code' => 202]);
-                        }
                     }
 
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
@@ -89,8 +84,12 @@ class UserInfoController extends Controller
                         $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ?: '';
                     }
 
-                    $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
-                    $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
+                    if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device']){
+                        $totalExpiredTime = $user['permanent_expired'] > $now ? $user['permanent_expired'] - $now : 0;
+                    }else {
+                        $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
+                        $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
+                    }
                     $response['userInfo'] = [
                         'uuid' => $user['uuid'] ?: '',
                         'vipExpired' => $totalExpiredTime,
@@ -298,8 +297,35 @@ class UserInfoController extends Controller
         return $uuid;
     }
 
+    //auto update user uuid
     public function updateUserUuid()
     {
-
+        $users = Seeuser::all();
+//        $users = Seeuser::where('id', 2049)->get();
+        foreach ($users as $key => $user) {
+            //if buy
+            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
+            if(empty($order)){
+                $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
+            }
+            if($order) {
+                $user->uuid = $order['uuid'];
+            }elseif($deviceUuids) {
+                $user->uuid = $deviceUuids[0];
+            }
+            echo $user->uuid . PHP_EOL;
+            if($user['is_permanent_vip'] === 1){
+                $user->permanent_expired = $user['vip_expired'];
+                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
+                if($permanentDevice) {
+                    $seedevice = $permanentDevice->toArray();
+                    $seedevice['is_permanent_device'] = 1;
+                    Seedevice::create($seedevice);
+                    $user->permanent_device = $seedevice['device_code'];
+                }
+            }
+            $user->save();
+        }
     }
 }
