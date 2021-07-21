@@ -22,6 +22,108 @@ use Illuminate\Support\Facades\DB;
 
 class UserInfoController extends Controller
 {
+    public function register(Request $request){
+        if($request->filled('email') && $request->filled('password') && $request->filled('device_code')) {
+            //check email
+            if(!filter_var($request->input('email'), FILTER_VALIDATE_EMAIL))
+                return response()->json(['data' => [], 'msg' => '邮箱格式错误，请输入正确的邮箱', 'code' => 202]);
+
+            $isExisted = Seeuser::where('email', $request->input('email'))->first(['id']);
+            if ($isExisted)
+                return response()->json(['data' => [], 'msg' => '该邮箱已注册过，请直接登录', 'code' => 202]);
+
+            //注册时写入设备
+            $deviceResRela = null;
+            $deviceRes = Seedevice::where('device_code', $request->input('device_code'))->first();
+            $now = time();
+            if (empty($deviceRes)) {
+                $freeDays = SystemSetting::getValueByName('freeDays');
+                //查询关联表是否已经有老设备的关联记录
+                $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
+                if($deviceResRela){
+                    $freeVipExpired = $deviceResRela['free_vip_expired'] > $now ? $deviceResRela['free_vip_expired'] : $now;
+                }else{
+                    $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                    $deviceResRela = devicesUuidRelations::create([
+                        'uuid' => '',
+                        'device_code' => $request->input('device_code'),
+                        'free_vip_expired' => $freeVipExpired,
+                        'uid' => 0
+                    ]);
+                }
+                $deviceRes = Device::create([
+                    'uuid' => '',
+                    'device_code' => $request->input('device_code'),
+                    'is_master' => 0,
+                    'status' => 1,
+                    'free_vip_expired' => $freeVipExpired,
+                    'uid' => 0
+                ]);
+            }
+
+            $uuid = $this->generateUUID();
+            if(empty($uuid))
+                return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
+
+            $insertData = [
+                'name' => '',
+                'gid' => 0,
+                'email' => $request->input('email'),
+                'password' => MD5($request->input('password')),
+                'phone' => '',
+                'free_vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
+                'vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
+                'vip_left_time' => 0,
+                'uuid' => $uuid
+            ];
+            $userInfo = Seeuser::create($insertData);
+            if ($userInfo) {
+                //update device uid
+                $deviceRes->uid = $userInfo['id'];
+                $deviceRes->uuid = $uuid;
+                $deviceRes->save();
+                if($deviceResRela) {
+                    $deviceResRela->uid = $userInfo['id'];
+                    $deviceResRela->uuid = $uuid;
+                    $deviceResRela->save();
+                }
+
+                //if has new notice now
+                $newNotice = 0;
+                $noticeUrl = '';
+                $nowDate = date('Y-m-d H:i:s', $now);
+                $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+                if ($latestNotice) {
+                    $userNoticeLog = NoticeLog::where('uuid', $uuid)->where('notice_id', $latestNotice['id'])->first();
+                    $newNotice = $userNoticeLog ? 0 : 1;
+                    $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid]) ?: '';
+                }
+
+                $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
+                $totalExpiredTime = $deviceRes['free_vip_expired'] > $vipExpiredTime ? $deviceRes['free_vip_expired'] - $now : $vipExpiredTime - $now;
+                $response['userInfo'] = [
+                    'uuid' => $uuid,
+                    'vipExpired' => $totalExpiredTime,
+                    'isVip' => $totalExpiredTime > 0 ? 1 : 0,
+                    'email' => trim($request->input('email')),
+                    'hasNewNotice' => $newNotice,
+                    'noticeUrl' => $noticeUrl,
+                    'paymentUrl' => action('PayController@list', ['token' => $uuid]),
+                ];
+
+//                $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
+
+                if($request->filled('device_identifier')){
+                    $deviceRes->device_identifier = $request->input('device_identifier', '');
+                    $deviceRes->save();
+                }
+
+                return response()->json(['data' => $response, 'msg' => '注册成功', 'code' => 200]);
+            }
+        }
+        return response()->json(['data' => [], 'msg' => '注册失败，请重试！', 'code' => 202]);
+    }
+
     public function login(Request $request){
         if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
             $userExisted = Seeuser::where('email', trim($request->input('email')))->count();
@@ -32,7 +134,7 @@ class UserInfoController extends Controller
                     //设置用户session
                     session(['user' => $user['id']]);
 
-                    $allDeviceCodes = Device::where('uid', $user['id'])->pluck('device_code')->toArray();
+                    $allDeviceCodes = Seedevice::where('uid', $user['id'])->pluck('device_code')->toArray();
                     if(!in_array($request->input('device_code'), $allDeviceCodes)){
                         //检测设备数
                         $exsitedDevicesCount = count($allDeviceCodes);
@@ -41,7 +143,7 @@ class UserInfoController extends Controller
                             return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
                     }
 
-                    $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
+                    $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
                     if ($deviceInfo) {
                         $deviceInfo->uid = $user['id'];
                         $deviceInfo->device_model = trim($request->input('model', ''));
@@ -79,13 +181,13 @@ class UserInfoController extends Controller
                     $nowDate = date('Y-m-d H:i:s', $now);
                     $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
                     if ($latestNotice) {
-                        $userNoticeLog = NoticeLog::where('uuid', $deviceInfo['uuid'])->where('notice_id', $latestNotice['id'])->first();
+                        $userNoticeLog = NoticeLog::where('uuid', $user['uuid'])->where('notice_id', $latestNotice['id'])->first();
                         $newNotice = $userNoticeLog ? 0 : 1;
-                        $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceInfo['uuid']]) ?: '';
+                        $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $user['uuid']]) ?: '';
                     }
 
-                    if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device']){
-                        $totalExpiredTime = $user['permanent_expired'] > $now ? $user['permanent_expired'] - $now : 0;
+                    if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device'] && $user['permanent_expired'] > $now){
+                        $totalExpiredTime = $user['permanent_expired'] - $now;
                     }else {
                         $vipExpiredTime = $user['vip_expired'] > $now ? $user['vip_expired'] : $now;
                         $totalExpiredTime = $deviceInfo['free_vip_expired'] > $vipExpiredTime ? $deviceInfo['free_vip_expired'] - $now : $vipExpiredTime - $now;
@@ -97,7 +199,7 @@ class UserInfoController extends Controller
                         'email' => trim($request->input('email')),
                         'hasNewNotice' => $newNotice,
                         'noticeUrl' => $noticeUrl,
-                        'paymentUrl' => action('PayController@list', ['token' => $deviceInfo['uuid']]),
+                        'paymentUrl' => action('PayController@list', ['token' => $user['uuid']]),
                     ];
                     $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
 
@@ -158,11 +260,15 @@ class UserInfoController extends Controller
             }
 
             $totalExpiredTime = 0;
-            if($deviceInfo){
+            if($deviceInfo)
                 $totalExpiredTime = $deviceInfo['free_vip_expired'] > $now ? $deviceInfo['free_vip_expired'] - $now : 0;
+            if($userInfo){
+                if($userInfo['is_permanent_vip'] === 1 && $request->input('device_code') === $userInfo['permanent_device'] && $userInfo['permanent_expired'] > $now){  //permanent_vip login
+                    $totalExpiredTime = $userInfo['permanent_expired'] - $now;
+                }else{
+                    $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
+                }
             }
-            if($userInfo)
-                $totalExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] - $now : 0;
 
             $isSupportPay = 0;
             if(in_array($deviceInfo['uuid'], ['1023492', '1027653', '1023501']))
@@ -176,108 +282,6 @@ class UserInfoController extends Controller
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
-    }
-
-    public function register(Request $request){
-        if($request->filled('email') && $request->filled('password') && $request->filled('device_code')) {
-            //check email
-            if(!filter_var($request->input('email'), FILTER_VALIDATE_EMAIL))
-                return response()->json(['data' => [], 'msg' => '邮箱格式错误，请输入正确的邮箱', 'code' => 202]);
-
-            $isExisted = Seeuser::where('email', $request->input('email'))->first(['id']);
-            if ($isExisted)
-                return response()->json(['data' => [], 'msg' => '该邮箱已注册过，请直接登录', 'code' => 202]);
-
-            //注册时写入设备
-            $deviceResRela = null;
-            $deviceRes = Device::where('device_code', $request->input('device_code'))->first();
-            $now = time();
-            if (empty($deviceRes)) {
-                $freeDays = SystemSetting::getValueByName('freeDays');
-                //查询关联表是否已经有老设备的关联记录
-                $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
-                if($deviceResRela){
-                    $uuid = $deviceResRela['uuid'];
-                    $freeVipExpired = $deviceResRela['free_vip_expired'] > $now ? $deviceResRela['free_vip_expired'] : $now;
-                }else{
-                    $uuid = $this->generateUUID();
-                    if(empty($uuid))
-                        return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
-
-                    $freeVipExpired = strtotime('+' . $freeDays . ' day');
-                    $deviceResRela = devicesUuidRelations::create([
-                        'uuid' => $uuid,
-                        'device_code' => $request->input('device_code'),
-                        'free_vip_expired' => $freeVipExpired,
-                        'uid' => 0
-                    ]);
-                }
-                $deviceRes = Device::create([
-                    'uuid' => $uuid,
-                    'device_code' => $request->input('device_code'),
-                    'is_master' => 0,
-                    'status' => 1,
-                    'free_vip_expired' => $freeVipExpired,
-                    'uid' => 0
-                ]);
-            }
-
-            $insertData = [
-                'name' => '',
-                'gid' => 0,
-                'email' => $request->input('email'),
-                'password' => MD5($request->input('password')),
-                'phone' => '',
-                'free_vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
-                'vip_expired' => $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : 0,
-                'vip_left_time' => 0,
-                'uuid' => $deviceRes['uuid'] ?? ''
-            ];
-            $userInfo = Seeuser::create($insertData);
-            if ($userInfo) {
-                //update device uid
-                $deviceRes->uid = $userInfo['id'];
-                $deviceRes->save();
-                if($deviceResRela) {
-                    $deviceResRela->uid = $userInfo['id'];
-                    $deviceResRela->save();
-                }
-
-                //if has new notice now
-                $newNotice = 0;
-                $noticeUrl = '';
-                $nowDate = date('Y-m-d H:i:s', $now);
-                $today = strtotime(date('Y-m-d', $now));
-                $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
-                if ($latestNotice) {
-                    $userNoticeLog = NoticeLog::where('uuid', $deviceRes['uuid'])->where('notice_id', $latestNotice['id'])->first();
-                    $newNotice = $userNoticeLog ? 0 : 1;
-                    $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $deviceRes['uuid']]) ?: '';
-                }
-
-                $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
-                $totalExpiredTime = $deviceRes['free_vip_expired'] > $vipExpiredTime ? $deviceRes['free_vip_expired'] - $now : $vipExpiredTime - $now;
-                $response['userInfo'] = [
-                    'uuid' => $deviceRes['uuid'] ?: '',
-                    'vipExpired' => $totalExpiredTime,
-                    'isVip' => $totalExpiredTime > 0 ? 1 : 0,
-                    'email' => trim($request->input('email')),
-                    'hasNewNotice' => $newNotice,
-                    'noticeUrl' => $noticeUrl,
-                    'paymentUrl' => action('PayController@list', ['token' => $deviceRes['uuid']]),
-                ];
-
-                $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
-
-                if($request->filled('device_identifier')){
-                    $deviceRes->device_identifier = $request->input('device_identifier', '');
-                    $deviceRes->save();
-                }
-
-                return response()->json(['data' => $response, 'msg' => '注册成功', 'code' => 200]);
-            }
-        }
-        return response()->json(['data' => [], 'msg' => '注册失败，请重试！', 'code' => 202]);
     }
 
     protected function generateUUID(){
@@ -300,7 +304,7 @@ class UserInfoController extends Controller
     //auto update user uuid
     public function updateUserUuid()
     {
-        $users = Seeuser::all();
+        $users = Seeuser::where('uuid', '')->all();
 //        $users = Seeuser::where('id', 2049)->get();
         foreach ($users as $key => $user) {
             //if buy

@@ -62,6 +62,17 @@ Route::group(['middleware' => ['signature']], function() {
 
     //get pc account servers by all apps
     Route::get('/app-account-servers', 'AppusersController@appAccountServerList');
+
+
+    //build 5 new api--------------------------------------------------------------
+    //new register
+    Route::post('/user-register', 'UserInfoController@register');
+
+    //new login
+    Route::post('/user-login', 'UserInfoController@login');
+
+    //new get user vip time
+    Route::post('/query-user-vip-new', 'UserInfoController@queryUserVip');
 });
 
 

@@ -14,6 +14,7 @@ use App\Models\FlowerUser;
 use App\Models\FlowerSettlementList;
 use App\Models\Goods;
 use App\Models\RechargeLogs;
+use App\Models\Seeuser;
 use App\Models\SettlementList;
 use App\Models\SystemSetting;
 use Carbon\Carbon;
@@ -88,8 +89,12 @@ class SupportPayController extends Controller
                     if($seeRecord)
                         return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
 
-                    $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
-                    $user = $device ? Appuser::find($device['uid']) : '';
+                    if($request->input('version', 0) >= 5){
+                        $user = Seeuser::where('uuid', $userUuid)->first();
+                    }else {
+                        $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
+                        $user = $device ? Appuser::find($device['uid']) : '';
+                    }
                     $good = Goods::where('status', 1)->where('service_date', $request->input('product'))->first();
                 }
 
