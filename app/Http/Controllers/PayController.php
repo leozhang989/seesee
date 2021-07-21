@@ -155,19 +155,29 @@ class PayController extends Controller
                     $month = $order->service_date * $order->goods_num;
                     $deviceInfo = Device::where('uuid', $order->uuid)->first();
                     $user = Appuser::find($deviceInfo['uid']);
+                    $now = time();
                     if($user) {
-                        $now = time();
                         $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
                         $freeLeft = 0;
                         if($user->free_vip_expired > $now && $vipExpireAt == $now)
                             $freeLeft = $user->free_vip_expired - $now;
 
                         $user->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt) + $freeLeft;
-                        if ($user->save())
-                            return response()->json('ok');
+                        $user->save();
                     }
-                    return response()->json('error', 202);
+                    $seeuser = Seeuser::where('uuid', $order->uuid)->first();
+                    if($seeuser){
+                        $vipExpireAt = $seeuser->vip_expired > $now ? $seeuser->vip_expired : $now;
+                        $freeLeft = 0;
+                        if($seeuser->free_vip_expired > $now && $vipExpireAt == $now)
+                            $freeLeft = $seeuser->free_vip_expired - $now;
+
+                        $seeuser->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt) + $freeLeft;
+                        $seeuser->save();
+                    }
+                    return response()->json('ok');
                 }
+                return response()->json('error', 202);
             }
         }
         return response()->json('error', 202);
