@@ -7,6 +7,8 @@ use App\Models\Device;
 use App\Models\Goods;
 use App\Models\Order;
 use App\Models\PaddlePayment;
+use App\Models\Seedevice;
+use App\Models\Seeuser;
 use App\Models\SystemSetting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -43,11 +45,13 @@ class PayController extends Controller
                 return response()->json(['msg' => '商品不存在', 'data' => [], 'code' => 202]);
 
             $deviceInfo = Device::where('uuid', $request->input('token'))->first();
-            if(empty($deviceInfo) || empty($deviceInfo['uid']))
+            $seedeviceInfo = Seedevice::where('uuid', $request->input('token'))->first();
+            if(empty($deviceInfo) && empty($seedeviceInfo))
                 return response()->json(['msg' => '设备不存在或您还未注册', 'data' => [], 'code' => 202]);
 
             $UserInfo = Appuser::find($deviceInfo['uid']);
-            if (empty($UserInfo))
+            $seeUserInfo = Seeuser::find($deviceInfo['uid']);
+            if (empty($UserInfo) && empty($seeUserInfo))
                 return response()->json(['msg' => '用户信息不存在，请先注册成为会员', 'data' => [], 'code' => 202]);
 
 //            if ($order = Order::where('commodity_code', $request->input('commodityCode'))->where('uuid', $request->input('token'))->where('status', 0)->first())

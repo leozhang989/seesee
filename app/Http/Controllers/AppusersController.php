@@ -153,7 +153,15 @@ class AppusersController extends Controller
             $lastUser = DB::table('devices')
                 ->latest()
                 ->first();
-            $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
+            $seeLastUser = DB::table('seedevices')
+                ->latest()
+                ->first();
+            $lastUuid = $seeLastUser->uuid;
+            if($lastUser->uuid > $seeLastUser->uuid){
+                $lastUuid = $lastUser->uuid;
+            }
+            $lastUuid = $lastUuid ?? '1000011';
+//            $lastUuid = $lastUser && $lastUser->uuid ? $lastUser->uuid : '1000011';
             $length = strlen($lastUuid) - 1;
             $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
             $ex = Device::where('uuid', $uuid)->first();
