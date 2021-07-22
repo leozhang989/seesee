@@ -201,7 +201,6 @@ class UserInfoController extends Controller
                         'noticeUrl' => $noticeUrl,
                         'paymentUrl' => action('PayController@list', ['token' => $user['uuid']]),
                     ];
-                    $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
 
                     if($request->filled('device_identifier')){
                         $deviceInfo->device_identifier = $request->input('device_identifier');
