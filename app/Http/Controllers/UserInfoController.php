@@ -288,7 +288,7 @@ class UserInfoController extends Controller
                 $lastUuid = $seeLastUser->uuid;
             }
             $lastUuid = $lastUuid ?? '1210011';
-            $length = strlen($lastUuid) - 1;
+            $length = strlen($lastUuid) - 3;
             $uuid = '12' . (substr($lastUuid, 2, $length) + 1) . random_int(0, 9);
             $ex = Seedevice::where('uuid', $uuid)->first();
             if(empty($ex))
