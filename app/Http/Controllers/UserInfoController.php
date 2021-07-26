@@ -51,7 +51,7 @@ class UserInfoController extends Controller
                         'uid' => 0
                     ]);
                 }
-                $deviceRes = Device::create([
+                $deviceRes = Seedevice::create([
                     'uuid' => '',
                     'device_code' => $request->input('device_code'),
                     'is_master' => 0,
@@ -110,8 +110,6 @@ class UserInfoController extends Controller
                     'noticeUrl' => $noticeUrl,
                     'paymentUrl' => action('PayController@list', ['token' => $uuid]),
                 ];
-
-//                $response['servers'] = Server::get(['gid', 'type', 'name', 'address', 'icon']);
 
                 if($request->filled('device_identifier')){
                     $deviceRes->device_identifier = $request->input('device_identifier', '');
@@ -286,19 +284,16 @@ class UserInfoController extends Controller
     protected function generateUUID(){
         $uuid = '';
         for ($x=0; $x<=5; $x++){
-            $lastUser = DB::table('devices')
-                ->latest()
-                ->first();
             $seeLastUser = DB::table('seedevices')
                 ->latest()
                 ->first();
-            $lastUuid = $seeLastUser->uuid;
-            if($lastUser->uuid > $seeLastUser->uuid){
-                $lastUuid = $lastUser->uuid;
+            $lastUuid = '';
+            if($seeLastUser && $seeLastUser->uuid){
+                $lastUuid = $seeLastUser->uuid;
             }
-            $lastUuid = $lastUuid ?? '1000011';
+            $lastUuid = $lastUuid ?? '1200011';
             $length = strlen($lastUuid) - 1;
-            $uuid = substr($lastUuid, 0, $length) + 1 . random_int(0, 9);
+            $uuid = '12' . (substr($lastUuid, 2, $length) + 1) . random_int(0, 9);
             $ex = Seedevice::where('uuid', $uuid)->first();
             if(empty($ex))
                 break;
