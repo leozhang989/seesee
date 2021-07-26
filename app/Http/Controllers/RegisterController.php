@@ -18,6 +18,8 @@ use Illuminate\Support\Facades\Schema;
 class RegisterController extends Controller
 {
     public function register(Request $request){
+        return response()->json(['data' => [], 'msg' => '系统维护需要半小时，暂停注册，请稍后再试！', 'code' => 202]);
+
         if($request->filled('email') && $request->filled('password') && $request->filled('device_code')) {
             //check email
             if(!filter_var($request->input('email'), FILTER_VALIDATE_EMAIL))

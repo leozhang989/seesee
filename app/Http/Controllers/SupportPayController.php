@@ -66,6 +66,8 @@ class SupportPayController extends Controller
     }
 
     public function recharge(Request $request){
+        return response()->json(['data' => [], 'msg' => '系统维护需要半小时，请稍后再试！', 'code' => 202]);
+
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
             $now = time();
             $uuid = $request->input('uuid', '');
