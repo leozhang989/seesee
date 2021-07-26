@@ -33,26 +33,28 @@ class UserInfoController extends Controller
                 return response()->json(['data' => [], 'msg' => '该邮箱已注册过，请直接登录', 'code' => 202]);
 
             //注册时写入设备
-            $deviceResRela = null;
-            $deviceRes = Seedevice::where('device_code', $request->input('device_code'))->first();
+            $uuid = $this->generateUUID();
+            if(empty($uuid))
+                return response()->json(['msg' => '登录失败，请重试', 'data' => [], 'code' => 202]);
+
+            $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
             $now = time();
-            if (empty($deviceRes)) {
+            if (empty($deviceResRela)) {
                 $freeDays = SystemSetting::getValueByName('freeDays');
-                //查询关联表是否已经有老设备的关联记录
-                $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
-                if($deviceResRela){
-                    $freeVipExpired = $deviceResRela['free_vip_expired'] > $now ? $deviceResRela['free_vip_expired'] : $now;
-                }else{
-                    $freeVipExpired = strtotime('+' . $freeDays . ' day');
-                    $deviceResRela = devicesUuidRelations::create([
-                        'uuid' => '',
-                        'device_code' => $request->input('device_code'),
-                        'free_vip_expired' => $freeVipExpired,
-                        'uid' => 0
-                    ]);
-                }
+                $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                $deviceResRela = devicesUuidRelations::create([
+                    'uuid' => $uuid,
+                    'device_code' => $request->input('device_code'),
+                    'free_vip_expired' => $freeVipExpired,
+                    'uid' => 0
+                ]);
+            }else{
+                $freeVipExpired = $deviceResRela['free_vip_expired'];
+            }
+            $deviceRes = Seedevice::where('device_code', $request->input('device_code'))->first();
+            if(empty($deviceRes)) {
                 $deviceRes = Seedevice::create([
-                    'uuid' => '',
+                    'uuid' => $uuid,
                     'device_code' => $request->input('device_code'),
                     'is_master' => 0,
                     'status' => 1,
@@ -60,10 +62,6 @@ class UserInfoController extends Controller
                     'uid' => 0
                 ]);
             }
-
-            $uuid = $this->generateUUID();
-            if(empty($uuid))
-                return response()->json(['msg' => '设备登录失败，请重试', 'data' => [], 'code' => 202]);
 
             $insertData = [
                 'name' => '',
@@ -80,11 +78,9 @@ class UserInfoController extends Controller
             if ($userInfo) {
                 //update device uid
                 $deviceRes->uid = $userInfo['id'];
-                $deviceRes->uuid = $uuid;
                 $deviceRes->save();
                 if($deviceResRela) {
                     $deviceResRela->uid = $userInfo['id'];
-                    $deviceResRela->uuid = $uuid;
                     $deviceResRela->save();
                 }
 
@@ -291,7 +287,7 @@ class UserInfoController extends Controller
             if($seeLastUser && $seeLastUser->uuid){
                 $lastUuid = $seeLastUser->uuid;
             }
-            $lastUuid = $lastUuid ?? '1200011';
+            $lastUuid = $lastUuid ?? '1210011';
             $length = strlen($lastUuid) - 1;
             $uuid = '12' . (substr($lastUuid, 2, $length) + 1) . random_int(0, 9);
             $ex = Seedevice::where('uuid', $uuid)->first();
