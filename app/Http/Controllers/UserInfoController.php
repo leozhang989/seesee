@@ -156,8 +156,8 @@ class UserInfoController extends Controller
                     }else{
                         $freeVipExpired = $deviceResRela['free_vip_expired'];
                     }
-                    $deviceRes = Seedevice::where('device_code', $request->input('device_code'))->first();
-                    if(empty($deviceRes)) {
+                    $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
+                    if(empty($deviceInfo)) {
                         $deviceInfo = Seedevice::create([
                             'uuid' => $uuid,
                             'device_code' => $request->input('device_code'),
