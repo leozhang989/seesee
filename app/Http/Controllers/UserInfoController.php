@@ -137,27 +137,22 @@ class UserInfoController extends Controller
                             return response()->json(['data' => [], 'msg' => '登录失败，只支持' . $maxSettings . '台设备绑定。', 'code' => 202]);
                     }
 
-                    $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
-                    if ($deviceInfo) {
-                        $deviceInfo->uid = $user['id'];
-                        $deviceInfo->device_model = trim($request->input('model', ''));
-                        $deviceInfo->save();
-                    } else {
+                    $deviceResRela = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
+                    if (empty($deviceResRela)) {
                         $freeDays = SystemSetting::getValueByName('freeDays');
-                        //查询关联表是否已经有老设备的关联记录
-                        $deviceRes = devicesUuidRelations::where('device_code', $request->input('device_code'))->first();
-                        if($deviceRes){
-                            $freeVipExpired = $deviceRes['free_vip_expired'] > $now ? $deviceRes['free_vip_expired'] : $now;
-                        }else{
-                            $freeVipExpired = strtotime('+' . $freeDays . ' day');
-                            devicesUuidRelations::create([
-                                'uuid' => $user['uuid'],
-                                'device_code' => $request->input('device_code'),
-                                'free_vip_expired' => $freeVipExpired,
-                                'uid' => $user['id']
-                            ]);
-                        }
-                        $deviceInfo = Device::create([
+                        $freeVipExpired = strtotime('+' . $freeDays . ' day');
+                        devicesUuidRelations::create([
+                            'uuid' => $user['uuid'],
+                            'device_code' => $request->input('device_code'),
+                            'free_vip_expired' => $freeVipExpired,
+                            'uid' => 0
+                        ]);
+                    }else{
+                        $freeVipExpired = $deviceResRela['free_vip_expired'];
+                    }
+                    $deviceRes = Seedevice::where('device_code', $request->input('device_code'))->first();
+                    if(empty($deviceRes)) {
+                        $deviceInfo = Seedevice::create([
                             'uuid' => $user['uuid'],
                             'device_code' => $request->input('device_code'),
                             'is_master' => 0,
