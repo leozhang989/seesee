@@ -287,7 +287,7 @@ class UserInfoController extends Controller
             $seeLastUser = DB::table('seedevices')
                 ->latest()
                 ->first();
-            $lastUuid = '';
+            $lastUuid = null;
             if($seeLastUser && $seeLastUser->uuid){
                 $lastUuid = $seeLastUser->uuid;
             }
