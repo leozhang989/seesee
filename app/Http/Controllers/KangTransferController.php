@@ -8,6 +8,8 @@ use App\Models\Device;
 use App\Models\DeviceTypeMaps;
 use App\Models\DeviceIdentifierMaps;
 use App\Models\FlowerTransferLogs;
+use App\Models\Seedevice;
+use App\Models\Seeuser;
 use App\Models\SystemSetting;
 use App\Models\TransferLogs;
 use Carbon\Carbon;
@@ -39,30 +41,20 @@ class KangTransferController extends Controller
                     throw new \Exception('这台康设备已经转移过了');
             }
 
-            $user = Appuser::where('email', $account)->first();
-            if(empty($user)){
-                $device = Device::where('uuid', $account)->first();
-                if(empty($device))
-                    throw new \Exception('账号或UUID错误，会员不存在');
-                if(empty($device['uid']))
-                    throw new \Exception('该会员还未注册账号，无法开通');
-                $user = Appuser::find($device['uid']);
-                if(empty($user))
-                    throw new \Exception('用户账号异常，未查询到账户，请稍后重试');
-                $log = FlowerTransferLogs::where('email', $user['email'])->first();
-                if($log)
-                    throw new \Exception('用户已开通过永久会员');
+            $user = Seeuser::where('email', $account)->orWhere('uuid', $account)->first();
+            if(empty($user))
+                throw new \Exception('账号或UUID错误，会员不存在');
 
-                $this->checkDeviceModel($payTime, [$device]);
-            }else{
-                //判断设备型号对不对
-                $devices = Device::where('uid', $user['id'])->get()->toArray();
-                if(empty($devices))
-                    throw new \Exception('未查询到用户设备，稍后重试');
+            if($user['is_permanent_vip'] === 1)
+                throw new \Exception('用户已开通过永久会员');
 
-                $deviceId = $this->checkDeviceModel($payTime, $devices);
-                $device = Device::find($deviceId);
-            }
+            //判断设备型号对不对
+            $devices = Seedevice::where('uid', $user['id'])->get()->toArray();
+            if(empty($devices))
+                throw new \Exception('未查询到用户设备，稍后重试');
+
+            $deviceId = $this->checkDeviceModel($payTime, $devices);
+            $device = Seedevice::find($deviceId);
 
             $logData = [
                 'device_code' => $device['device_code'] ?? '',
