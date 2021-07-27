@@ -16,6 +16,8 @@ use App\Models\FlowerUsers;
 use App\Models\FlowerVipSetLogs;
 use App\Models\Notice;
 use App\Models\NoticeLog;
+use App\Models\Seedevice;
+use App\Models\Seeuser;
 use App\Models\SeeVersion;
 use App\Models\Server;
 use App\Models\SystemSetting;
@@ -492,7 +494,11 @@ class AppusersController extends Controller
             switch ($appname) {
                 case 'see':
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
-                    $userInfo = $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
+                    $userInfo = $deviceInfo && $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
+                    if(empty($deviceInfo)){
+                        $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
+                        $userInfo = Seeuser::find($deviceInfo['uid']);
+                    }
                     $isvip = ($userInfo && $userInfo['vip_expired'] > $now) ? 1 : 0;
                     break;
                 case 'feng':
