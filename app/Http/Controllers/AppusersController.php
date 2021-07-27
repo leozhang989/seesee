@@ -637,6 +637,9 @@ class AppusersController extends Controller
             switch ($appname) {
                 case 'see':
                     $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
+                    if(empty($deviceInfo)){
+                        $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
+                    }
                     break;
                 case 'feng':
                     $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
