@@ -633,26 +633,11 @@ class AppusersController extends Controller
         if($request->filled('device_code')){
             $now = time();
             $appname = $request->filled('appname') ? $request->input('appname') : 'see';
-            $deviceInfo = '';
-            switch ($appname) {
-                case 'see':
-                    $deviceInfo = Device::where('device_code', $request->input('device_code'))->where('status', 1)->first();
-                    if(empty($deviceInfo)){
-                        $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
-                    }
-                    break;
-                case 'feng':
-                    $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
-                    break;
-                case 'flower':
-                    $deviceInfo = FlowerUser::where('code', $request->input('device_code'))->first();
-                    break;
-            }
-            if(empty($deviceInfo))
-                return response()->json(['msg' => '设备不存在', 'data' => '', 'code' => 202]);
-
-            if($appname === 'flower' && $deviceInfo['paid_vip_expireat'] <= $now && $deviceInfo['is_permanent_vip'] != 1){
-                $servers = FlowerAdServers::get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+            if($appname === 'flower'){
+                $deviceInfo = FlowerUser::where('code', $request->input('device_code'))->first();
+                if($deviceInfo['paid_vip_expireat'] <= $now && $deviceInfo['is_permanent_vip'] != 1){
+                    $servers = FlowerAdServers::get(['name', 'address', 'icon', 'type', 'start_port', 'end_port', 'encrypt_type', 'server_pwd']);
+                }
             }else {
                 $currentIP = $request->input('ip', '');
                 $currentServerGid = 0;
