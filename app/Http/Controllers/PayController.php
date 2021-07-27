@@ -157,7 +157,9 @@ class PayController extends Controller
                     $deviceInfo = Device::where('uuid', $order->uuid)->first();
                     $user = Appuser::find($deviceInfo['uid']);
                     $now = time();
+                    $email = '';
                     if($user) {
+                        $email = $user->email ?? '';
                         $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
                         $freeLeft = 0;
                         if($user->free_vip_expired > $now && $vipExpireAt == $now)
@@ -166,7 +168,9 @@ class PayController extends Controller
                         $user->vip_expired = strtotime('+' . $month . ' month', $vipExpireAt) + $freeLeft;
                         $user->save();
                     }
-                    $seeuser = Seeuser::where('uuid', $order->uuid)->first();
+                    $seeuser = Seeuser::where('email', $email)->first();
+                    if(empty($seeuser))
+                        $seeuser = Seeuser::where('uuid', $order->uuid)->first();
                     if($seeuser){
                         $vipExpireAt = $seeuser->vip_expired > $now ? $seeuser->vip_expired : $now;
                         $freeLeft = 0;
