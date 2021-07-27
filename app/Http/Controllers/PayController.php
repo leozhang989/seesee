@@ -19,10 +19,11 @@ class PayController extends Controller
     {
         if ($token) {
             $device = Device::where('uuid', $token)->first();
-            if(empty($device))
+            $seeDevice = Seeuser::where('uuid', $token)->first();
+            if(empty($device) && empty($seeDevice))
                 die('支付异常');
 
-            if($device['uid'] == 0)
+            if($device && $device['uid'] == 0)
                 die('用户账户异常，请先注册账号');
 
             $goodsList = Goods::where('status', 1)->get();
