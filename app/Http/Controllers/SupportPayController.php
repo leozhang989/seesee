@@ -83,53 +83,49 @@ class SupportPayController extends Controller
             $length = strlen($userUuid);
             if (in_array($uuid, ['1011779', '1000047', '1000092', '1023492', '1027653', '1023501']) && $userUuid && in_array($request->input('product'), [0, 1, 6, 12]) && in_array($length, [7, 8, 10])) {
                 $user = $good = [];
-                if ($length == 7) {
-                    //同一个账号一天只能开一次
-                    $seeRecord = RechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
-                    if($seeRecord)
-                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
-
-                    if($request->input('version', 0) >= 5){
-                        $user = Seeuser::where('uuid', $userUuid)->first();
-                    }else {
-                        $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
-                        $user = $device ? Appuser::find($device['uid']) : '';
-                    }
-                    $good = Goods::where('status', 1)->where('service_date', $request->input('product'))->first();
-                }
-
-//                if ($length == 8) {
-//                    if($request->input('product') == 12)
-//                        return response()->json(['msg' => '小花产品暂无开通一年包权限', 'data' => [], 'code' => 202]);
-//                    //同一个账号一天只能开一次
-//                    $flowerRecord = FlowerRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
-//                    if($flowerRecord)
-//                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
-//
-//                    $user = FlowerUser::where('uuid', $userUuid)->first();
-//                    if($user->is_permanent_vip == 1)
-//                        return response()->json(['msg' => '该用户已开通过永久VIP，请确认是否操作？', 'data' => [], 'code' => 202]);
-//
-//                    $good = FlowerGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
-//                }
-
-                if($length == 10){
-                    //同一个账号一天只能开一次
-                    $fengRecord = FengRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
-                    if($fengRecord)
-                        return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
-
-                    $user = FengUser::where('uuid', $userUuid)->first() ? : '';
-                    $good = FengGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
-                }
-
-                if(empty($user))
-                    return response()->json(['msg' => '用户不存在，请检查输入的uuid是否正确', 'data' => [], 'code' => 202]);
-                if(empty($good))
-                    return response()->json(['msg' => '产品不存在', 'data' => [], 'code' => 202]);
-
                 DB::beginTransaction();
                 try {
+                    if ($length == 7) {
+                        //同一个账号一天只能开一次
+                        $seeRecord = RechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
+                        if($seeRecord)
+                            return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
+
+                        $seeuser = Seeuser::where('uuid', $userUuid)->first();
+                        if($seeuser) {
+                            $vipExpireAt = $seeuser->vip_expired > $now ? $seeuser->vip_expired : $now;
+                            $seeuser->vip_expired = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
+                            if (!$seeuser->save())
+                                throw new \Exception('开通失败');
+                        }
+                        $device = Device::where('uuid', $userUuid)->where('status', 1)->first();
+                        $user = $device ? Appuser::find($device['uid']) : '';
+                        if($user){
+                            $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
+                            $user->vip_expired = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
+                            if (!$user->save())
+                                throw new \Exception('开通失败');
+                        }
+                        if(empty($user) && empty($seeuser))
+                            return response()->json(['msg' => '用户不存在，请检查输入的uuid是否正确', 'data' => [], 'code' => 202]);
+                        $good = Goods::where('status', 1)->where('service_date', $request->input('product'))->first();
+                    }
+
+                    if($length == 10){
+                        //同一个账号一天只能开一次
+                        $fengRecord = FengRechargeLogs::where('is_dealed', 0)->where('uuid', $userUuid)->where('creater', $uuid)->first();
+                        if($fengRecord)
+                            return response()->json(['msg' => '本次账单中该用户已开通过，请核实后再开通', 'data' => [], 'code' => 202]);
+
+                        $user = FengUser::where('uuid', $userUuid)->first() ? : '';
+                        if(empty($user))
+                            return response()->json(['msg' => '用户不存在，请检查输入的uuid是否正确', 'data' => [], 'code' => 202]);
+                        $good = FengGoods::where('status', 1)->where('service_date', $request->input('product'))->first();
+                    }
+
+                    if(empty($good))
+                        return response()->json(['msg' => '产品不存在', 'data' => [], 'code' => 202]);
+
                     if($length == 7) {
                         RechargeLogs::create([
                             'creater' => $uuid,
@@ -141,27 +137,7 @@ class SupportPayController extends Controller
                             'app_name' => 'See',
                             'settlement_id' => 0
                         ]);
-                        $vipExpireAt = $user->vip_expired > $now ? $user->vip_expired : $now;
-                        $user->vip_expired = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
                     }
-//                    if($length == 8) {
-//                        FlowerRechargeLogs::create([
-//                            'creater' => $uuid,
-//                            'uuid' => $userUuid,
-//                            'product' => $request->input('product'),
-//                            'price' => $good['price'],
-//                            'is_dealed' => 0,
-//                            'res_status' => 1,
-//                            'app_name' => 'Flower',
-//                            'settlement_id' => 0
-//                        ]);
-//                        if($request->input('product') == 0){
-//                            $user->is_permanent_vip = 1;
-//                        }else{
-//                            $vipExpireAt = $user->paid_vip_expireat > $now ? $user->paid_vip_expireat : $now;
-//                            $user->paid_vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
-//                        }
-//                    }
                     if($length == 10) {
                         FengRechargeLogs::create([
                             'creater' => $uuid,
@@ -176,9 +152,9 @@ class SupportPayController extends Controller
                         $vipExpireAt = $user->vip_expireat > $now ? $user->vip_expireat : $now;
 //                        $user->vip_expireat = Carbon::createFromTimestamp($vipExpireAt)->addMonth()->getTimestamp();
                         $user->vip_expireat = strtotime('+' . $request->input('product') . ' month', $vipExpireAt);
+                        if (!$user->save())
+                            throw new \Exception('开通失败');
                     }
-                    if (!$user->save())
-                        throw new \Exception('开通失败');
 
                     DB::commit();
 //                    $productName = $request->input('product') == 6 ? '半年包' : '一年包';
