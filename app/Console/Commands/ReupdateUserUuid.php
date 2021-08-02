@@ -5,21 +5,21 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Http\Controllers\UserInfoController;
 
-class UpdateUserUuid5 extends Command
+class ReupdateUserUuid extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'update:uuid5';
+    protected $signature = 'reupdate:uuid';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = '更新用户表uuid5';
+    protected $description = '更新12用户表uuid';
 
     /**
      * Create a new command instance.
@@ -38,6 +38,6 @@ class UpdateUserUuid5 extends Command
      */
     public function handle(UserInfoController $ch)
     {
-        $ch->updateUserUuid5();
+        $ch->reupdateUserUuid();
     }
 }

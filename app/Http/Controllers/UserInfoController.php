@@ -8,6 +8,7 @@ use App\Models\Device;
 use App\Models\devicesUuidRelations;
 use App\Models\Notice;
 use App\Models\NoticeLog;
+use App\Models\OldDevice;
 use App\Models\Order;
 use App\Models\RechargeLogs;
 use App\Models\Seedevice;
@@ -303,10 +304,12 @@ class UserInfoController extends Controller
     public function updateUserUuid()
     {
         $users = Seeuser::where('id', '<=', 500)->where('uuid', '')->orderBy('id', 'ASC')->get();
-//        $users = Seeuser::where('id', 2049)->get();
         foreach ($users as $key => $user) {
             //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            $deviceUuids = OldDevice::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            if(empty($deviceUuids))
+                continue;
+
             $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
             if(empty($order)){
                 $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
@@ -316,17 +319,17 @@ class UserInfoController extends Controller
             }elseif($deviceUuids) {
                 $user->uuid = $deviceUuids[0];
             }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
+            echo '用户的uuid是：' . $user->uuid . PHP_EOL;
+//            if($user['is_permanent_vip'] === 1){
+//                $user->permanent_expired = $user['vip_expired'];
+//                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
+//                if($permanentDevice) {
+//                    $seedevice = $permanentDevice->toArray();
+//                    $seedevice['is_permanent_device'] = 1;
+//                    Seedevice::create($seedevice);
+//                    $user->permanent_device = $seedevice['device_code'];
+//                }
+//            }
             $user->save();
         }
     }
@@ -334,10 +337,11 @@ class UserInfoController extends Controller
     public function updateUserUuid2()
     {
         $users = Seeuser::where('id', '>', 500)->where('id', '<=', 1000)->where('uuid', '')->orderBy('id', 'ASC')->get();
-//        $users = Seeuser::where('id', 2049)->get();
         foreach ($users as $key => $user) {
             //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            $deviceUuids = OldDevice::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            if(empty($deviceUuids))
+                continue;
             $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
             if(empty($order)){
                 $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
@@ -347,28 +351,19 @@ class UserInfoController extends Controller
             }elseif($deviceUuids) {
                 $user->uuid = $deviceUuids[0];
             }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
+            echo '用户的uuid是：' . $user->uuid . PHP_EOL;
             $user->save();
         }
     }
 
     public function updateUserUuid3()
     {
-        $users = Seeuser::where('id', '>', 1000)->where('id', '<=', 1500)->where('uuid', '')->get();
-//        $users = Seeuser::where('id', 2049)->get();
+        $users = Seeuser::where('id', '>', 1000)->where('id', '<=', 1500)->where('uuid', '')->orderBy('id', 'ASC')->get();
         foreach ($users as $key => $user) {
             //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            $deviceUuids = OldDevice::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            if(empty($deviceUuids))
+                continue;
             $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
             if(empty($order)){
                 $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
@@ -378,28 +373,19 @@ class UserInfoController extends Controller
             }elseif($deviceUuids) {
                 $user->uuid = $deviceUuids[0];
             }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
+            echo '用户的uuid是：' . $user->uuid . PHP_EOL;
             $user->save();
         }
     }
 
     public function updateUserUuid4()
     {
-        $users = Seeuser::where('id', '>', 1500)->where('id', '<=', 2000)->where('uuid', '')->orderBy('id', 'ASC')->get();
-//        $users = Seeuser::where('id', 2049)->get();
+        $users = Seeuser::where('id', '>', 1500)->where('uuid', '')->orderBy('id', 'ASC')->get();
         foreach ($users as $key => $user) {
             //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            $deviceUuids = OldDevice::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            if(empty($deviceUuids))
+                continue;
             $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
             if(empty($order)){
                 $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
@@ -409,59 +395,20 @@ class UserInfoController extends Controller
             }elseif($deviceUuids) {
                 $user->uuid = $deviceUuids[0];
             }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->orderBy('id', 'ASC')->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
+            echo '用户的uuid是：' . $user->uuid . PHP_EOL;
             $user->save();
         }
     }
 
-    public function updateUserUuid5()
+    public function reupdateUserUuid()
     {
-        $users = Seeuser::where('id', '>', 2000)->where('id', '<=', 2500)->where('uuid', '')->orderBy('id', 'ASC')->get();
-//        $users = Seeuser::where('id', 2049)->get();
+        $users = Seeuser::where('uuid', 'like', '12%')->orderBy('id', 'ASC')->get();
         foreach ($users as $key => $user) {
             //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
-            $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
-            if(empty($order)){
-                $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
-            }
-            if($order) {
-                $user->uuid = $order['uuid'];
-            }elseif($deviceUuids) {
-                $user->uuid = $deviceUuids[0];
-            }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
-            $user->save();
-        }
-    }
+            $deviceUuids = OldDevice::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
+            if(empty($deviceUuids))
+                continue;
 
-    public function updateUserUuid6()
-    {
-        $users = Seeuser::where('id', '>', 2500)->where('uuid', '')->orderBy('id', 'ASC')->get();
-//        $users = Seeuser::where('id', 2049)->get();
-        foreach ($users as $key => $user) {
-            //if buy
-            $deviceUuids = Device::where('uid', $user['id'])->orderBy('updated_at', 'DESC')->pluck('uuid')->toArray();
             $order = RechargeLogs::whereIn('uuid', $deviceUuids)->where('res_status', 1)->orderBy('created_at', 'DESC')->first();
             if(empty($order)){
                 $order = Order::whereIn('uuid', $deviceUuids)->where('status', 1)->orderBy('created_at', 'DESC')->first();
@@ -471,17 +418,7 @@ class UserInfoController extends Controller
             }elseif($deviceUuids) {
                 $user->uuid = $deviceUuids[0];
             }
-            echo $user->uuid . PHP_EOL;
-            if($user['is_permanent_vip'] === 1){
-                $user->permanent_expired = $user['vip_expired'];
-                $permanentDevice = Device::where('uid', $user['id'])->where('transfered', 1)->first();
-                if($permanentDevice) {
-                    $seedevice = $permanentDevice->toArray();
-                    $seedevice['is_permanent_device'] = 1;
-                    Seedevice::create($seedevice);
-                    $user->permanent_device = $seedevice['device_code'];
-                }
-            }
+            echo '用户的uuid是：' . $user->uuid . PHP_EOL;
             $user->save();
         }
     }
