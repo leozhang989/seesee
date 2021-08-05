@@ -8,6 +8,7 @@ use App\Models\Device;
 use App\Models\FengUser;
 use App\Models\FlowerUser;
 use App\Models\ResetEmailLog;
+use App\Models\Seeuser;
 use Illuminate\Http\Request;
 use App\Models\GroupGiftlLog;
 use App\Models\SystemSetting;
@@ -74,6 +75,16 @@ class ResetPwdController extends Controller
             if($userInfo){
                 $userInfo->password = MD5($request->input('new-pwd'));
                 $userInfo->save();
+                //无效重置链接操作
+                $emailLog->status = 1;
+                $emailLog->save();
+                return view('reset-msg', ['msg' => '密码已重置']);
+//                return response()->json(['msg' => '修改成功', 'data' => '', 'code' => 200]);
+            }
+            $seeUserInfo = Seeuser::where('email', $email)->first();
+            if($seeUserInfo){
+                $seeUserInfo->password = MD5($request->input('new-pwd'));
+                $seeUserInfo->save();
                 //无效重置链接操作
                 $emailLog->status = 1;
                 $emailLog->save();
