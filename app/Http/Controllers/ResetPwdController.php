@@ -78,7 +78,6 @@ class ResetPwdController extends Controller
                 //无效重置链接操作
                 $emailLog->status = 1;
                 $emailLog->save();
-                return view('reset-msg', ['msg' => '密码已重置']);
 //                return response()->json(['msg' => '修改成功', 'data' => '', 'code' => 200]);
             }
             $seeUserInfo = Seeuser::where('email', $email)->first();
@@ -88,9 +87,10 @@ class ResetPwdController extends Controller
                 //无效重置链接操作
                 $emailLog->status = 1;
                 $emailLog->save();
-                return view('reset-msg', ['msg' => '密码已重置']);
 //                return response()->json(['msg' => '修改成功', 'data' => '', 'code' => 200]);
             }
+            if($userInfo || $seeUserInfo)
+                return view('reset-msg', ['msg' => '密码已重置']);
         }
         return view('reset-msg', ['msg' => '请填写新密码和确认新密码']);
 //        return response()->json(['msg' => '修改失败', 'data' => '', 'code' => 202]);
