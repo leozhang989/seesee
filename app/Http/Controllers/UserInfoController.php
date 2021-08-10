@@ -282,16 +282,18 @@ class UserInfoController extends Controller
     protected function generateUUID(){
         $uuid = '';
         for ($x=0; $x<=5; $x++){
-            $seeLastUser = DB::table('seedevices')
-                ->latest()
+            $seeLastUser = DB::table('seeusers')
+                ->where('uuid', '<>', '')
+                ->orderBy('id', 'DESC')
                 ->first();
-            $lastUuid = null;
-            if($seeLastUser && $seeLastUser->uuid){
+            $lastUuid = '';
+            if($seeLastUser && $seeLastUser->uuid && strlen($seeLastUser->uuid) == 7){
                 $lastUuid = $seeLastUser->uuid;
             }
-            $lastUuid = $lastUuid ?? '1210011';
+            $lastUuid = $lastUuid ? : '1210011';
             $length = strlen($lastUuid) - 3;
-            $uuid = '12' . (substr($lastUuid, 2, $length) + 1) . random_int(0, 9);
+            $newNum = str_pad((substr($lastUuid, 2, $length) + 1),  4, '0', STR_PAD_LEFT);
+            $uuid = '12' . $newNum . random_int(0, 9);
             $ex = Seedevice::where('uuid', $uuid)->first();
             if(empty($ex))
                 break;
