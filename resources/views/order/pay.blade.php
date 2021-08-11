@@ -23,7 +23,7 @@
         </p>
     </div>
     <div class="row">
-        <p class="text-left col-sm-12" style="margin-top: 20px;">
+        <p class="text-left col-sm-12" style="margin: 20px auto;">
             1、长按 支付宝付款码 保存到手机相册
         </p>
     </div>
