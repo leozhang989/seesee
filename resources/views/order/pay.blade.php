@@ -42,10 +42,10 @@
     </div>
     <div class="row">
         <div class="col-sm-6 text-center" style="margin-top: 20px;">
-            <img class="" src="{{ asset('seesee/images/step1.jpg') }}" style="width:80%;height: auto;">
+            <img class="" src="{{ asset('seesee/images/step1.png') }}" style="width:80%;height: auto;">
         </div>
         <div class="col-sm-6 text-center" style="margin-top:20px;">
-            <img class="" src="{{ asset('seesee/images/step2.jpg') }}" style="width:80%;height: auto;">
+            <img class="" src="{{ asset('seesee/images/step2.png') }}" style="width:80%;height: auto;">
         </div>
     </div>
     <div class="row" style="margin-top: 20px;">
