@@ -19,11 +19,13 @@
     </div>
     <div class="row">
         <p class="text-left col-sm-12">
-            价格：1个月30元、半年98元、一年138元
+            会员价格：<span style="color:red;">1个月30元、半年98元、一年138元</span>
         </p>
     </div>
     <div class="row">
-        <img class="img-responsive text-center col-sm-12" src="{{ asset('seesee/images/qrcode.png') }}" style="width:100%;height: auto;">
+        <div class="col-sm-12 text-center">
+            <img class="img-responsive" src="{{ asset('seesee/images/qrcode.png') }}" style="width:80%;height: auto;">
+        </div>
     </div>
     <div class="row">
         <p class="text-left col-sm-12" style="margin-top: 20px;">
@@ -32,15 +34,18 @@
     </div>
     <div class="row">
         <p class="text-left col-sm-12">
-            2、支付宝转账并添加备注，备注一定要写上风速ID（风速ID在风速设置页面，点击复制即可）
+            2、支付宝转账并添加备注，，备注填写风速ID，你的<span style="color:red;">风速ID：{{$uuid}}</span>
+        </p>
+        <p class="col-sm-12">
+            （风速ID在风速设置页面，点击复制即可）
         </p>
     </div>
     <div class="row">
-        <div class="col-sm-6">
-            <img class="text-center" src="{{ asset('seesee/images/step1.png') }}" style="width:100%;height: auto;">
+        <div class="col-sm-6 text-center" style="margin-top: 20px;">
+            <img class="" src="{{ asset('seesee/images/step1.jpg') }}" style="width:80%;height: auto;">
         </div>
-        <div class="col-sm-6">
-            <img class="text-center" src="{{ asset('seesee/images/step2.png') }}" style="width:100%;height: auto;">
+        <div class="col-sm-6 text-center" style="margin-top:20px;">
+            <img class="" src="{{ asset('seesee/images/step2.jpg') }}" style="width:80%;height: auto;">
         </div>
     </div>
     <div class="row" style="margin-top: 20px;">

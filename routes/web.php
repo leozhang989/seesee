@@ -56,9 +56,7 @@ Route::get('sshelp/mac', function () {
 });
 
 //support pay page
-Route::get('support/pay', function () {
-    return view('order.pay');
-});
+Route::get('see/support/pay/{uuid}', 'DownloadController@seeSupportPay');
 
 //deng下载页
 Route::get('sssee/download', 'DownloadController@dengDownload');

@@ -28,4 +28,7 @@ class DownloadController extends Controller
         return view('feng-download', ['testFlightUrl' => $fengTestFlightUrl]);
     }
 
+    public function seeSupportPay($uuid){
+        return view('order.pay', ['uuid' => $uuid]);
+    }
 }
