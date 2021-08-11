@@ -19,7 +19,7 @@
     </div>
     <div class="row">
         <p class="text-left col-sm-12">
-            会员价格：<span style="color:red;">1个月30元、半年98元、一年138元</span>
+            会员价格：<span style="color:red;">1个月28元、半年98元、一年146元</span>
         </p>
     </div>
     <div class="row">
@@ -34,10 +34,10 @@
     </div>
     <div class="row">
         <p class="text-left col-sm-12">
-            2、支付宝转账并添加备注，，备注填写风速ID，你的<span style="color:red;">风速ID：{{$uuid}}</span>
+            2、支付宝转账并添加备注，，备注填写See ID，你的<span style="color:red;">See ID：{{$uuid}}</span>
         </p>
         <p class="col-sm-12">
-            （风速ID在风速设置页面，点击复制即可）
+            （See ID在风速设置页面，点击复制即可）
         </p>
     </div>
     <div class="row">
@@ -49,7 +49,7 @@
         </div>
     </div>
     <div class="row" style="margin-top: 20px;">
-        <p class="text-left col-sm-12">如有问题联系邮箱：fengchi@pm.me</p>
+        <p class="text-left col-sm-12">如有问题联系邮箱：xunjie@protonmail.com</p>
     </div>
 </div>
 </body>

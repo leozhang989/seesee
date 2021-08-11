@@ -196,6 +196,7 @@ class UserInfoController extends Controller
                         'hasNewNotice' => $newNotice,
                         'noticeUrl' => $noticeUrl,
                         'paymentUrl' => action('PayController@list', ['token' => $uuid]),
+                        'supportPayPage' => action('DownloadController@seeSupportPay', ['uuid' => $uuid])
                     ];
 
                     if($request->filled('device_identifier')){
@@ -274,8 +275,7 @@ class UserInfoController extends Controller
                 $deviceInfo->save();
             }
 
-            $supportPayPage = action('DownloadController@seeSupportPay', ['uuid' => $userInfo['uuid']]);
-            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay, 'supportPayPage' => $supportPayPage], 'code' => 200]);
+            return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }
         return response()->json(['msg' => '查询失败，参数异常', 'data' => '', 'code' => 202]);
     }
