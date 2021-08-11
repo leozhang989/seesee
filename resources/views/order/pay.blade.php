@@ -23,12 +23,12 @@
         </p>
     </div>
     <div class="row">
-        <p class="text-left col-sm-12" style="margin: 20px auto;">
+        <p class="text-left col-sm-12" style="margin-top: 20px;">
             1、长按 支付宝付款码 保存到手机相册
         </p>
     </div>
     <div class="row">
-        <div class="col-sm-12 text-center">
+        <div class="col-sm-12 text-center" style="margin-bottom: 20px;">
             <img class="img-responsive" src="{{ asset('seesee/images/qrcode.png') }}" style="width:80%;height: auto;">
         </div>
     </div>
