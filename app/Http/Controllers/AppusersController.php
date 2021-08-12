@@ -175,6 +175,7 @@ class AppusersController extends Controller
     }
 
     public function login(Request $request){
+        logger('老登陆');
         if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
             $userExisted = Appuser::where('email', trim($request->input('email')))->count();
             if($userExisted > 0) {

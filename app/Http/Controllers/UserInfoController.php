@@ -120,6 +120,7 @@ class UserInfoController extends Controller
     }
 
     public function login(Request $request){
+        logger('新登陆');
         if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
             $userExisted = Seeuser::where('email', trim($request->input('email')))->count();
             if($userExisted > 0) {
