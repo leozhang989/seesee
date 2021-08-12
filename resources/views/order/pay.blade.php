@@ -37,7 +37,7 @@
             2、支付宝转账并添加备注，，备注填写See ID，你的<span style="color:red;">See ID：{{$uuid}}</span>
         </p>
         <p class="col-sm-12">
-            （See ID在风速设置页面，点击复制即可）
+            （See ID也可在See App更多页面找到）
         </p>
     </div>
     <div class="row">
