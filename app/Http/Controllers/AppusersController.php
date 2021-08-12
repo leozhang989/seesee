@@ -497,9 +497,12 @@ class AppusersController extends Controller
 //                    $userInfo = $deviceInfo && $deviceInfo['uid'] ? Appuser::find($deviceInfo['uid']) : [];
 //                    if(empty($deviceInfo)){
                         $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
+                        logger('设备是：' . json_encode($deviceInfo));
                         $userInfo = $deviceInfo && $deviceInfo['uid'] ? Seeuser::find($deviceInfo['uid']) : [];
+                    logger('用户是：' . json_encode($userInfo));
 //                    }
                     $isvip = (($userInfo && $userInfo['vip_expired'] > $now) || $userInfo['is_permanent_vip']) ? 1 : 0;
+                    logger('是不是vip:' . $isvip);
                     break;
                 case 'feng':
                     $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
