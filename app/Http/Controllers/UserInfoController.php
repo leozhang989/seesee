@@ -234,14 +234,14 @@ class UserInfoController extends Controller
             $hasNewerVersion = 0;
             if($request->filled('version')){
                 $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
-                if (Cache::has($request->input('device_code'))) {
-                    $cacheVersion = Cache::get($request->input('device_code'));
-                }
+//                if (Cache::has($request->input('device_code'))) {
+//                    $cacheVersion = Cache::get($request->input('device_code'));
+//                }
                 if (($request->input('version', 0) < $latestVersionRes['app_version']) && empty($cacheVersion)) {
                     $hasNewerVersion = 1;
                     $testflightContent = $latestVersionRes['content'];
-                    $expiresAt = Carbon::now()->addHours(12);
-                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
+//                    $expiresAt = Carbon::now()->addHours(12);
+//                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
                 }
             }
             $testFlight['url'] = $testflightUrl;
