@@ -216,7 +216,7 @@ class UserInfoController extends Controller
     public function queryUserVip(Request $request){
         if($request->filled('device_code')){
             $now = time();
-            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
+            $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
             $userInfo = [];
             if($request->filled('email'))
                 $userInfo = Seeuser::where('email', $request->input('email'))->first();
