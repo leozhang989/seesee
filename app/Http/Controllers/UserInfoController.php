@@ -120,7 +120,6 @@ class UserInfoController extends Controller
     }
 
     public function login(Request $request){
-        logger('新登陆');
         if($request->filled('password') && $request->filled('email') && $request->filled('device_code')) {
             $userExisted = Seeuser::where('email', trim($request->input('email')))->count();
             if($userExisted > 0) {
@@ -278,6 +277,7 @@ class UserInfoController extends Controller
                 $deviceInfo->device_identifier = $request->input('device_identifier', '');
                 $deviceInfo->save();
             }
+            logger('返回的数据是：' . json_encode(['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay]));
 
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }
