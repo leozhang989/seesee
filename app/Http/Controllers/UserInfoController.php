@@ -203,6 +203,8 @@ class UserInfoController extends Controller
                         $deviceInfo->device_identifier = $request->input('device_identifier');
                         $deviceInfo->save();
                     }
+                    //last login
+                    $user->last_login = Carbon::now();
 
                     return response()->json(['data' => $response, 'msg' => '登陆成功', 'code' => 200]);
                 }
