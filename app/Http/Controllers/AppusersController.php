@@ -499,7 +499,7 @@ class AppusersController extends Controller
                         $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
                         $userInfo = $deviceInfo && $deviceInfo['uid'] ? Seeuser::find($deviceInfo['uid']) : [];
 //                    }
-                    $isvip = ($userInfo && $userInfo['vip_expired'] > $now) ? 1 : 0;
+                    $isvip = (($userInfo && $userInfo['vip_expired'] > $now) || $userInfo['is_permanent_vip']) ? 1 : 0;
                     break;
                 case 'feng':
                     $deviceInfo = FengDevice::where('device_code', $request->input('device_code'))->where('status', 1)->first();
