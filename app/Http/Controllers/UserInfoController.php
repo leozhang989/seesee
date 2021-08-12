@@ -203,6 +203,9 @@ class UserInfoController extends Controller
                         $deviceInfo->device_identifier = $request->input('device_identifier');
                         $deviceInfo->save();
                     }
+                    //last login
+                    $user->last_login = Carbon::now();
+                    $user->save();
 
                     return response()->json(['data' => $response, 'msg' => '登陆成功', 'code' => 200]);
                 }
@@ -216,7 +219,7 @@ class UserInfoController extends Controller
     public function queryUserVip(Request $request){
         if($request->filled('device_code')){
             $now = time();
-            $deviceInfo = Device::where('device_code', $request->input('device_code'))->first();
+            $deviceInfo = Seedevice::where('device_code', $request->input('device_code'))->first();
             $userInfo = [];
             if($request->filled('email'))
                 $userInfo = Seeuser::where('email', $request->input('email'))->first();
