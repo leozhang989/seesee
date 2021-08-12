@@ -19,7 +19,7 @@
     </div>
     <div class="row">
         <p class="text-left col-sm-12">
-            会员价格：<span style="color:red;">1个月28元、半年98元、一年146元</span>
+            会员价格：<span style="color:red;">1个月30元、半年108元、一年156元</span>
         </p>
     </div>
     <div class="row">
