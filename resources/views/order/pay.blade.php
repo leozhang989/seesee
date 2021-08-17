@@ -10,7 +10,7 @@
 <body>
 <div class="container" style="margin: 30px auto;">
     <div class="row" style="color:red;">
-        <h2 class="col-sm-12 text-center">二维码转账</h2>
+        <h2 class="col-sm-12 text-center">转账备注See ID</h2>
     </div>
     <div class="row">
         <p class="text-left col-sm-12" style="margin-top: 20px;">
