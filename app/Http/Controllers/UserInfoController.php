@@ -195,7 +195,7 @@ class UserInfoController extends Controller
                         'email' => trim($request->input('email')),
                         'hasNewNotice' => $newNotice,
                         'noticeUrl' => $noticeUrl,
-                        'paymentUrl' => app('url') . '/' . action('PayController@list', ['token' => $uuid], false),
+                        'paymentUrl' => action('PayController@list', ['token' => $uuid]),
                         'supportPayPage' => action('DownloadController@seeSupportPay', ['uuid' => $uuid])
                     ];
 
