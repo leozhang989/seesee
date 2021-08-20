@@ -105,7 +105,7 @@ class UserInfoController extends Controller
                     'email' => trim($request->input('email')),
                     'hasNewNotice' => $newNotice,
                     'noticeUrl' => $noticeUrl,
-                    'paymentUrl' => action('PayController@list', ['token' => $uuid]),
+                    'paymentUrl' => config('app.url') . action('PayController@list', ['token' => $uuid], false),
                 ];
 
                 if($request->filled('device_identifier')){
@@ -195,7 +195,7 @@ class UserInfoController extends Controller
                         'email' => trim($request->input('email')),
                         'hasNewNotice' => $newNotice,
                         'noticeUrl' => $noticeUrl,
-                        'paymentUrl' => action('PayController@list', ['token' => $uuid]),
+                        'paymentUrl' => config('app.url') . action('PayController@list', ['token' => $uuid], false),
                         'supportPayPage' => action('DownloadController@seeSupportPay', ['uuid' => $uuid])
                     ];
 
