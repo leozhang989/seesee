@@ -93,7 +93,7 @@ class UserInfoController extends Controller
                 if ($latestNotice) {
                     $userNoticeLog = NoticeLog::where('uuid', $uuid)->where('notice_id', $latestNotice['id'])->first();
                     $newNotice = $userNoticeLog ? 0 : 1;
-                    $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid]) ?: '';
+                    $noticeUrl = config('app.url') . action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid], false) ?: '';
                 }
 
                 $vipExpiredTime = $userInfo['vip_expired'] > $now ? $userInfo['vip_expired'] : $now;
@@ -179,7 +179,7 @@ class UserInfoController extends Controller
                     if ($latestNotice) {
                         $userNoticeLog = NoticeLog::where('uuid', $uuid)->where('notice_id', $latestNotice['id'])->first();
                         $newNotice = $userNoticeLog ? 0 : 1;
-                        $noticeUrl = action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid]) ?: '';
+                        $noticeUrl = config('app.url') . action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid], false) ?: '';
                     }
 
                     if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device'] && $user['permanent_expired'] > $now){
@@ -196,7 +196,7 @@ class UserInfoController extends Controller
                         'hasNewNotice' => $newNotice,
                         'noticeUrl' => $noticeUrl,
                         'paymentUrl' => config('app.url') . action('PayController@list', ['token' => $uuid], false),
-                        'supportPayPage' => action('DownloadController@seeSupportPay', ['uuid' => $uuid])
+                        'supportPayPage' => config('app.url') . action('DownloadController@seeSupportPay', ['uuid' => $uuid], false)
                     ];
 
                     if($request->filled('device_identifier')){
