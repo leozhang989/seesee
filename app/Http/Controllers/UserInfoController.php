@@ -237,7 +237,7 @@ class UserInfoController extends Controller
 //                if (Cache::has($request->input('device_code'))) {
 //                    $cacheVersion = Cache::get($request->input('device_code'));
 //                }
-                if (($request->input('version', 0) < $latestVersionRes['app_version']) && empty($cacheVersion)) {
+                if (($request->input('version', 0) < $latestVersionRes['app_version'])) {
                     $hasNewerVersion = 1;
                     $testflightContent = $latestVersionRes['content'];
 //                    $expiresAt = Carbon::now()->addHours(12);
