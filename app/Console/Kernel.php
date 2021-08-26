@@ -13,7 +13,7 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-        \App\Console\Commands\ClearDeviceTask::class
+//        \App\Console\Commands\ClearDeviceTask::class
     ];
 
     /**
@@ -25,7 +25,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
 //         $schedule->command('command:clearDevice')->monthlyOn(1, '2:0');
-         $schedule->command('command:clearDevice')->everyFiveMinutes();
+//         $schedule->command('command:clearDevice')->everyFiveMinutes();
+        $schedule->call(function () {
+            logger('执行的时间是：' . date('Y-m-d H:i:s'));
+        })->everyMinute();
     }
 
     /**
