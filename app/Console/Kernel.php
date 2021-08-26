@@ -24,7 +24,8 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('command:clearDevice')->twiceMonthly(1, 16);
+//         $schedule->command('command:clearDevice')->monthlyOn(1, '2:0');
+         $schedule->command('command:clearDevice')->everyFiveMinutes();
     }
 
     /**

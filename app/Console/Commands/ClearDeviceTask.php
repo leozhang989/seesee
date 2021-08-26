@@ -41,9 +41,10 @@ class ClearDeviceTask extends Command
     public function handle()
     {
         $time = Carbon::now();
-        $res = DB::statement("CREATE TABLE `devices_bak_{$time}` SELECT * FROM `devices`");
-        if($res) {
+        logger('本次执行的时间是：' . $time);
+//        $res = DB::statement("CREATE TABLE `devices_bak_{$time}` SELECT * FROM `devices`");
+//        if($res) {
 //            Device::where('uid', '!=', 0)->delete();
-        }
+//        }
     }
 }
