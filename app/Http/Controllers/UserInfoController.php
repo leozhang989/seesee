@@ -210,6 +210,7 @@ class UserInfoController extends Controller
                     //last login
                     $user->last_login = Carbon::now();
                     $user->save();
+                    logger($user['email'] . '登录返回：' . json_encode(['noticeUrl' => $noticeUrl, 'notice' => $latestNotice]));
 
                     return response()->json(['data' => $response, 'msg' => '登陆成功', 'code' => 200]);
                 }
