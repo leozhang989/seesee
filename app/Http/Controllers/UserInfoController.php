@@ -152,7 +152,7 @@ class UserInfoController extends Controller
                             'uuid' => $uuid,
                             'device_code' => $request->input('device_code'),
                             'free_vip_expired' => $freeVipExpired,
-                            'uid' => 0
+                            'uid' => $user['id']
                         ]);
                     }else{
                         $freeVipExpired = $deviceResRela['free_vip_expired'];
@@ -168,6 +168,9 @@ class UserInfoController extends Controller
                             'uid' => $user['id'],
                             'device_model' => trim($request->input('model', ''))
                         ]);
+                    }else{
+                        $deviceInfo->uid = $user['id'];
+                        $deviceInfo->uuid = $uuid;
                     }
                     unset($user['id'], $user['created_at'], $user['updated_at'], $user['name']);
 
