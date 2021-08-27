@@ -71,7 +71,10 @@ Route::get('see/download', function () {
 });
 
 //newfeng下载页
-Route::get('feng/download', 'DownloadController@fengDownload');
+//Route::get('feng/download', 'DownloadController@fengDownload');
+Route::get('feng/download', function () {
+    return view('feng-download-notice');
+});
 
 //all apps tf无法连接appstore问题解决页
 Route::get('app/faq1', function () {
