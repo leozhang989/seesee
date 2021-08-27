@@ -171,6 +171,7 @@ class UserInfoController extends Controller
                     }else{
                         $deviceInfo->uid = $user['id'];
                         $deviceInfo->uuid = $uuid;
+                        $deviceInfo->save();
                     }
                     unset($user['id'], $user['created_at'], $user['updated_at'], $user['name']);
 
