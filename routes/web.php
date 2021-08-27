@@ -65,7 +65,10 @@ Route::get('sssee/download', 'DownloadController@dengDownload');
 Route::get('flower/download', 'DownloadController@flowerDownload');
 
 //seesee下载页
-Route::get('see/download', 'DownloadController@seeDownload');
+//Route::get('see/download', 'DownloadController@seeDownload');
+Route::get('see/download', function () {
+    return view('see-download-notice');
+});
 
 //newfeng下载页
 Route::get('feng/download', 'DownloadController@fengDownload');
