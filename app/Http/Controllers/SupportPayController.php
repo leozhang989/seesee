@@ -67,6 +67,11 @@ class SupportPayController extends Controller
 
     public function recharge(Request $request){
         if($request->filled('uuid') && $request->filled('user_uuid') && $request->filled('product')) {
+            if($request->filled('source')){
+                $userPwd = $request->input('pwd', '');
+                if(empty($userPwd) || $userPwd !== '13579')
+                    return response()->json(['msg' => '密码错误', 'data' => [], 'code' => 202]);
+            }
             $now = time();
             $uuid = $request->input('uuid', '');
             $userUuid = $request->input('user_uuid', '');
@@ -292,5 +297,10 @@ class SupportPayController extends Controller
             return response()->json(['data' => [], 'msg' => '无权限！', 'code' => 202]);
         }
         return response()->json(['data' => [], 'msg' => '参数错误！', 'code' => 202]);
+    }
+
+    public function webpay()
+    {
+        return view('support-pay');
     }
 }

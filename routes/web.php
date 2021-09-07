@@ -103,3 +103,6 @@ Route::get('see/device-zhuanyi/{uuid}/{token}', 'AppusersController@seeDeviceZhu
 
 //kang VIP转移
 Route::get('kang/transfer-page/uht1i7xlm6wfs8ob', 'KangTransferController@kangTransferPage');
+
+//open vip support pay
+Route::get('support/pay/vYmCpFZXwA5BrVES', 'SupportPayController@webpay');

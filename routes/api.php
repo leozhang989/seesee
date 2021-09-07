@@ -105,3 +105,6 @@ Route::post('/query-flower-vip', 'AppusersController@queryFlowerVip');
 Route::get('/see/transfer/{email}/{uuid}/{token}', 'AppusersController@seeDeviceZhuanyiApi');
 
 Route::get('/kang/transfer/{account}/{payTime}/{pwd}/{code?}', 'KangTransferController@kangTransferApi');
+
+//web recharge api
+Route::post('/web/recharge', 'SupportPayController@recharge');
