@@ -18,7 +18,7 @@ class ResetPwdController extends Controller
 {
     public function resetPassword(Request $request){
         if($request->filled('email')) {
-            $user = Appuser::where('email', $request->input('email'))->first();
+            $user = Seeuser::where('email', $request->input('email'))->first();
             if(empty($user))
                 return response()->json(['msg' => '此邮箱尚未注册！', 'data' => '', 'code' => 200]);
 
