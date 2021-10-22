@@ -282,7 +282,7 @@ class UserInfoController extends Controller
             }
             if($announcementwebp){
                 $userAnnouncement['online'] = 1;
-                $userAnnouncement['content'] = $announcement['content'];
+                $userAnnouncement['content'] = $announcementwebp['content'];
                 $userAnnouncement['redirect_url'] = action('KangTransferController@webpermanentTransferPage', ['uuid' => $userInfo['uuid']]);
             }
 
