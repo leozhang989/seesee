@@ -94,9 +94,9 @@
     <p><strong>5. 如何继续付费使用？</strong></p>
     <p>风速云网站和See APP已经信息同步，在任何一端购买VIP都能实时同步，购买方式没有改变，放心购买。</p>
     <p>图一：风速云页面介绍</p>
-    <p><img src="" alt=""></p>
+    <p><img style="width:100%;height: auto;" src="{{ asset('fengsee/images/fengsee_info.png') }}" alt=""></p>
     <p>图二：跟第一种太极用户聊天记录</p>
-    <p><img src="" alt=""></p>
+    <p><img style="width:100%;height: auto;" src="{{ asset('fengsee/images/chat.png') }}" alt=""></p>
 </div>
 </body>
 </html>
