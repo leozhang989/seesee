@@ -179,11 +179,19 @@ class UserInfoController extends Controller
                     $newNotice = 0;
                     $noticeUrl = '';
                     $nowDate = date('Y-m-d H:i:s', $now);
-                    $latestNotice = Notice::where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+                    $latestNotice = Notice::where('id', '<', 9)->where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
+                    $webpLatestNotice = [];
+                    if($user['is_permanent_vip'] == 1){
+                        $webpLatestNotice = Notice::find(9);
+                    }
                     if ($latestNotice) {
                         $userNoticeLog = NoticeLog::where('uuid', $uuid)->where('notice_id', $latestNotice['id'])->first();
                         $newNotice = $userNoticeLog ? 0 : 1;
                         $noticeUrl = config('app.url') . action('NoticesController@detail', ['id' => $latestNotice['id'], 'uuid' => $uuid], false) ?: '';
+                    }
+                    if($webpLatestNotice){
+                        $newNotice = 1;
+                        $noticeUrl = action('KangTransferController@webpermanentTransferPage', ['uuid' => $uuid]) ? : '';
                     }
 
                     if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device'] && $user['permanent_expired'] > $now){
@@ -237,15 +245,22 @@ class UserInfoController extends Controller
             $testflightContent = '';
             $hasNewerVersion = 0;
             if($request->filled('version')){
-                $latestVersionRes = SeeVersion::orderBy('app_version', 'DESC')->first();
-//                if (Cache::has($request->input('device_code'))) {
-//                    $cacheVersion = Cache::get($request->input('device_code'));
-//                }
-                if (($request->input('version', 0) < $latestVersionRes['app_version'])) {
-                    $hasNewerVersion = 1;
-                    $testflightContent = $latestVersionRes['content'];
-//                    $expiresAt = Carbon::now()->addHours(12);
-//                    Cache::put($request->input('device_code'), $latestVersionRes['app_version'], $expiresAt);
+                $latestVersionRes = SeeVersion::where('id', '<', 3)->orderBy('app_version', 'DESC')->first();
+                if($userInfo['is_permanent_vip'] == 1){
+                    $latestVersionRes = SeeVersion::find(3);
+                }
+                if ($latestVersionRes && ($request->input('version', 0) < $latestVersionRes['app_version'])) {
+                    if($userInfo['is_permanent_vip'] == 1){
+                        $hasNewerVersion = 1;
+                        $testflightUrl = action('KangTransferController@webpermanentTransferPage', ['uuid' => $userInfo['uuid']]) ?: '';
+                        $testflightContent = '亲爱的用户，新版本新模式终于来了！
+最新模式摒弃了testflight不稳定的方式，采用思科客户端【Cisco AnyConnect】为大家提供链接服务。
+大厂品质，稳定可靠，欢迎体验。
+有任何问题联系fengchi@pm.me';
+                    }else {
+                        $hasNewerVersion = 1;
+                        $testflightContent = $latestVersionRes['content'];
+                    }
                 }
             }
             $testFlight['url'] = $testflightUrl;
@@ -253,13 +268,22 @@ class UserInfoController extends Controller
             $testFlight['content'] = $testflightContent;
 
             //展示公告
-            $announcement = Announcement::orderBy('id', 'DESC')->first();
+            $announcement = Announcement::where('id', '<', 8)->orderBy('id', 'DESC')->first();
+            $announcementwebp = [];
+            if($userInfo['is_permanent_vip']){
+                $announcementwebp = Announcement::find(8);
+            }
             $userAnnouncement['online'] = 0;
             $userAnnouncement['content'] = $userAnnouncement['redirect_url'] = '';
             if($announcement){
                 $userAnnouncement['online'] = $announcement['online'] ? 1 : 0;
                 $userAnnouncement['content'] = $announcement['content'] ? : '';
                 $userAnnouncement['redirect_url'] = $announcement['redirect_url'] ? : '';
+            }
+            if($announcementwebp){
+                $userAnnouncement['online'] = 1;
+                $userAnnouncement['content'] = $announcement['content'];
+                $userAnnouncement['redirect_url'] = action('KangTransferController@webpermanentTransferPage', ['uuid' => $userInfo['uuid']]);
             }
 
             $totalExpiredTime = 0;

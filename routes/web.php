@@ -106,3 +106,7 @@ Route::get('kang/transfer-page/uht1i7xlm6wfs8ob', 'KangTransferController@kangTr
 
 //open vip support pay
 Route::get('support/pay/vYmCpFZXwA5BrVES', 'SupportPayController@webpay');
+
+
+//eb transfer per vip
+Route::get('kfp/transfer-page/{uuid}', 'KangTransferController@webpermanentTransferPage');

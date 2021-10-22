@@ -15,6 +15,7 @@ use App\Models\TransferLogs;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use phpDocumentor\Reflection\DocBlock\Tags\See;
 
 class KangTransferController extends Controller
 {
@@ -114,4 +115,15 @@ class KangTransferController extends Controller
         return $correct;
     }
 
+    public function webpermanentTransferPage(string $uuid)
+    {
+        $user = Seeuser::where('uuid', $uuid)->first();
+        if(empty($user))
+            return '';
+
+        $now = Carbon::now();
+        $vipExpired = Carbon::createFromTimestamp($user['vip_expired'])->toDateString();
+        $days = Carbon::createFromTimestamp($user['vip_expired'])->diffInDays($now);
+        return view('webpermanent-zhuanyi', ['email' => $user['email'], 'expired' => $vipExpired, 'days' => $days]);
+    }
 }
