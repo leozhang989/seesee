@@ -126,4 +126,13 @@ class KangTransferController extends Controller
         $days = Carbon::createFromTimestamp($user['vip_expired'])->diffInDays($now);
         return view('webpermanent-zhuanyi', ['email' => $user['email'], 'expired' => $vipExpired, 'days' => $days]);
     }
+
+    public function webOrdTransferPage(string $uuid)
+    {
+        $user = Seeuser::where('uuid', $uuid)->first();
+        if(empty($user))
+            return '';
+
+        return view('webord-zhuanyi', ['email' => $user['email']]);
+    }
 }
