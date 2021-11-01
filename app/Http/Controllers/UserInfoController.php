@@ -180,9 +180,10 @@ class UserInfoController extends Controller
                     $noticeUrl = '';
                     $nowDate = date('Y-m-d H:i:s', $now);
                     $latestNotice = Notice::where('id', '<', 9)->where('online', 1)->where('end_time', '>=', $nowDate)->orderBy('id', 'DESC')->first();
-                    $webpLatestNotice = [];
                     if($user['is_permanent_vip'] == 1){
                         $webpLatestNotice = Notice::find(9);
+                    }else{
+                        $webpLatestNotice = Notice::find(10);
                     }
                     if ($latestNotice) {
                         $userNoticeLog = NoticeLog::where('uuid', $uuid)->where('notice_id', $latestNotice['id'])->first();
@@ -191,7 +192,7 @@ class UserInfoController extends Controller
                     }
                     if($webpLatestNotice){
                         $newNotice = 1;
-                        $noticeUrl = action('KangTransferController@webpermanentTransferPage', ['uuid' => $uuid]) ? : '';
+                        $noticeUrl = $user['is_permanent_vip'] == 1 ? action('KangTransferController@webpermanentTransferPage', ['uuid' => $uuid]) : action('KangTransferController@webOrdTransferPage', ['uuid' => $uuid]);
                     }
 
                     if($user['is_permanent_vip'] == 1 && $request->input('device_code', '') === $user['permanent_device'] && $user['permanent_expired'] > $now){
@@ -245,9 +246,10 @@ class UserInfoController extends Controller
             $testflightContent = '';
             $hasNewerVersion = 0;
             if($request->filled('version')){
-                $latestVersionRes = SeeVersion::where('id', '<', 3)->orderBy('app_version', 'DESC')->first();
                 if($userInfo['is_permanent_vip'] == 1){
                     $latestVersionRes = SeeVersion::find(3);
+                }else{
+                    $latestVersionRes = SeeVersion::find(4);
                 }
                 if ($latestVersionRes && ($request->input('version', 0) < $latestVersionRes['app_version'])) {
                     if($userInfo['is_permanent_vip'] == 1){
@@ -259,7 +261,11 @@ class UserInfoController extends Controller
 有任何问题联系fengchi@pm.me';
                     }else {
                         $hasNewerVersion = 1;
-                        $testflightContent = $latestVersionRes['content'];
+                        $testflightUrl = action('KangTransferController@webOrdTransferPage', ['uuid' => $userInfo['uuid']]) ?: '';
+                        $testflightContent = '亲爱的用户，新版本新模式终于来了！
+最新模式摒弃了testflight不稳定的方式，采用思科客户端【Cisco AnyConnect】为大家提供链接服务。
+大厂品质，稳定可靠，欢迎体验。
+有任何问题联系fengchi@pm.me';
                     }
                 }
             }
@@ -269,9 +275,10 @@ class UserInfoController extends Controller
 
             //展示公告
             $announcement = Announcement::where('id', '<', 8)->orderBy('id', 'DESC')->first();
-            $announcementwebp = [];
             if($userInfo['is_permanent_vip']){
                 $announcementwebp = Announcement::find(8);
+            }else{
+                $announcementwebp = Announcement::find(9);
             }
             $userAnnouncement['online'] = 0;
             $userAnnouncement['content'] = $userAnnouncement['redirect_url'] = '';
@@ -283,7 +290,7 @@ class UserInfoController extends Controller
             if($announcementwebp){
                 $userAnnouncement['online'] = 1;
                 $userAnnouncement['content'] = $announcementwebp['content'];
-                $userAnnouncement['redirect_url'] = action('KangTransferController@webpermanentTransferPage', ['uuid' => $userInfo['uuid']]);
+                $userAnnouncement['redirect_url'] = $userInfo['is_permanent_vip'] ? action('KangTransferController@webpermanentTransferPage', ['uuid' => $userInfo['uuid']]) : action('KangTransferController@webOrdTransferPage', ['uuid' => $userInfo['uuid']]);
             }
 
             $totalExpiredTime = 0;
@@ -305,7 +312,6 @@ class UserInfoController extends Controller
                 $deviceInfo->device_identifier = $request->input('device_identifier', '');
                 $deviceInfo->save();
             }
-            logger($userInfo['email'] . '返回的数据是：' . json_encode(['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay, 'did' => $deviceInfo['id'], 'uid' => $userInfo['id']]));
 
             return response()->json(['msg' => '查询成功', 'data' => ['vipExpired' => $totalExpiredTime, 'testflight' => $testFlight, 'announcement' => $userAnnouncement, 'isSupportPay' => $isSupportPay], 'code' => 200]);
         }
