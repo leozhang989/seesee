@@ -73,7 +73,7 @@
     <p style="color: red">思科公司是全球领先的网络解决方案供应商，为企业和学校提供安全稳定的VPN解决方案。思科客户端可正常渠道下载，网络安全稳定性更有保障。</p>
 
     <p>图一：风速云页面介绍</p>
-    <p><img style="width:100%;height: auto;" src="{{ asset('fengsee/images/fengsee_info.png') }}" alt=""></p>
+    <p><img style="width:100%;height: auto;" src="{{ asset('fengsee/images/fengsee_info.jpg') }}" alt=""></p>
 </div>
 </body>
 </html>
